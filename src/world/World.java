@@ -1,9 +1,10 @@
 package world;
 
 import org.joml.Vector2d;
+import world.feature.Feature;
+import world.feature.Tree;
 import world.terrain.Terrain;
 import world.worldBuilder.Biome;
-import world.worldBuilder.FastNoiseLite;
 import world.worldBuilder.WorldBuilder;
 
 import java.util.*;
@@ -16,6 +17,7 @@ public class World {
     private final WorldBuilder BUILDER;
     private final Terrain[] TERRAIN;
     private final Biome[] BIOME;
+    private final List<Feature> FEATURES = new LinkedList<>();
 
     public World(int seed, int worldSize) {
         this.SEED = seed;
@@ -30,6 +32,15 @@ public class World {
         Biome biome;
         continentality = this.BUILDER.getContinentalityAt(x, y);
         biome = Biome.generateBiome(continentality);
+
+        switch (biome) {
+            case FOREST:
+                if (World.RANDOM.nextFloat() >= 0.7) FEATURES.add(new Tree(new Vector2d(x + World.RANDOM.nextDouble(), y + World.RANDOM.nextDouble())));
+                break;
+            case PLAINS:
+                if (World.RANDOM.nextFloat() >= 0.99) FEATURES.add(new Tree(new Vector2d(x + World.RANDOM.nextDouble(), y + World.RANDOM.nextDouble())));
+                break;
+        }
 
         this.setBiome(x, y, biome);
         this.setTerrain(x, y, biome.getTerrain());
@@ -60,6 +71,10 @@ public class World {
 
     public int getSize() {
         return this.WORLD_SIZE;
+    }
+
+    public List<Feature> getFeatures() {
+        return new LinkedList<>(this.FEATURES);
     }
 
     private int mapCoordinatesToIndex(int x, int y) {

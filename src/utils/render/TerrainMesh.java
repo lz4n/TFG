@@ -1,22 +1,19 @@
 package utils.render;
 
+import main.Main;
 import org.joml.Vector2i;
 import utils.render.scene.WorldScene;
 
 import java.util.Arrays;
 
 public class TerrainMesh {
-    public float[] vertexArray = new float[0];
-    public int[] elementArray = new int[0];
+    public float[] vertexArray = new float[Main.WORLD.getSize() * Main.WORLD.getSize() * 9*4];
+    public int[] elementArray = new int[Main.WORLD.getSize() * Main.WORLD.getSize() * 9*4];
     public int vaoID;
     private int elementsCount = 0;
+    int previousVertexArrayLength = 0, previousElementArrayLength = 0;
 
     public void addVertex(int x, int y) {
-        int previousVertexArrayLength = this.vertexArray.length;
-        int previousElementArrayLength = this.elementArray.length;
-
-        this.vertexArray = Arrays.copyOf(this.vertexArray, previousVertexArrayLength + 9*4);
-        this.elementArray = Arrays.copyOf(this.elementArray, previousVertexArrayLength + 2*3);
 
         //Primer vértice: abajo derecha
         //Posición
@@ -72,7 +69,7 @@ public class TerrainMesh {
         this.vertexArray[previousVertexArrayLength++] = 0f;
         //Coordenadas UV
         this.vertexArray[previousVertexArrayLength++] = 0f;
-        this.vertexArray[previousVertexArrayLength] = 1f;
+        this.vertexArray[previousVertexArrayLength++] = 1f;
 
         //Añadir elementos
         //Primer triangulo

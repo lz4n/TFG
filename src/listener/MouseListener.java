@@ -1,6 +1,8 @@
 package listener;
 
 import org.lwjgl.glfw.GLFW;
+import utils.render.Window;
+import utils.render.scene.WorldScene;
 
 public class MouseListener {
     private static double scrollX, scrollY, posX, posY, lastX, lastY;
@@ -29,6 +31,12 @@ public class MouseListener {
     public static void mouseScrollCallback(long window, double offsetX, double offsetY) {
         MouseListener.scrollX = offsetX;
         MouseListener.scrollY = offsetY;
+
+        if (MouseListener.scrollY >= 1) {
+            WorldScene.CAMERA.zoomIn();
+        } else if (MouseListener.scrollY <= -1) {
+            WorldScene.CAMERA.zoomOut();
+        }
     }
 
     public static  void endFrame() {

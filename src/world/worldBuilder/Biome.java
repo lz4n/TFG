@@ -6,7 +6,7 @@ public enum Biome {
     OCEAN(new double[]{0, -2}, Terrain.TerrainType.WATER),
     BEACH(new double[]{0.3, 0}, Terrain.TerrainType.SAND),
     PLAINS(new double[]{0.55, 0.3}, Terrain.TerrainType.GRASS),
-    FORES(new double[]{0.7, 0.55}, Terrain.TerrainType.GRASS),
+    FOREST(new double[]{0.7, 0.55}, Terrain.TerrainType.GRASS),
     MOUNTAIN(new double[]{1.1, 0.7}, Terrain.TerrainType.STONE),
     SNOWY_MOUNTAIN(new double[]{2, 1.1}, Terrain.TerrainType.SNOW);
 

@@ -75,6 +75,47 @@ public class WorldScene extends Scene {
             GL20.glVertexAttribPointer(1, uvSize, GL11.GL_FLOAT, false, vertexSizeBytes, (positionsSize + colorSize) * Float.BYTES);
             GL20.glEnableVertexAttribArray(1);
         });
+
+        Main.WORLD.getFeatures().forEach(feature -> {
+            int vaoId, vboId, eboId;
+            float[] vertexArray = feature.getVertexArray();
+            int[] elementArray = feature.getElementArray();
+
+            //Generamos los VAO, VBO y EBO, y los mandamos a la GPU
+            vaoId = ARBVertexArrayObject.glGenVertexArrays();
+            ARBVertexArrayObject.glBindVertexArray(vaoId);
+
+            feature.setVaoID(vaoId);
+
+            //Creamos el buffer de vértices
+            FloatBuffer vertexBuffer = BufferUtils.createFloatBuffer(vertexArray.length);
+            vertexBuffer.put(vertexArray).flip();
+
+            //Creamos la VBO y la subimos al buffer
+            vboId = GL20.glGenBuffers();
+            GL15C.glBindBuffer(GL20.GL_ARRAY_BUFFER, vboId);
+            GL15C.glBufferData(GL20.GL_ARRAY_BUFFER, vertexBuffer, GL20.GL_STATIC_DRAW);
+
+            //Creamos los índices
+            IntBuffer elementBuffer = BufferUtils.createIntBuffer(elementArray.length);
+            elementBuffer.put(elementArray).flip();
+
+            eboId = GL20.glGenBuffers();
+            GL15C.glBindBuffer(GL20.GL_ELEMENT_ARRAY_BUFFER, eboId);
+            GL15C.glBufferData(GL20.GL_ELEMENT_ARRAY_BUFFER, elementBuffer, GL20.GL_STATIC_DRAW);
+
+            //Añadimos los atributos a los vertices
+            int positionsSize = 3;
+            int colorSize = 4;
+            int uvSize = 2;
+            int vertexSizeBytes = (positionsSize + colorSize + uvSize) * Float.BYTES;
+
+            GL20.glVertexAttribPointer(0, positionsSize, GL20.GL_FLOAT, false, vertexSizeBytes, 0);
+            GL20.glEnableVertexAttribArray(0);
+
+            GL20.glVertexAttribPointer(1, uvSize, GL11.GL_FLOAT, false, vertexSizeBytes, (positionsSize + colorSize) * Float.BYTES);
+            GL20.glEnableVertexAttribArray(1);
+        });
 }
 
     public void update(long dTime) {
@@ -107,6 +148,25 @@ public class WorldScene extends Scene {
                 ARBVertexArrayObject.glBindVertexArray(0);
             }
         }
+
+        Main.WORLD.getFeatures().forEach(feature -> {
+            Shader.DEFAULT_TEXTURE.uploadTexture("texture_sampler", 0);
+            GL20.glActiveTexture(GL20.GL_TEXTURE0);
+            GL20.glEnable(GL20.GL_BLEND);
+            GL20.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+            new Texture(feature.getTexturePath()).bind();
+
+            ARBVertexArrayObject.glBindVertexArray(feature.getVaoId());
+            GL20.glEnableVertexAttribArray(0);
+            GL20.glEnableVertexAttribArray(1);
+
+            GL20.glDrawElements(GL20.GL_TRIANGLES, feature.getElementArray().length, GL11.GL_UNSIGNED_INT, 0);
+
+            GL20.glDisableVertexAttribArray(0);
+            GL20.glDisableVertexAttribArray(1);
+
+            ARBVertexArrayObject.glBindVertexArray(0);
+        });
         Shader.detach();
     }
 }

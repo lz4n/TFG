@@ -6,8 +6,11 @@ import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 public class Camera {
+    private static final int RIGHT_ORTHO_CONST = 80, TOP_ORTHO_CONST = 41;
+
     private Matrix4f projectionMatrix = new Matrix4f(), viewMatrix = new Matrix4f();
     public Vector2f cameraPosition;
+    private double zoom = 1;
 
     public Camera(Vector2f cameraPosition) {
         this.cameraPosition = cameraPosition;
@@ -16,7 +19,7 @@ public class Camera {
 
     public void updateProjection() {
         this.projectionMatrix.identity(); //Usamos Matrix4f#identity() para establecer los valores de la matriz como si fuera una matriz unidad.
-        this.projectionMatrix.ortho(0f, 16f * 80f, 0f, 16f * 41f, 0f, 100f); //No vamos a poder ver más cerca de 0 unidades (no píxeles) ni más lejos de 100 unidades.
+        this.projectionMatrix.ortho(0f, 16f * (float) this.zoom * Camera.RIGHT_ORTHO_CONST, 0f, 16f * (float) this.zoom * Camera.TOP_ORTHO_CONST, 0f, 100f); //No vamos a poder ver más cerca de 0 unidades (no píxeles) ni más lejos de 100 unidades.
     }
 
     public Matrix4f getViewMatrix() {
@@ -28,6 +31,16 @@ public class Camera {
                 cameraUp);
 
         return this.viewMatrix;
+    }
+
+    public void zoomIn() {
+        this.zoom *= 0.75;
+        updateProjection();
+    }
+
+    public void zoomOut() {
+        this.zoom *= 1.75;
+        updateProjection();
     }
 
     public Matrix4f getProjectionMatrix() {
