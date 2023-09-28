@@ -16,5 +16,6 @@ public class Player extends Entity {
         super.move(movement);
 
         WorldScene.CAMERA.cameraPosition = new Vector2f((float) this.location.x() * WorldScene.SPRITE_SIZE, (float) this.location.y() * WorldScene.SPRITE_SIZE);
+        WorldScene.CAMERA.updateProjection();
     }
 }

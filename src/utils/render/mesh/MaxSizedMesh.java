@@ -90,8 +90,8 @@ public class MaxSizedMesh extends Mesh {
 
     public void adjust() {
         if (this.previousVertexArrayLength > 0) {
-            this.vertexArray = Arrays.copyOf(this.vertexArray, --this.previousVertexArrayLength);
-            this.elementArray = Arrays.copyOf(this.elementArray, --this.previousElementArrayLength);
+            this.vertexArray = Arrays.copyOf(this.vertexArray, this.previousVertexArrayLength);
+            this.elementArray = Arrays.copyOf(this.elementArray, this.previousElementArrayLength);
         }
     }
 }

@@ -11,7 +11,8 @@ import java.nio.file.Paths;
 
 public enum Shader {
     DEFAULT("assets/shaders/default"),
-    DEFAULT_TEXTURE("assets/shaders/defaultTexture");
+    DEFAULT_TEXTURE("assets/shaders/defaultTexture"),
+    SELECTION("assets/shaders/selection");
 
     private String vertexShader = null, fragmentShader = null;
     private int vertexID, fragmentID, shaderProgramID;

@@ -1,9 +1,8 @@
 package utils.render;
 
-import org.joml.Matrix4f;
-import org.joml.Vector2d;
-import org.joml.Vector2f;
-import org.joml.Vector3f;
+import listener.MouseListener;
+import org.joml.*;
+import utils.render.scene.WorldScene;
 
 public class Camera {
     private static final int RIGHT_ORTHO_CONST = 80, TOP_ORTHO_CONST = 41;
@@ -20,6 +19,7 @@ public class Camera {
     public void updateProjection() {
         this.projectionMatrix.identity(); //Usamos Matrix4f#identity() para establecer los valores de la matriz como si fuera una matriz unidad.
         this.projectionMatrix.ortho(0f, 16f * (float) this.zoom * Camera.RIGHT_ORTHO_CONST, 0f, 16f * (float) this.zoom * Camera.TOP_ORTHO_CONST, 0f, 100f); //No vamos a poder ver más cerca de 0 unidades (no píxeles) ni más lejos de 100 unidades.
+        MouseListener.updateInGameLocation();
     }
 
     public Matrix4f getViewMatrix() {
@@ -31,6 +31,21 @@ public class Camera {
                 cameraUp);
 
         return this.viewMatrix;
+    }
+
+    public Vector2f getInGameLocationMousePosition(Vector2f mousePosition) {
+        //Calculamos las coordenadas normalizadas del cursor en pantalla (de -1 a 1)
+        float normalizedX = (2.0f * mousePosition.x() / Window.getWidth()) - 1.0f;
+        float normalizedY = 1.0f - (2.0f * (mousePosition.y() + 48) / Window.getHeight());
+
+        //Vector 4D con las coordenadas normalizadas y profundidad entre -1 y 1
+        Vector4f cursorClip = new Vector4f(normalizedX, normalizedY, -1.0f, 1.0f);
+
+        //Calculamos las coordenadas in-game
+        Matrix4f inverseTransform = projectionMatrix.mul(viewMatrix, new Matrix4f()).invert();
+        Vector4f cursorView = inverseTransform.transform(cursorClip, new Vector4f());
+        cursorView.div(cursorView.w);
+        return new Vector2f(cursorView.x() / WorldScene.SPRITE_SIZE, cursorView.y() / WorldScene.SPRITE_SIZE);
     }
 
     public void zoomIn() {

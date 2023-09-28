@@ -1,5 +1,6 @@
 package listener;
 
+import org.joml.Vector2f;
 import org.lwjgl.glfw.GLFW;
 import utils.render.Window;
 import utils.render.scene.WorldScene;
@@ -8,6 +9,14 @@ public class MouseListener {
     private static double scrollX, scrollY, posX, posY, lastX, lastY;
     private static boolean[] isMouseButtonPressed = new boolean[3];
     private static boolean isDragging;
+    private static Vector2f inGameLocation;
+
+    public static void updateInGameLocation() {
+        if (Window.currentScene instanceof WorldScene worldScene) {
+            MouseListener.inGameLocation = WorldScene.CAMERA.getInGameLocationMousePosition(new Vector2f((float) MouseListener.posX, (float) MouseListener.posY));
+            worldScene.updateSelection((int) MouseListener.inGameLocation.x(), (int) MouseListener.inGameLocation.y());
+        }
+    }
 
     public static void mousePosCallback(long window, double posX,double posY) {
         MouseListener.lastX = MouseListener.posX;
@@ -15,6 +24,8 @@ public class MouseListener {
 
         MouseListener.posX = posX;
         MouseListener.posY = posY;
+
+        MouseListener.updateInGameLocation();
 
         MouseListener.isDragging = MouseListener.isMouseButtonPressed[0] || MouseListener.isMouseButtonPressed[1] || MouseListener.isMouseButtonPressed[2];
     }
@@ -37,13 +48,6 @@ public class MouseListener {
         } else if (MouseListener.scrollY <= -1) {
             WorldScene.CAMERA.zoomOut();
         }
-    }
-
-    public static  void endFrame() {
-        MouseListener.scrollX = 0;
-        MouseListener.scrollY = 0;
-        MouseListener.lastX = MouseListener.posX;
-        MouseListener.lastY = MouseListener.posY;
     }
 
     private static void setIsMouseButtonPressed(int button, boolean isPressed) {

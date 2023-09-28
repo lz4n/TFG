@@ -6,6 +6,7 @@ import org.joml.Vector2i;
 import utils.render.mesh.MaxSizedMesh;
 import utils.render.mesh.Mesh;
 import utils.render.scene.WorldScene;
+import world.World;
 
 import javax.swing.*;
 import java.util.Arrays;
@@ -19,11 +20,23 @@ public abstract class Feature {
         this.location = location;
         this.sizeInBlocks = sizeInBlocks;
         this.featureType = featureType;
+        //this.featureType.getMesh().addVertex((float) this.location.x(), (float) this.location.y(), this.sizeInBlocks.x(), this.sizeInBlocks.y());
+        if (this.canBePlaced()) {
+            this.featureType.getMesh().addVertex((float) this.location.x(), (float) this.location.y(), this.sizeInBlocks.x(), this.sizeInBlocks.y());
+            for (int x = 0; x <= this.sizeInBlocks.x(); x++) for (int y = 0; y <= this.sizeInBlocks.y(); y++) {
+                Main.WORLD.setFeature((int) this.location.x() + x, (int) this.location.y() + y, this);
+            }
+        }
+    }
 
-        this.featureType.getMesh().addVertex((float) this.location.x(), (float) this.location.y(), this.sizeInBlocks.x(), this.sizeInBlocks.y());
+    private boolean canBePlaced() {
+        Feature feature;
+        for (int x = 0; x <= this.sizeInBlocks.x(); x++) for (int y = 0; y <= this.sizeInBlocks.y(); y++) {
+            feature = Main.WORLD.getFeature(this.getLocation().add(x, y));
+            if (feature != null && !feature.getFeatureType().equals(this.featureType)) return false;
 
-        float screenPosX = WorldScene.SPRITE_SIZE * (float) location.x(), screenPosY = WorldScene.SPRITE_SIZE * (float) location.y();
-        int sizeX = this.sizeInBlocks.x(), sizeY = this.sizeInBlocks.y();
+        }
+        return true;
     }
 
     public Vector2d getLocation() {

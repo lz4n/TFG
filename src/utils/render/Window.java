@@ -110,4 +110,11 @@ public class Window {
         }
     }
 
+    public static int getWidth() {
+        return Window.WIDTH;
+    }
+
+    public static int getHeight() {
+        return Window.HEIGHT;
+    }
 }

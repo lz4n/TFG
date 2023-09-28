@@ -18,7 +18,7 @@ public class WorldGenerator extends Thread {
 
     @Override
     public void run() {
-        for (int x = 0; x < Main.WORLD.getSize(); x++) for (int y = 0; y < Main.WORLD.getSize(); y++) {
+        for (int x = 0; x < Main.WORLD.getSize(); x++) for (int y = Main.WORLD.getSize() -1; y >=0; y--) {
             this.SCENE.RENDER.get(Main.WORLD.getTerrain(x, y).getType()).addVertex(x, y, 1, 1);
         }
     }

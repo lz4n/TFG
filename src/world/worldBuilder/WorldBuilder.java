@@ -2,7 +2,7 @@ package world.worldBuilder;
 
 public class WorldBuilder {
     private final int OCTAVES = 8;
-    private final float ROUGHNESS = 0.4f, SCALE = 0.5f;
+    private final float ROUGHNESS = 0.5f, SCALE = 0.5f;
     private final NoiseGenerator CONTINENTALITY_NOISE, WEIRDNESS_NOISE;
 
     public WorldBuilder(int seed) {
