@@ -3,8 +3,8 @@ package utils.render;
 import listener.KeyListener;
 import listener.MouseListener;
 import main.Main;
-import org.joml.Vector2d;
 import org.joml.Vector2f;
+import org.joml.Vector2i;
 import org.lwjgl.glfw.Callbacks;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
@@ -13,7 +13,6 @@ import org.lwjgl.system.MemoryUtil;
 import utils.Time;
 import utils.render.scene.Scene;
 import utils.render.scene.WorldScene;
-import world.World;
 
 public class Window {
     private final static int WIDTH = 1920, HEIGHT = 1080;
@@ -113,11 +112,21 @@ public class Window {
         }
     }
 
+    public static Vector2i getDimensions() {
+        try {
+            int[] width = new int[1], height = new int[1];
+            GLFW.glfwGetFramebufferSize(Window.window, width, height);
+            return new Vector2i(width[0], height[0]);
+        } catch (NullPointerException exception) {
+            return new Vector2i(0, 0);
+        }
+    }
+
     public static int getWidth() {
-        return Window.WIDTH;
+        return Window.getDimensions().x();
     }
 
     public static int getHeight() {
-        return Window.HEIGHT;
+        return Window.getDimensions().y();
     }
 }

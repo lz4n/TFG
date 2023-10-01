@@ -17,7 +17,7 @@ public class World extends Thread {
 
 
     private final int SEED, WORLD_SIZE;
-    private final WorldBuilder BUILDER;
+    public final WorldBuilder BUILDER;
     private final Terrain[] TERRAIN;
     private final Biome[] BIOME;
     private final Feature[] FEATURE;
@@ -42,6 +42,10 @@ public class World extends Thread {
         biome = Biome.generateBiome(continentality, weirdness, rivers);
 
         switch (biome) {
+            case RIVER_MOUNTAIN_SHORE:
+                if (World.RANDOM.nextFloat() >= 0.4) new Tree(new Location(x + World.RANDOM.nextDouble() /4, y + World.RANDOM.nextDouble() /4));
+                else if (World.RANDOM.nextFloat() >= 0.6) new Bush(new Location(x, y + World.RANDOM.nextDouble() /2));
+                break;
             case FOREST:
                 if (World.RANDOM.nextFloat() >= 0.75) new Tree(new Location(x + World.RANDOM.nextDouble() /4, y + World.RANDOM.nextDouble() /4));
                 else if (World.RANDOM.nextFloat() >= 0.8) new Bush(new Location(x, y + World.RANDOM.nextDouble() /2));

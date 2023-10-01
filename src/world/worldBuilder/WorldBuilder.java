@@ -10,7 +10,6 @@ public class WorldBuilder {
         this.WEIRDNESS_NOISE = new NoiseGenerator(seed+1) {{SetNoiseType(NoiseType.OpenSimplex2);}};
         this.RIVERS_NOSISE = new NoiseGenerator(seed+2) {{
             SetNoiseType(NoiseType.OpenSimplex2);
-            SetDomainWarpAmp(1);
         }};
     }
 
@@ -23,7 +22,7 @@ public class WorldBuilder {
     }
 
     public double getRiversAt(int x, int y) {
-        return this.getNoiseAt(x, y, this.RIVERS_NOSISE, this.SCALE, this.OCTAVES, this.ROUGHNESS);
+        return this.getNoiseAt(x, y, this.RIVERS_NOSISE, this.SCALE /3, this.OCTAVES, this.ROUGHNESS * 1.5);
     }
 
     public double getNoiseAt(int x, int y, NoiseGenerator noiseGenerator, double scale, double octaves, double roughness) {

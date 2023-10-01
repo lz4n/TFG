@@ -12,7 +12,8 @@ import java.nio.file.Paths;
 public enum Shader {
     DEFAULT("assets/shaders/default"),
     DEFAULT_TEXTURE("assets/shaders/defaultTexture"),
-    SELECTION("assets/shaders/selection");
+    SELECTION("assets/shaders/selection"),
+    HUD("assets/shaders/hud");
 
     private String vertexShader = null, fragmentShader = null;
     private int vertexID, fragmentID, shaderProgramID;
@@ -76,6 +77,10 @@ public enum Shader {
         FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
         matrix4f.get(matrixBuffer);
         GL20.glUniformMatrix4fv(variableLocation, false, matrixBuffer);
+    }
+
+    public void upload3f(String variableName, float floatValue1, float floatValue2, float floatValue3) {
+        GL20.glUniform3f(GL20.glGetUniformLocation(this.shaderProgramID, variableName), floatValue1, floatValue2, floatValue3);
     }
 
     public void uploadFloat(String variableName, float floatValue) {

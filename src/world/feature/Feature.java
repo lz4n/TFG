@@ -2,6 +2,7 @@ package world.feature;
 
 import main.Main;
 import org.joml.Vector2d;
+import org.joml.Vector2f;
 import org.joml.Vector2i;
 import utils.render.mesh.MaxSizedMesh;
 import utils.render.texture.StaticTexture;
@@ -19,7 +20,7 @@ public abstract class Feature {
         this.featureType = featureType;
         if (this.canBePlaced()) {
             this.featureType.getMesh().addVertex((float) this.location.getX(), (float) this.location.getY(), this.sizeInBlocks.x(), this.sizeInBlocks.y());
-            for (int x = 0; x <= this.sizeInBlocks.x(); x++) for (int y = 0; y <= this.sizeInBlocks.y(); y++) {
+            for (int x = 0; x < this.sizeInBlocks.x(); x++) for (int y = 0; y < this.sizeInBlocks.y(); y++) {
                 Main.WORLD.setFeature((int) this.location.getX() + x, (int) this.location.getY() + y, this);
             }
         }
@@ -41,6 +42,10 @@ public abstract class Feature {
 
     public FeatureType getFeatureType() {
         return this.featureType;
+    }
+
+    public Vector2i getSize() {
+        return new Vector2i(this.sizeInBlocks);
     }
 
     public enum FeatureType {

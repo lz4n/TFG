@@ -55,11 +55,10 @@ public class SquareScene extends Scene {
         //Añadimos los atributos a los vertices
         int positionsSize = 3;
         int colorSize = 4;
-        int floatSizeBytes = 4;
-        int vertexSizeBytes = (positionsSize + colorSize) * floatSizeBytes;
+        int vertexSizeBytes = (positionsSize + colorSize) * Float.BYTES;
         GL20.glVertexAttribPointer(0, positionsSize, GL20.GL_FLOAT, false, vertexSizeBytes, 0);
         GL20.glEnableVertexAttribArray(0);
-        GL20.glVertexAttribPointer(1, colorSize, GL20.GL_FLOAT, false, vertexSizeBytes, positionsSize * floatSizeBytes);
+        GL20.glVertexAttribPointer(1, colorSize, GL20.GL_FLOAT, false, vertexSizeBytes, positionsSize * Float.BYTES);
         GL20.glEnableVertexAttribArray(1);
     }
 
