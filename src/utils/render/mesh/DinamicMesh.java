@@ -1,12 +1,21 @@
 package utils.render.mesh;
 
-import utils.render.mesh.Mesh;
 import utils.render.scene.WorldScene;
 import utils.render.texture.Texture;
 
 import java.util.Arrays;
 
+/**
+ * <code>Mesh</code> de tamaño dinámico, se recomienda no utilizar a no ser que sea extrictamente necesario, gasta muchos recursos.
+ * @see Mesh
+ *
+ * @author Izan
+ */
 public class DinamicMesh extends Mesh {
+
+    /**
+     * @param texture Textura correspondiente al <code>mesh</code>.
+     */
     public DinamicMesh(Texture texture) {
         super(texture);
     }
@@ -26,11 +35,7 @@ public class DinamicMesh extends Mesh {
         this.vertexArray[previousVertexArrayLength++] = screenPosX + WorldScene.SPRITE_SIZE * sizeX;
         this.vertexArray[previousVertexArrayLength++] = screenPosY;
         this.vertexArray[previousVertexArrayLength++] = 0f;
-        //Color
-        this.vertexArray[previousVertexArrayLength++] = 0f;
-        this.vertexArray[previousVertexArrayLength++] = 0f;
-        this.vertexArray[previousVertexArrayLength++] = 0f;
-        this.vertexArray[previousVertexArrayLength++] = 0f;
+
         //Coordenadas UV
         this.vertexArray[previousVertexArrayLength++] = 1f;
         this.vertexArray[previousVertexArrayLength++] = 1f;
@@ -40,11 +45,7 @@ public class DinamicMesh extends Mesh {
         this.vertexArray[previousVertexArrayLength++] = screenPosX;
         this.vertexArray[previousVertexArrayLength++] = screenPosY + WorldScene.SPRITE_SIZE * sizeY;
         this.vertexArray[previousVertexArrayLength++] = 0f;
-        //Color
-        this.vertexArray[previousVertexArrayLength++] = 0f;
-        this.vertexArray[previousVertexArrayLength++] = 0f;
-        this.vertexArray[previousVertexArrayLength++] = 0f;
-        this.vertexArray[previousVertexArrayLength++] = 0f;
+
         //Coordenadas UV
         this.vertexArray[previousVertexArrayLength++] = 0f;
         this.vertexArray[previousVertexArrayLength++] = 0f;
@@ -54,11 +55,7 @@ public class DinamicMesh extends Mesh {
         this.vertexArray[previousVertexArrayLength++] = screenPosX + WorldScene.SPRITE_SIZE * sizeX;
         this.vertexArray[previousVertexArrayLength++] = screenPosY + WorldScene.SPRITE_SIZE * sizeY;
         this.vertexArray[previousVertexArrayLength++] = 0f;
-        //Color
-        this.vertexArray[previousVertexArrayLength++] = 0f;
-        this.vertexArray[previousVertexArrayLength++] = 0f;
-        this.vertexArray[previousVertexArrayLength++] = 0f;
-        this.vertexArray[previousVertexArrayLength++] = 0f;
+
         //Coordenadas UV
         this.vertexArray[previousVertexArrayLength++] = 1f;
         this.vertexArray[previousVertexArrayLength++] = 0f;
@@ -68,11 +65,7 @@ public class DinamicMesh extends Mesh {
         this.vertexArray[previousVertexArrayLength++] = screenPosX;
         this.vertexArray[previousVertexArrayLength++] = screenPosY;
         this.vertexArray[previousVertexArrayLength++] = 0f;
-        //Color
-        this.vertexArray[previousVertexArrayLength++] = 0f;
-        this.vertexArray[previousVertexArrayLength++] = 0f;
-        this.vertexArray[previousVertexArrayLength++] = 0f;
-        this.vertexArray[previousVertexArrayLength++] = 0f;
+
         //Coordenadas UV
         this.vertexArray[previousVertexArrayLength++] = 0f;
         this.vertexArray[previousVertexArrayLength] = 1f;

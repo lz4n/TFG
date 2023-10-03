@@ -4,7 +4,6 @@ import org.lwjgl.glfw.GLFW;
 
 /**
  * Listener para los eventos de teclado. Rastrea el estado de cada tecla y lanza un evento cuando se presiona una.
- * @since 2-10-2023
  * @author Izan
  */
 public class KeyListener {

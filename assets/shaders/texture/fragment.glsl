@@ -22,7 +22,7 @@ void main()
     //Si el fragmento es trasparente no se aplica la nievla.
     vec4 fragmentColor = texture(texture_sampler, fTextureCoords);
     if (fragmentColor.a == 0) {
-        color = texture(texture_sampler, fTextureCoords);
+        color = fragmentColor;
     } else {
         color = vec4(mix(fragmentColor.rgb, fogColor, fogFactor), 1);
     }

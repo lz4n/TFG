@@ -1,20 +1,20 @@
 package utils.render.scene;
 
-import org.joml.Vector2f;
-import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.*;
-import utils.Time;
-import utils.render.Camera;
-import utils.render.Shader;
-
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-
+/**
+ * La escena es la encargada de la parte gráfica del juego, cada pantalla tiene una escena.
+ *
+ * @author Izan
+ */
 public abstract class Scene {
-
-
+    /**
+     * Se llama cuando se inicia la escena, justo antes de aparecer en pantalla. No cuando se instancia.
+     */
     public abstract void init();
 
 
+    /**
+     * Se llama en cada frame.
+     * @param dTime Tiempo que ha pasado desde el anterior frame.
+     */
     public abstract void update(long dTime);
 }

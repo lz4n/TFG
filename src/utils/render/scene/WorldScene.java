@@ -18,10 +18,27 @@ import world.terrain.Terrain;
 
 import java.awt.*;
 
+/**
+ * Escena encargada de renderizar el mundo.
+ *
+ * @author Izan
+ */
 public class WorldScene extends Scene {
+
+    /**
+     * Tamaño base (sin contar el zoom) de los sprites.
+     */
     public static final int SPRITE_SIZE = 20;
 
+    /**
+     * Camara de la escena.
+     */
     public static Camera CAMERA = new Camera(new Vector2f(0, 0)); //Iniciamos la cámara en 0,0.
+
+    /**
+     * <code>Mesh</code> anónimo utilizado para el selector del ratón.
+     * @see Mesh
+     */
     private final Mesh MOUSE_SELECTION_MESH = new Mesh(new StaticTexture("assets/textures/ui/selector.png")) {
         {
             this.vertexArray = new float[9*4];
@@ -38,11 +55,6 @@ public class WorldScene extends Scene {
             this.vertexArray[previousVertexArrayLength++] = screenPosX + WorldScene.SPRITE_SIZE * sizeX;
             this.vertexArray[previousVertexArrayLength++] = screenPosY;
             this.vertexArray[previousVertexArrayLength++] = 0f;
-            //Color
-            this.vertexArray[previousVertexArrayLength++] = 0f;
-            this.vertexArray[previousVertexArrayLength++] = 0f;
-            this.vertexArray[previousVertexArrayLength++] = 0f;
-            this.vertexArray[previousVertexArrayLength++] = 0f;
             //Coordenadas UV
             this.vertexArray[previousVertexArrayLength++] = 1f;
             this.vertexArray[previousVertexArrayLength++] = 1f;
@@ -51,11 +63,6 @@ public class WorldScene extends Scene {
             //Posición
             this.vertexArray[previousVertexArrayLength++] = screenPosX;
             this.vertexArray[previousVertexArrayLength++] = screenPosY + WorldScene.SPRITE_SIZE * sizeY;
-            this.vertexArray[previousVertexArrayLength++] = 0f;
-            //Color
-            this.vertexArray[previousVertexArrayLength++] = 0f;
-            this.vertexArray[previousVertexArrayLength++] = 0f;
-            this.vertexArray[previousVertexArrayLength++] = 0f;
             this.vertexArray[previousVertexArrayLength++] = 0f;
             //Coordenadas UV
             this.vertexArray[previousVertexArrayLength++] = 0f;
@@ -66,11 +73,6 @@ public class WorldScene extends Scene {
             this.vertexArray[previousVertexArrayLength++] = screenPosX + WorldScene.SPRITE_SIZE * sizeX;
             this.vertexArray[previousVertexArrayLength++] = screenPosY + WorldScene.SPRITE_SIZE * sizeY;
             this.vertexArray[previousVertexArrayLength++] = 0f;
-            //Color
-            this.vertexArray[previousVertexArrayLength++] = 0f;
-            this.vertexArray[previousVertexArrayLength++] = 0f;
-            this.vertexArray[previousVertexArrayLength++] = 0f;
-            this.vertexArray[previousVertexArrayLength++] = 0f;
             //Coordenadas UV
             this.vertexArray[previousVertexArrayLength++] = 1f;
             this.vertexArray[previousVertexArrayLength++] = 0f;
@@ -80,17 +82,13 @@ public class WorldScene extends Scene {
             this.vertexArray[previousVertexArrayLength++] = screenPosX;
             this.vertexArray[previousVertexArrayLength++] = screenPosY;
             this.vertexArray[previousVertexArrayLength++] = 0f;
-            //Color
-            this.vertexArray[previousVertexArrayLength++] = 0f;
-            this.vertexArray[previousVertexArrayLength++] = 0f;
-            this.vertexArray[previousVertexArrayLength++] = 0f;
-            this.vertexArray[previousVertexArrayLength++] = 0f;
             //Coordenadas UV
             this.vertexArray[previousVertexArrayLength++] = 0f;
             this.vertexArray[previousVertexArrayLength] = 1f;
         }
     }, HUD_MES = new HUDMesh(null);
 
+    @Override
     public void init() {
         //Cargamos el shader
         Shader.TEXTURE.compile();
@@ -114,6 +112,11 @@ public class WorldScene extends Scene {
         WorldScene.CAMERA.moveCamera(new Vector2f(Main.WORLD.getSize() / 2));
     }
 
+    /**
+     * Actualiza y sube a la <code>GPU</code> el <code>mesh</code> del selector.
+     * @param x Posición en el eje X in-game del selector.
+     * @param y Posición en el eje Y in-game del selector.
+     */
     public void updateSelection(int x, int y) {
         int sizeX = 1, sizeY = 1;
         Feature selectedFeature = new Location(x, y).getFeature();
@@ -128,52 +131,52 @@ public class WorldScene extends Scene {
         this.MOUSE_SELECTION_MESH.load();
         //Añadimos los atributos a los vertices
         int positionsSize = 3;
-        int colorSize = 4;
         int uvSize = 2;
-        int vertexSizeBytes = (positionsSize + colorSize + uvSize) * Float.BYTES;
+        int vertexSizeBytes = (positionsSize + uvSize) * Float.BYTES;
 
         GL20.glVertexAttribPointer(0, positionsSize, GL20.GL_FLOAT, false, vertexSizeBytes, 0);
         GL20.glEnableVertexAttribArray(0);
 
-        GL20.glVertexAttribPointer(1, uvSize, GL11.GL_FLOAT, false, vertexSizeBytes, (positionsSize + colorSize) * Float.BYTES);
+        GL20.glVertexAttribPointer(1, uvSize, GL11.GL_FLOAT, false, vertexSizeBytes, positionsSize* Float.BYTES);
         GL20.glEnableVertexAttribArray(1);
-
-        GL20.glVertexAttribPointer(2, colorSize, GL20.GL_FLOAT, false, vertexSizeBytes, positionsSize * Float.BYTES);
-        GL20.glEnableVertexAttribArray(2);
     }
 
+    /**
+     * Sube a la <code>GPU</code> el terreno del mundo.
+     */
     public void drawTerrain() {
-        int vaoId, vboId, eboId;
         for (Terrain.TerrainType terrainType: Terrain.TerrainType.values()) {
             terrainType.getMesh().load();
             //Añadimos los atributos a los vertices
             int positionsSize = 3;
-            int colorSize = 4;
             int uvSize = 2;
-            int vertexSizeBytes = (positionsSize + colorSize + uvSize) * Float.BYTES;
+            int vertexSizeBytes = (positionsSize + uvSize) * Float.BYTES;
 
             GL20.glVertexAttribPointer(0, positionsSize, GL20.GL_FLOAT, false, vertexSizeBytes, 0);
             GL20.glEnableVertexAttribArray(0);
 
-            GL20.glVertexAttribPointer(1, uvSize, GL11.GL_FLOAT, false, vertexSizeBytes, (positionsSize + colorSize) * Float.BYTES);
+            GL20.glVertexAttribPointer(1, uvSize, GL11.GL_FLOAT, false, vertexSizeBytes, positionsSize * Float.BYTES);
             GL20.glEnableVertexAttribArray(1);
         }
         for (Feature.FeatureType featureType: Feature.FeatureType.values()) {
             featureType.getMesh().load();
             //Añadimos los atributos a los vertices
             int positionsSize = 3;
-            int colorSize = 4;
             int uvSize = 2;
-            int vertexSizeBytes = (positionsSize + colorSize + uvSize) * Float.BYTES;
+            int vertexSizeBytes = (positionsSize + uvSize) * Float.BYTES;
 
             GL20.glVertexAttribPointer(0, positionsSize, GL20.GL_FLOAT, false, vertexSizeBytes, 0);
             GL20.glEnableVertexAttribArray(0);
 
-            GL20.glVertexAttribPointer(1, uvSize, GL11.GL_FLOAT, false, vertexSizeBytes, (positionsSize + colorSize) * Float.BYTES);
+            GL20.glVertexAttribPointer(1, uvSize, GL11.GL_FLOAT, false, vertexSizeBytes, positionsSize * Float.BYTES);
             GL20.glEnableVertexAttribArray(1);
         }
     }
 
+    /**
+     * Dibuja todos los elementos en pantalla.
+     */
+    @Override
     public void update(long dTime) {
         Shader.TEXTURE.use();
 
