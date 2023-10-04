@@ -8,13 +8,28 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.List;
 
+/**
+ * Representa una textura. Permite aplicar y desaplicar una textura en la <code>GPU</code>.
+ */
 public abstract class Texture {
+    /**
+     * Sube la textura a la <code>GPU</code>.
+     */
     public abstract void bind();
 
+    /**
+     * Limpia la textura de la <code>GPU</code>, y limpia la memoria.<br>
+     * <b>IMPORTANTE</b>: la limpieza de memoria la implementa cada clase de forma individual.
+     */
     public void unbind() {
         GL20.glBindTexture(GL20.GL_TEXTURE_2D, 0);
     }
 
+    /**
+     * Genera una textura a partir de una imagen .png con 32bits de color.
+     * @param path ruta a la textura.
+     * @return identificador numérico de la textura.
+     */
     protected final int generateSprite(String path) {
         IntBuffer width = BufferUtils.createIntBuffer(1), height = BufferUtils.createIntBuffer(1), channels = BufferUtils.createIntBuffer(1);
         ByteBuffer image;

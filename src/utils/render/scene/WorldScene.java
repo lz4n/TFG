@@ -3,6 +3,7 @@ package utils.render.scene;
 import listener.MouseListener;
 import main.Main;
 import org.joml.Matrix4f;
+import utils.Time;
 import utils.render.Window;
 import utils.render.mesh.*;
 import org.joml.Vector2f;
@@ -252,6 +253,9 @@ public class WorldScene extends Scene {
             Shader.HUD.uploadTexture("texture_sampler", 0);
             GL20.glActiveTexture(GL20.GL_TEXTURE0);
             String debug = String.format("""
+                            game:
+                                fps=%s
+                            
                             selection:
                                 x=%.2f, y=%.2f
                             %s
@@ -264,6 +268,7 @@ public class WorldScene extends Scene {
                                 seed=%s
                                 daytime=%s
                             """,
+                    (int) (1/ Time.nanosecondsToSeconds(dTime)),
                     MouseListener.inGameLocation.getX(),
                     MouseListener.inGameLocation.getY(),
                     MouseListener.inGameLocation.isOutOfTheWorld() ? "    OutOfTheWorld" : String.format("""
@@ -286,7 +291,7 @@ public class WorldScene extends Scene {
                     WorldScene.CAMERA.getZoom(),
                     Main.WORLD.getSeed(),
                     Main.WORLD.getDayTime());
-            Graphics2dTexture texture = new Graphics2dTexture(900, 500);
+            Graphics2dTexture texture = new Graphics2dTexture(Window.getWidth() / 2, Window.getHeight());
             Graphics2D graphics2D = texture.getGraphics();
             int posY = 10;
             for (String debugLine : debug.split("\n")) {

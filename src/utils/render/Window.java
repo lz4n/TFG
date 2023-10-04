@@ -87,7 +87,7 @@ public class Window {
 
             if (dTime >= 0) {
                 Window.currentScene.update(dTime);
-                GLFW.glfwSetWindowTitle(window, "FPS: " + (int) (1/Time.nanosecondsToSeconds(dTime)));
+                GLFW.glfwSetWindowTitle(window, "EL PATO JUEGO");
             }
 
             if (KeyListener.isKeyPressed(GLFW.GLFW_KEY_W)) {
@@ -112,7 +112,7 @@ public class Window {
         }
     }
 
-    public static Vector2i getDimensions() {
+    private static Vector2i getDimensions() {
         try {
             int[] width = new int[1], height = new int[1];
             GLFW.glfwGetFramebufferSize(Window.window, width, height);

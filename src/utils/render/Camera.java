@@ -5,7 +5,13 @@ import org.joml.*;
 import utils.render.scene.WorldScene;
 import world.location.Location;
 
+/**
+ * Representa la posición y prespectiva de la cámara dentro del mundo.
+ */
 public class Camera {
+    /**
+     * Contantes para la amplitud de la camara.
+     */
     private static final int RIGHT_ORTHO_CONST = 80, TOP_ORTHO_CONST = 41;
 
     private Matrix4f projectionMatrix = new Matrix4f(), viewMatrix = new Matrix4f();

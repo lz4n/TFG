@@ -2,10 +2,23 @@ package utils.render.texture;
 
 import org.lwjgl.opengl.GL20;
 
+/**
+ * Representa una textura fija.
+ */
 public class StaticTexture extends Texture {
+    /**
+     * Ruta de la textura.
+     */
     private final String TEXTURE;
+
+    /**
+     * Identificador numérico de la textura.
+     */
     private int textureId;
 
+    /**
+     * @param path Ruta al archivo .png de la textura.
+     */
     public StaticTexture(String path) {
         this.TEXTURE = path;
     }
