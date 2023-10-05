@@ -194,7 +194,7 @@ public class WorldScene extends Scene {
         GL20.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
         for (Terrain.TerrainType terrainType: Terrain.TerrainType.values()) {
-            Shader.TEXTURE.uploadTexture("texture_sampler", 0);
+            Shader.TEXTURE.uploadInt("texture_sampler", 0);
             GL20.glActiveTexture(GL20.GL_TEXTURE0);
             terrainType.getMesh().getTexture().bind();
 
@@ -213,7 +213,7 @@ public class WorldScene extends Scene {
         }
 
         for (Feature.FeatureType featureType: Feature.FeatureType.values()) {
-            Shader.TEXTURE.uploadTexture("texture_sampler", 0);
+            Shader.TEXTURE.uploadInt("texture_sampler", 0);
             GL20.glActiveTexture(GL20.GL_TEXTURE0);
             featureType.getMesh().getTexture().bind();
 
@@ -233,7 +233,7 @@ public class WorldScene extends Scene {
 
 
         if (!MouseListener.inGameLocation.isOutOfTheWorld()) {
-            Shader.TEXTURE.uploadTexture("texture_sampler", 0);
+            Shader.TEXTURE.uploadInt("texture_sampler", 0);
             GL20.glActiveTexture(GL20.GL_TEXTURE0);
             this.MOUSE_SELECTION_MESH.getTexture().bind();
             ARBVertexArrayObject.glBindVertexArray(this.MOUSE_SELECTION_MESH.getVaoId());
@@ -250,7 +250,7 @@ public class WorldScene extends Scene {
             Shader.HUD.use();
             Shader.HUD.uploadMatrix4f("uProjection", new Matrix4f().ortho(0, Window.getWidth(), Window.getHeight(), 0, -1, 1));
             Shader.HUD.uploadMatrix4f("uView", new Matrix4f().identity());
-            Shader.HUD.uploadTexture("texture_sampler", 0);
+            Shader.HUD.uploadInt("texture_sampler", 0);
             GL20.glActiveTexture(GL20.GL_TEXTURE0);
             String debug = String.format("""
                             game:

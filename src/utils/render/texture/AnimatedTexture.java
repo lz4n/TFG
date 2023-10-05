@@ -4,6 +4,8 @@ import org.lwjgl.opengl.GL20;
 
 /**
  * Representa una textura animada que cambia su sprite según el tiempo.
+ *
+ * @author Izan
  */
 public class AnimatedTexture extends Texture {
     /**

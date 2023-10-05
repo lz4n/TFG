@@ -4,6 +4,8 @@ import org.lwjgl.opengl.GL20;
 
 /**
  * Representa una textura fija.
+ *
+ * @author Izan
  */
 public class StaticTexture extends Texture {
     /**

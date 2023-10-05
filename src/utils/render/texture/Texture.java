@@ -10,6 +10,8 @@ import java.util.List;
 
 /**
  * Representa una textura. Permite aplicar y desaplicar una textura en la <code>GPU</code>.
+ *
+ * @author Izan
  */
 public abstract class Texture {
     /**

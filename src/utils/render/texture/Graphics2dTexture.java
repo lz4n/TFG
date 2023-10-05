@@ -12,6 +12,7 @@ import java.util.function.Consumer;
  * generar gráficos 2D más pequeños y unirlos más tarde utilizando el resto de tipos de texturas.
  *
  * @see Graphics2D
+ * @author Izan
  */
 public class Graphics2dTexture extends Texture {
     /**

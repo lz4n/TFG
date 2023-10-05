@@ -14,11 +14,31 @@ import utils.Time;
 import utils.render.scene.Scene;
 import utils.render.scene.WorldScene;
 
+/**
+ * Representa la ventana en la que se ejecuta el juego.
+ *
+ * @author Izan
+ */
 public class Window {
+    /**
+     * Tamaño por defecto de la ventana.
+     */
     private final static int WIDTH = 1920, HEIGHT = 1080;
+
+    /**
+     * Identificador numérico de la ventana.
+     */
     public static long window;
+
+    /**
+     * Escena actual de la ventana.
+     */
     public static Scene currentScene = new WorldScene();
 
+    /**
+     * Inicia la ventana: inicializa sus componentes y genera el loop principal. Cuando el loop termina libera memoria
+     * y desactiva GLSL.
+     */
     public static void run() {
         init();
         currentScene.init();
@@ -31,10 +51,10 @@ public class Window {
         GLFW.glfwSetErrorCallback(null).free();
     }
 
-    public static void setScene(Scene scene) {
-        Window.currentScene = scene;
-    }
-
+    /**
+     * Inicializa los componentes gráficos y establece los atributos y comportamientos de la ventana.
+     * También inicializa OpenGL: todos los comandos gráficos deben ejecutarse después de este método.
+     */
     private static void init() {
         //Generamos el ErrorCallback
         GLFWErrorCallback.createPrint(System.err).set();
@@ -58,6 +78,7 @@ public class Window {
             throw new RuntimeException("No se ha podido crear la ventana.");
         }
 
+        //Generamos los eventos de teclado y ratón
         GLFW.glfwSetCursorPosCallback(window, MouseListener::mousePosCallback);
         GLFW.glfwSetMouseButtonCallback(window, MouseListener::mouseButtonCallback);
         GLFW.glfwSetScrollCallback(window, MouseListener::mouseScrollCallback);
@@ -76,16 +97,18 @@ public class Window {
         GL.createCapabilities();
     }
 
+    /**
+     * Crea el loop principal y calcula los FPS.
+     */
     private static void loop() {
         long beginTime = Time.getTimeInNanoseconds(), endTime, dTime = -1;
 
         while (!GLFW.glfwWindowShouldClose(window)) {
-            Main.WORLD.onTick();
-
             GLFW.glfwPollEvents();
             GLFW.glfwSwapBuffers(window);
 
             if (dTime >= 0) {
+                Main.WORLD.onTick();
                 Window.currentScene.update(dTime);
                 GLFW.glfwSetWindowTitle(window, "EL PATO JUEGO");
             }
@@ -112,6 +135,12 @@ public class Window {
         }
     }
 
+    /**
+     * @return Vector de dos enteros con las dimensiones de la ventana.
+     *
+     * @see Window#getWidth()
+     * @see Window#getHeight()
+     */
     private static Vector2i getDimensions() {
         try {
             int[] width = new int[1], height = new int[1];
@@ -122,10 +151,16 @@ public class Window {
         }
     }
 
+    /**
+     * @return Ancho de la ventana.
+     */
     public static int getWidth() {
         return Window.getDimensions().x();
     }
 
+    /**
+     * @return Alto de la ventana.
+     */
     public static int getHeight() {
         return Window.getDimensions().y();
     }
