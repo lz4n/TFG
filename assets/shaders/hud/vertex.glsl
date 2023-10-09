@@ -5,8 +5,8 @@ out vec2 TexCoord; // Coordenadas de textura de salida para el fragment shader
 
 uniform mat4 uProjection; // Matriz de proyección
 uniform mat4 uView; // Matriz de modelo-vista
-uniform vec2 hudPosition = vec2(0, 0); // Posición del HUD en pantalla
-uniform vec2 hudSize = vec2(1920, 1080); // Tamaño del HUD en pantalla
+uniform vec2 hudPosition; // Posición del HUD en pantalla
+uniform vec2 hudSize; // Tamaño del HUD en pantalla
 
 void main()
 {
