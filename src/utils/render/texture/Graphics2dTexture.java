@@ -50,13 +50,13 @@ public class Graphics2dTexture extends Texture {
      * Dibuja los gráficos 2D en el buffer de imagen y genera la textura.
      * @return identificador numérico de la textura.
      */
-    public int convert() {
+    public void convert() {
         //Dibujamos los gráficos 2D en la imagen
         this.GRAPHICS.dispose();
 
         //Generamos la textura
-        int textureId = GL20.glGenTextures();
-        GL20.glBindTexture(GL20.GL_TEXTURE_2D, textureId);
+        this.textureId = GL20.glGenTextures();
+        GL20.glBindTexture(GL20.GL_TEXTURE_2D, this.textureId);
         GL20.glTexImage2D(GL20.GL_TEXTURE_2D,
                 0,
                 GL20.GL_RGBA,
@@ -82,8 +82,6 @@ public class Graphics2dTexture extends Texture {
         //Cuando hagamos la textura más grande o más pequeña se pixele.
         GL20.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_MIN_FILTER, GL20.GL_NEAREST);
         GL20.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_MAG_FILTER, GL20.GL_NEAREST);
-
-        return textureId;
     }
 
     @Override
@@ -94,7 +92,6 @@ public class Graphics2dTexture extends Texture {
 
     @Override
     public void bind() {
-        this.textureId = this.convert();
         GL20.glBindTexture(GL20.GL_TEXTURE_2D, this.textureId);
     }
 }

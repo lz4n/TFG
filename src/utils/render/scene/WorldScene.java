@@ -6,6 +6,7 @@ import org.joml.Matrix4f;
 import ui.Inventory;
 import ui.widget.SeparatorWidget;
 import ui.widget.SlotWidget;
+import ui.widget.TextWidget;
 import utils.Time;
 import utils.render.Window;
 import utils.render.mesh.*;
@@ -92,7 +93,7 @@ public class WorldScene extends Scene {
         }
     }, HUD_MESH = new HUDMesh(null);
 
-    private final Inventory INVENTORY = new Inventory(0, 3.7065f * (Window.getHeight() / 5f),  Window.getWidth(), Window.getHeight() / 5f, Window.getHeight() / 205f);
+    private final Inventory INVENTORY = new Inventory();
 
     @Override
     public void init() {
@@ -119,7 +120,7 @@ public class WorldScene extends Scene {
 
         this.INVENTORY.addWidget(new SeparatorWidget(20, 0));
         this.INVENTORY.addWidget(new SlotWidget(40, 4, Feature.FeatureType.TREE.getMesh().getTexture()));
-        this.INVENTORY.addWidget(new SlotWidget(40, 23, Feature.FeatureType.TREE.getMesh().getTexture()));
+        this.INVENTORY.addWidget(new TextWidget(40, 23, "kkkkkkkkk"));
     }
 
     /**
@@ -310,6 +311,7 @@ public class WorldScene extends Scene {
                 posY += graphics2D.getFontMetrics().getHeight();
             }
 
+            texture.convert();
             texture.bind();
             ARBVertexArrayObject.glBindVertexArray(this.HUD_MESH.getVaoId());
             GL20.glEnableVertexAttribArray(0);
@@ -322,5 +324,15 @@ public class WorldScene extends Scene {
         this.INVENTORY.draw(this.HUD_MESH);
 
         Shader.detach();
+    }
+
+    @Override
+    public void resizeWindow() {
+        this.INVENTORY.setPixelSizeInScreen(Window.getHeight() / 205f);
+    }
+
+    @Override
+    public void click(float mouseX, float mouseY) {
+        this.INVENTORY.click(mouseX, mouseY);
     }
 }

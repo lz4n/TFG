@@ -37,13 +37,11 @@ public abstract class Texture {
         ByteBuffer image;
         int textureId = GL20.glGenTextures();
 
-        //Generamos la texetura
+        //Generamos la textura
         GL20.glBindTexture(GL20.GL_TEXTURE_2D, textureId);
 
         //Repetimos la textura en todas direcciones
-        List.of(GL20.GL_TEXTURE_WRAP_S, GL20.GL_TEXTURE_WRAP_T).forEach(textureRepeatDirection -> {
-            GL20.glTexParameteri(GL20.GL_TEXTURE_2D, textureRepeatDirection, GL20.GL_CLAMP_TO_EDGE);
-        });
+        List.of(GL20.GL_TEXTURE_WRAP_S, GL20.GL_TEXTURE_WRAP_T).forEach(textureRepeatDirection -> GL20.glTexParameteri(GL20.GL_TEXTURE_2D, textureRepeatDirection, GL20.GL_CLAMP_TO_EDGE));
 
         //Cuando hagamos la textura más grande o más pequeña se pixele.
         GL20.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_MIN_FILTER, GL20.GL_NEAREST);
@@ -51,6 +49,7 @@ public abstract class Texture {
 
         image = STBImage.stbi_load(path, width, height, channels, 0);
         if (image != null) {
+            //Para poder utilizar imágenes con 32 y 24 bits de color.
             int format = (channels.get(0) == 4) ? GL20.GL_RGBA : GL20.GL_RGB;
 
             GL20.glTexImage2D(GL20.GL_TEXTURE_2D, 0, format, width.get(0), height.get(0), 0, format, GL20.GL_UNSIGNED_BYTE, image);

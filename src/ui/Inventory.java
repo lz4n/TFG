@@ -1,11 +1,14 @@
 package ui;
 
+import org.joml.Vector4f;
 import org.lwjgl.opengl.ARBVertexArrayObject;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
+import ui.widget.ClickableWidget;
 import ui.widget.CustomDrawWidget;
 import ui.widget.Widget;
 import utils.render.Shader;
+import utils.render.Window;
 import utils.render.mesh.Mesh;
 import utils.render.texture.StaticTexture;
 import utils.render.texture.Texture;
@@ -13,31 +16,26 @@ import utils.render.texture.Texture;
 import java.util.LinkedList;
 import java.util.List;
 
-public class Inventory extends Widget {
+public class Inventory {
     public static final Texture CONTAINER = new StaticTexture("assets/textures/ui/inventory/container.png");
 
-    private final float height;
-    private final float width;
-    private final float pixelSizeInScreen;
+    private float width, height, posY;
+    private float pixelSizeInScreen;
     private final List<Widget> WIDGETS = new LinkedList<>();
-
-    public Inventory(float posX, float posY, float width, float height, float pixelSizeInScreen) {
-        super(posX / pixelSizeInScreen, posY / pixelSizeInScreen);
-        this.height = height / pixelSizeInScreen;
-        this.width = width / pixelSizeInScreen;
-        this.pixelSizeInScreen = pixelSizeInScreen;
-    }
-
+    private final List<ClickableWidget> CLICKABLE_WIDGETS = new LinkedList<>();
 
     public void addWidget(Widget widget) {
-        WIDGETS.add(widget);
+        this.WIDGETS.add(widget);
+        if (widget instanceof ClickableWidget clickableWidget) {
+            this.CLICKABLE_WIDGETS.add(clickableWidget);
+        }
     }
 
     public void draw(Mesh mesh) {
         Shader.HUD.uploadInt("texture_sampler", 0);
 
-        Shader.HUD.upload2f("hudPosition", this.pixelSizeInScreen * this.getPosX(), this.pixelSizeInScreen * this.getPosY());
-        Shader.HUD.upload2f("hudSize", this.pixelSizeInScreen * this.getWidth(), this.pixelSizeInScreen * this.getHeight());
+        Shader.HUD.upload2f("hudPosition", 0, this.posY);
+        Shader.HUD.upload2f("hudSize", this.width, this.height);
 
         Inventory.CONTAINER.bind();
         ARBVertexArrayObject.glBindVertexArray(mesh.getVaoId());
@@ -48,7 +46,7 @@ public class Inventory extends Widget {
         Inventory.CONTAINER.bind();
 
         this.WIDGETS.forEach(widget -> {
-            Shader.HUD.upload2f("hudPosition", this.pixelSizeInScreen * (widget.getPosX() + this.getPosX()), this.pixelSizeInScreen * (widget.getPosY() + this.getPosY()));
+            Shader.HUD.upload2f("hudPosition", this.pixelSizeInScreen * widget.getPosX(), this.pixelSizeInScreen * widget.getPosY() + this.posY);
             Shader.HUD.upload2f("hudSize", this.pixelSizeInScreen * widget.getWidth(), this.pixelSizeInScreen * widget.getHeight());
 
             widget.getTexture().bind();
@@ -60,23 +58,34 @@ public class Inventory extends Widget {
             widget.getTexture().bind();
 
             if (widget instanceof CustomDrawWidget customDrawWidget) {
-                customDrawWidget.draw(mesh, this.pixelSizeInScreen, this.pixelSizeInScreen * (widget.getPosX() + this.getPosX()), this.pixelSizeInScreen * (widget.getPosY() + this.getPosY()), this.pixelSizeInScreen * widget.getWidth(), this.pixelSizeInScreen * widget.getHeight());
+                customDrawWidget.draw(mesh, this.pixelSizeInScreen, this.pixelSizeInScreen * widget.getPosX(), this.pixelSizeInScreen * widget.getPosY() + this.posY, this.pixelSizeInScreen * widget.getWidth(), this.pixelSizeInScreen * widget.getHeight());
             }
         });
     }
 
-    @Override
-    public float getHeight() {
-        return this.height;
+    public void setPixelSizeInScreen(float pixelSizeInScreen) {
+        this.pixelSizeInScreen = pixelSizeInScreen;
+        this.height = Window.getHeight() / 5f;
+        this.width = Window.getWidth();
+        this.posY = this.height * 4;
+        System.err.println(pixelSizeInScreen);
     }
 
-    @Override
-    public float getWidth() {
-        return this.width;
-    }
+    public void click(float mouseX, float mouseY) {
+        float interfaceX = mouseX / this.pixelSizeInScreen;
+        float interfaceY = (mouseY - this.posY) / this.pixelSizeInScreen;
 
-    @Override
-    public Texture getTexture() {
-        return Inventory.CONTAINER;
+        this.CLICKABLE_WIDGETS.forEach(clickableWidget -> {
+            Vector4f clickableArea = clickableWidget.getClickArea();
+
+            if (
+                    interfaceX >= clickableArea.x &&
+                    interfaceX <= clickableArea.z &&
+                    interfaceY >= clickableArea.y &&
+                    interfaceY <= clickableArea.w
+            ) {
+                clickableWidget.click();
+            }
+        });
     }
 }

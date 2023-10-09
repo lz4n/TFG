@@ -2,6 +2,7 @@ package utils.render;
 
 import listener.KeyListener;
 import listener.MouseListener;
+import listener.WindowListener;
 import main.Main;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
@@ -78,11 +79,12 @@ public class Window {
             throw new RuntimeException("No se ha podido crear la ventana.");
         }
 
-        //Generamos los eventos de teclado y ratón
+        //Generamos los eventos de teclado, ratón y pantalla
         GLFW.glfwSetCursorPosCallback(window, MouseListener::mousePosCallback);
         GLFW.glfwSetMouseButtonCallback(window, MouseListener::mouseButtonCallback);
         GLFW.glfwSetScrollCallback(window, MouseListener::mouseScrollCallback);
         GLFW.glfwSetKeyCallback(window, KeyListener::keyCallback);
+        GLFW.glfwSetWindowSizeCallback(window, WindowListener::windowCallback);
 
         //Establecemos OpenGL como el contexto actual
         GLFW.glfwMakeContextCurrent(window);

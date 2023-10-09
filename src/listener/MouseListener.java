@@ -70,6 +70,7 @@ public class MouseListener {
     public static void mouseButtonCallback(long window, int button, int action, int mods) {
       if (action == GLFW.GLFW_PRESS) {
           MouseListener.setIsMouseButtonPressed(button, true);
+          if (button == GLFW.GLFW_MOUSE_BUTTON_1) Window.currentScene.click((float) MouseListener.posX, (float) MouseListener.posY);
       } else if (action == GLFW.GLFW_RELEASE) {
           MouseListener.setIsMouseButtonPressed(button, false);
           MouseListener.isDragging = false;

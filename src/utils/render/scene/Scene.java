@@ -1,5 +1,7 @@
 package utils.render.scene;
 
+import javax.swing.plaf.PanelUI;
+
 /**
  * La escena es la encargada de la parte gráfica del juego, cada pantalla tiene una escena.
  *
@@ -17,4 +19,8 @@ public abstract class Scene {
      * @param dTime Tiempo que ha pasado desde el anterior frame.
      */
     public abstract void update(long dTime);
+
+    public abstract void resizeWindow();
+
+    public abstract void click(float mouseX, float mouseY);
 }
