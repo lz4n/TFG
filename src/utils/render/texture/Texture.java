@@ -16,6 +16,14 @@ import java.util.List;
  * @author Izan
  */
 public abstract class Texture {
+    private static final List<AtlasTexture> ATLAS = new LinkedList<>();
+
+    public Texture() {
+        if (this instanceof AtlasTexture atlasTexture) {
+            Texture.ATLAS.add(atlasTexture);
+        }
+    }
+
     /**
      * Sube la textura a la <code>GPU</code>.
      */
@@ -25,7 +33,7 @@ public abstract class Texture {
      * Limpia la textura de la <code>GPU</code>, y limpia la memoria.<br>
      * <b>IMPORTANTE</b>: la limpieza de memoria la implementa cada clase de forma individual.
      */
-    public void unbind() {
+    public static void unbind() {
         GL20.glBindTexture(GL20.GL_TEXTURE_2D, 0);
     }
 
@@ -63,5 +71,19 @@ public abstract class Texture {
         }
 
         return textureId;
+    }
+
+    public static final void initAtlas() {
+        Texture.ATLAS.forEach(atlasTexture -> {
+            atlasTexture.init();
+            Logger.sendMessage("Se ha generado la textura %s: %s.", Logger.LogMessageType.INFO, ((Texture) atlasTexture).getTextureId(), atlasTexture);
+        });
+    }
+
+    public static final void removeAtlas() {
+        Texture.ATLAS.forEach(atlasTexture -> {
+            Logger.sendMessage("Se ha eliminado la textura %s: %s.", Logger.LogMessageType.INFO, ((Texture) atlasTexture).getTextureId(), atlasTexture);
+            atlasTexture.remove();
+        });
     }
 }

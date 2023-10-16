@@ -2,26 +2,29 @@ package utils.render.texture;
 
 import org.lwjgl.opengl.GL20;
 
+import java.util.Arrays;
+
 /**
  * Representa una textura animada que cambia su sprite según el tiempo.
  *
  * @author Izan
  */
-public class AnimatedTexture extends Texture {
+public class AnimatedTexture extends Texture implements AtlasTexture {
     /**
-     * Ruta a cada uno de los frames de la textura.
+     * Dirección de cada una de las texturas de los frames.
      */
-    private final String[] FRAMES;
+    private final String[] PATHS;
+
+    /**
+     * Identificador de cada uno de los frames de la textura.
+     */
+    private final int[] FRAMES;
 
     /**
      * índice del sprite actual de la textura.
      */
     private int currentSprite = 0;
 
-    /**
-     * Identificador numérico de la textura del frame actual.
-     */
-    private int currentTextureId;
 
     /**
      * Número de frames que tienen que pasar para pasar al siguiente sprite.
@@ -35,22 +38,24 @@ public class AnimatedTexture extends Texture {
      */
     public AnimatedTexture(String path, int spriteCount, int fps) {
         this.FPS = fps;
-        this.FRAMES = new String[spriteCount];
+        this.FRAMES = new int[spriteCount];
+        this.PATHS = new String[spriteCount];
 
         for (int sprite = 0; sprite < spriteCount; sprite++) {
-            this.FRAMES[sprite] = String.format("%s/%s.png", path, sprite);
+            this.PATHS[sprite] = String.format("%s/%s.png", path, sprite);
         }
     }
 
     @Override
-    public void unbind() {
-        GL20.glDeleteTextures(this.currentTextureId);
-        super.unbind();
+    public void remove() {
+        for (int textureId: this.FRAMES) {
+            GL20.glDeleteTextures(textureId);
+        }
     }
 
     @Override
     public int getTextureId() {
-        return this.currentTextureId;
+        return this.FRAMES[this.currentSprite / this.FPS];
     }
 
     @Override
@@ -60,7 +65,18 @@ public class AnimatedTexture extends Texture {
             this.currentSprite = 0;
         }
 
-        this.currentTextureId = this.generateSprite(this.FRAMES[this.currentSprite / this.FPS]);
-        GL20.glBindTexture(GL20.GL_TEXTURE_2D, this.currentTextureId);
+        GL20.glBindTexture(GL20.GL_TEXTURE_2D, this.getTextureId());
+    }
+
+    @Override
+    public void init() {
+        for (int sprite = 0; sprite < this.FRAMES.length; sprite++) {
+            this.FRAMES[sprite] = this.generateSprite(this.PATHS[sprite]);
+        }
+    }
+
+    @Override
+    public String toString() {
+        return String.format("AnimatedTexture(paths=%s)", Arrays.toString(this.PATHS));
     }
 }

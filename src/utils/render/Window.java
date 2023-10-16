@@ -14,6 +14,7 @@ import org.lwjgl.system.MemoryUtil;
 import utils.Time;
 import utils.render.scene.Scene;
 import utils.render.scene.WorldScene;
+import utils.render.texture.Texture;
 import world.entity.Duck;
 import world.terrain.Terrain;
 
@@ -45,6 +46,10 @@ public class Window {
     public static void run() {
         init();
         currentScene.init();
+
+        //Cargamos el átlas de texuras
+        Texture.initAtlas();
+
         loop();
 
         //Liberamos memoria
@@ -52,6 +57,7 @@ public class Window {
         GLFW.glfwDestroyWindow(window);
         GLFW.glfwTerminate();
         GLFW.glfwSetErrorCallback(null).free();
+        Texture.removeAtlas();
     }
 
     /**
@@ -104,7 +110,6 @@ public class Window {
         for (Shader shader: Shader.values()) {
             shader.compile();
         }
-
     }
 
     /**

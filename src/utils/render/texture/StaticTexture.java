@@ -7,11 +7,11 @@ import org.lwjgl.opengl.GL20;
  *
  * @author Izan
  */
-public class StaticTexture extends Texture {
+public class StaticTexture extends Texture implements AtlasTexture {
     /**
      * Ruta de la textura.
      */
-    private final String TEXTURE;
+    private final String PATH;
 
     /**
      * Identificador numérico de la textura.
@@ -22,13 +22,12 @@ public class StaticTexture extends Texture {
      * @param path Ruta al archivo .png de la textura.
      */
     public StaticTexture(String path) {
-        this.TEXTURE = path;
+        this.PATH = path;
     }
 
     @Override
-    public void unbind() {
+    public void remove() {
         GL20.glDeleteTextures(this.textureId);
-        super.unbind();
     }
 
     @Override
@@ -38,7 +37,16 @@ public class StaticTexture extends Texture {
 
     @Override
     public void bind() {
-        this.textureId = this.generateSprite(this.TEXTURE);
         GL20.glBindTexture(GL20.GL_TEXTURE_2D, this.getTextureId());
+    }
+
+    @Override
+    public void init() {
+        this.textureId = this.generateSprite(this.PATH);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("StaticTexture(path=%s)", this.PATH);
     }
 }

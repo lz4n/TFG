@@ -51,6 +51,9 @@ public class Graphics2dTexture extends Texture {
      * @return identificador numérico de la textura.
      */
     public void convert() {
+        //Borramos la textura anterior
+        this.remove();
+
         //Dibujamos los gráficos 2D en la imagen
         this.GRAPHICS.dispose();
 
@@ -84,10 +87,8 @@ public class Graphics2dTexture extends Texture {
         GL20.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_MAG_FILTER, GL20.GL_NEAREST);
     }
 
-    @Override
-    public void unbind() {
+    public void remove() {
         GL20.glDeleteTextures(this.textureId);
-        super.unbind();
     }
 
     @Override

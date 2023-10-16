@@ -4,6 +4,7 @@ import utils.render.texture.StaticTexture;
 import utils.render.texture.Texture;
 
 public class SeparatorWidget extends Widget {
+    private static final Texture TEXTURE = new StaticTexture("assets/textures/ui/inventory/separator.png");
     public SeparatorWidget(float posX, float posY) {
         super(posX, posY);
     }
@@ -20,6 +21,6 @@ public class SeparatorWidget extends Widget {
 
     @Override
     public Texture getTexture() {
-        return new StaticTexture("assets/textures/ui/inventory/separator.png");
+        return SeparatorWidget.TEXTURE;
     }
 }

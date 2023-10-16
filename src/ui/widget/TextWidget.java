@@ -12,6 +12,8 @@ import utils.render.texture.Texture;
 import java.awt.*;
 
 public class TextWidget extends Widget implements CustomDrawWidget {
+    private final static Texture TEXTURE = new StaticTexture("assets/textures/ui/inventory/text_field.png");
+
     private final Graphics2dTexture TEXT;
 
     public TextWidget(float posX, float posY, String text) {
@@ -36,7 +38,7 @@ public class TextWidget extends Widget implements CustomDrawWidget {
 
     @Override
     public Texture getTexture() {
-        return new StaticTexture("assets/textures/ui/inventory/text_field.png");
+        return TextWidget.TEXTURE;
     }
 
     @Override

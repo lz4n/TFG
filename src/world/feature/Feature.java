@@ -72,7 +72,7 @@ public abstract class Feature implements Comparable<Feature> {
         public void updateMesh() {
             this.mesh = new WorldMesh(Main.WORLD.getSize() * Main.WORLD.getSize(), new int[]{2, 2});
             Main.WORLD.getFeaturesMap().get(this).forEach(feature -> {
-                mesh.addVertex((float) feature.getLocation().getX(), (float) feature.getLocation().getY(), feature.getSize().x(), feature.getSize().y());
+                mesh.addVertex(feature.getLocation().getX(), feature.getLocation().getY(), feature.getSize().x(), feature.getSize().y());
             });
             this.mesh.load();
         }
