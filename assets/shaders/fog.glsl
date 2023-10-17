@@ -18,7 +18,7 @@ vec4 calculateFog(sampler2D texture_sampler, vec2 uvCoords) {
     vec3 fogColor = vec3(0.1, 0.1, 0.1); // Color de la niebla
 
     //Si el fragmento es trasparente no se aplica la nievla.
-    vec4 fragmentColor = texture(texture_sampler, uvCoords);
+    vec4 fragmentColor = texture(texture_sampler, uvCoords, 1);
     if (fragmentColor.a == 0) {
         return fragmentColor;
     }
