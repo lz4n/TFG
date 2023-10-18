@@ -1,7 +1,5 @@
 package utils.render.mesh;
 
-import utils.render.texture.Texture;
-
 /**
  * <code>Mesh</code> utilizado para renderizar la <code>HUD</code>.
  * @see Mesh

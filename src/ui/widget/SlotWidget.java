@@ -10,6 +10,7 @@ import utils.render.texture.StaticTexture;
 import utils.render.texture.Texture;
 
 public class SlotWidget extends Widget implements CustomDrawWidget, ClickableWidget {
+
     private static final Texture SELECTED_SLOT = new StaticTexture("assets/textures/ui/inventory/selected_slot.png"),
         UNSELECTED_SLOT = new StaticTexture("assets/textures/ui/inventory/unselected_slot.png");
 

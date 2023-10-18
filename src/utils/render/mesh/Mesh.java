@@ -32,6 +32,9 @@ public abstract class Mesh {
      */
     protected int[] elementArray;
 
+    /**
+     * Array que almacena el tamaño de cada atributo de los vértices.
+     */
     protected int[] vertexAttributesSize;
 
     /**
@@ -39,6 +42,9 @@ public abstract class Mesh {
      */
     private int vaoId;
 
+    /**
+     * Tamaño del vértice en bytes y en unidades.
+     */
     protected int vertexSizeBytes = 0, vertexSize = 0;
 
     /**

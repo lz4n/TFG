@@ -180,7 +180,7 @@ public class WorldScene extends Scene {
 
             terrainType.getTexture().bind();
             terrainType.getMesh().draw();
-            terrainType.getTexture().unbind();
+            Texture.unbind();
         }
 
         for (Feature.FeatureType featureType: Feature.FeatureType.values()) {
@@ -189,7 +189,7 @@ public class WorldScene extends Scene {
             featureType.getTexture().bind();
 
             featureType.getMesh().draw();
-            featureType.getTexture().unbind();
+            Texture.unbind();
         }
 
         Shader.ENTITY.use();
@@ -216,7 +216,7 @@ public class WorldScene extends Scene {
             GL20.glActiveTexture(GL20.GL_TEXTURE0);
             this.MOUSE_TEXTURE.bind();
             this.MOUSE_SELECTION_MESH.draw();
-            this.MOUSE_TEXTURE.unbind();
+            Texture.unbind();
         }
 
         Shader.HUD.use();
@@ -280,7 +280,8 @@ public class WorldScene extends Scene {
             texture.convert();
             texture.bind();
             this.HUD_MESH.draw();
-            texture.unbind();
+            texture.remove();
+            Texture.unbind();
         }
         this.INVENTORY.draw(this.HUD_MESH);
 
