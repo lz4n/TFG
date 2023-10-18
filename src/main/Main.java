@@ -7,6 +7,9 @@ import world.World;
 
 import java.util.Arrays;
 
+/**
+ * FEHOIFEWHOIEWGFHIOEWRGHOIGEHWOIREHWOIGPEWGHOIEGWHOIP
+ */
 public class Main {
     //https://www.youtube.com/watch?v=88oZT7Aum6s&list=PLtrSb4XxIVbp8AKuEAlwNXDxr99e3woGE&index=3
 
