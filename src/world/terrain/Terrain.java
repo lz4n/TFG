@@ -62,5 +62,16 @@ public class Terrain {
         public MaxSizedMesh getMesh() {
             return this.MESH;
         }
+        }
+    //Para determinar si un terreno es Transitable para el Pathfinding:
+    public boolean isPassable() {
+        //AQUÍ SE VAN A DEFINIR CUÁLES TERRRENOS SERÁN TRANSITABLES O NO.
+        switch (TYPE) {
+            case WATER, SNOW:
+                return false; //VER LO DE LAS ANIMACIONES PARA VER SI LO PONGO EN FALSE O NO.
+            case GRASS, SAND, STONE, GRAVEL:
+                return true;
+        }
+        return false;
     }
 }
