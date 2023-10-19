@@ -1,12 +1,10 @@
 package utils.render.mesh;
 
-import org.joml.Vector2f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.ARBVertexArrayObject;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15C;
 import org.lwjgl.opengl.GL20;
-import utils.render.texture.Texture;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -46,11 +44,6 @@ public abstract class Mesh {
      * Tamaño del vértice en bytes y en unidades.
      */
     protected int vertexSizeBytes = 0, vertexSize = 0;
-
-    /**
-     * Textura del <code>Mesh</code>
-     */
-    private final Texture TEXTURE = null;
 
     public Mesh(int... attributesSize) {
         this.vertexAttributesSize = attributesSize;
@@ -95,7 +88,7 @@ public abstract class Mesh {
         //Añadimos los atributos a los vertices
         for (int attributeIndex = 0, attributePosition = 0, attributeSize; attributeIndex < this.vertexAttributesSize.length; attributeIndex++) {
             attributeSize = this.vertexAttributesSize[attributeIndex];
-            GL20.glVertexAttribPointer(attributeIndex, attributeSize, GL20.GL_FLOAT, false, this.vertexSizeBytes, attributePosition * Float.BYTES);
+            GL20.glVertexAttribPointer(attributeIndex, attributeSize, GL20.GL_FLOAT, false, this.vertexSizeBytes, (long) attributePosition * Float.BYTES);
             GL20.glEnableVertexAttribArray(attributeIndex);
             attributePosition += attributeSize;
         }
@@ -132,12 +125,5 @@ public abstract class Mesh {
      */
     public int getVaoId() {
         return this.vaoId;
-    }
-
-    /**
-     * @return Textura correspondiente al <code>mesh</code>.
-     */
-    public final Texture getTexture() {
-        return this.TEXTURE;
     }
 }

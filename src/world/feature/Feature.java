@@ -1,7 +1,6 @@
 package world.feature;
 
 import main.Main;
-import org.joml.Vector2f;
 import org.joml.Vector2i;
 import utils.render.mesh.WorldMesh;
 import utils.render.texture.StaticTexture;
@@ -12,9 +11,9 @@ import java.util.Random;
 
 public abstract class Feature implements Comparable<Feature> {
     protected static final Random RANDOM = new Random();
-    private Location location;
-    private Vector2i sizeInBlocks;
-    private FeatureType featureType;
+    private final Location LOCATION;
+    private final Vector2i SIZE_IN_BLOCKS;
+    private final FeatureType FEATURE_TYPE;
 
     public Feature(Location location, Vector2i sizeInBlocks, FeatureType featureType) {
         float offsetX = 0, offsetY = 0;
@@ -24,28 +23,28 @@ public abstract class Feature implements Comparable<Feature> {
         if (this.getRandomOffset().y() != 0) {
             offsetY = Feature.RANDOM.nextFloat() / this.getRandomOffset().y();
         }
-        this.location = location.add(offsetX, offsetY);
-        this.sizeInBlocks = sizeInBlocks;
-        this.featureType = featureType;
+        this.LOCATION = location.add(offsetX, offsetY);
+        this.SIZE_IN_BLOCKS = sizeInBlocks;
+        this.FEATURE_TYPE = featureType;
     }
 
     public Location getLocation() {
-        return this.location.clone();
+        return this.LOCATION.clone();
     }
 
     public FeatureType getFeatureType() {
-        return this.featureType;
+        return this.FEATURE_TYPE;
     }
 
     public Vector2i getSize() {
-        return new Vector2i(this.sizeInBlocks);
+        return new Vector2i(this.SIZE_IN_BLOCKS);
     }
 
     public abstract Vector2i getRandomOffset();
 
     @Override
     public int hashCode() {
-        return this.location.hashCode();
+        return this.LOCATION.hashCode();
     }
 
     @Override
@@ -65,15 +64,14 @@ public abstract class Feature implements Comparable<Feature> {
         private final Texture TEXTURE;
 
         FeatureType(Texture texture) {
-            this.mesh = new WorldMesh(Main.WORLD.getSize() * Main.WORLD.getSize(), new int[]{2, 2});
+            this.mesh = new WorldMesh(Main.WORLD.getSize() * Main.WORLD.getSize(), 2, 2);
             this.TEXTURE = texture;
         }
 
         public void updateMesh() {
-            this.mesh = new WorldMesh(Main.WORLD.getSize() * Main.WORLD.getSize(), new int[]{2, 2});
-            Main.WORLD.getFeaturesMap().get(this).forEach(feature -> {
-                mesh.addVertex(feature.getLocation().getX(), feature.getLocation().getY(), feature.getSize().x(), feature.getSize().y());
-            });
+            this.mesh = new WorldMesh(Main.WORLD.getSize() * Main.WORLD.getSize(), 2, 2);
+            Main.WORLD.getFeaturesMap().get(this).forEach(feature ->
+                    mesh.addVertex(feature.getLocation().getX(), feature.getLocation().getY(), feature.getSize().x(), feature.getSize().y()));
             this.mesh.load();
         }
 

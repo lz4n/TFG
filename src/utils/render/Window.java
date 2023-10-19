@@ -16,7 +16,8 @@ import utils.render.scene.Scene;
 import utils.render.scene.WorldScene;
 import utils.render.texture.Texture;
 import world.entity.Duck;
-import world.terrain.Terrain;
+
+import java.util.Objects;
 
 /**
  * Representa la ventana en la que se ejecuta el juego.
@@ -47,8 +48,8 @@ public class Window {
         init();
         currentScene.init();
 
-        //Cargamos el átlas de texuras
-        Texture.initAtlas();
+        //Cargamos las texturas a la caché de texuras
+        Texture.initCacheTextures();
 
         loop();
 
@@ -56,8 +57,8 @@ public class Window {
         Callbacks.glfwFreeCallbacks(window);
         GLFW.glfwDestroyWindow(window);
         GLFW.glfwTerminate();
-        GLFW.glfwSetErrorCallback(null).free();
-        Texture.removeAtlas();
+        Objects.requireNonNull(GLFW.glfwSetErrorCallback(null)).free();
+        Texture.removeCacheTextures();
     }
 
     /**

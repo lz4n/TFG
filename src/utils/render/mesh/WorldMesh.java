@@ -1,41 +1,64 @@
 package utils.render.mesh;
 
-import utils.Logger;
 import utils.render.scene.WorldScene;
 
-import java.util.Arrays;
-
+/**
+ * Mesh utilizado para renderizar una cantidad de objetos igual al área total del mundo. A contrario de <code>EntityMesh</code>,
+ * este mesh no se instancia para cada uno de los objetos. Este mesh contiene todos los vértices directamente, que habrá
+ * que añadir según se vayan generando los objetos.
+ * @see EntityMesh
+ * @see Mesh
+ *
+ * @author Izan
+ */
 public class WorldMesh extends Mesh {
+    /**
+     * Generador de coordenadas UV. Cada objeto puede tener unas coordenadas UV distintas.
+     */
+    private final UVCoordsGenerator UV_COORDS_RANDOMIZER;
+
+    /**
+     * Número de objetos que se han colocado en el mesh hasta el momento.
+     */
     private int elementsCount = 0;
+
+    /**
+     * Últimos índices utilizados de los arrays de vérices y elementos.
+     */
     private int previousVertexArrayPos = 0, previousElementArrayPos = 0;
-    private int vertexArraySize;
 
-    public WorldMesh(int initialCapacity, int[] attributesSize) {
+    /**
+     * @param capacity Capacidad que va a tener el mesh.
+     * @param attributesSize Array que almacena los tamaños de los atributos, en unidades.
+     * @param uvCoordsGenerator Generador de coordenadas UV.
+     */
+    public WorldMesh(int capacity, int[] attributesSize, UVCoordsGenerator uvCoordsGenerator) {
         super(attributesSize);
-        this.vertexArray = new float[this.vertexSize *initialCapacity *4];
-        this.vertexArraySize = this.vertexSize *initialCapacity *4;
-        this.elementArray = new int[initialCapacity *2 *3];
+        this.UV_COORDS_RANDOMIZER = uvCoordsGenerator;
+        this.vertexArray = new float[this.vertexSize *capacity *4];
+        this.elementArray = new int[capacity *2 *3];
     }
 
-    public WorldMesh(int... attributesSize) {
-        this(0, attributesSize);
+    /**
+     * Constructor que utiliza las coordenadas UV normales para todos los objetos.
+     * @param capacity Capacidad que va a tener el mesh.
+     * @param attributesSize Tamaños de los atributos, en unidades.
+     */
+    public WorldMesh(int capacity, int... attributesSize) {
+        this(capacity, attributesSize, () -> new int[]{1, 1, 0, 0, 1, 0, 0, 1});
     }
 
+    /**
+     * Añade un objeto (con sus respectivos vértices) al mesh.
+     * @param posX Posición del objeto en el eje X, en coordenadas in-game.
+     * @param posY Posición del objeto en el eje Y, en coordenadas in-game.
+     * @param sizeX Tamaño del objeto en el eje X, en coordenadas in-game.
+     * @param sizeY Tamaño del objeto en el eje Y, en coordenadas in-game.
+     * @param attributes Atributos del vértice.
+     */
     public void addVertex(float posX, float posY, float sizeX, float sizeY, float... attributes) {
         float screenPosX = WorldScene.SPRITE_SIZE * posX, screenPosY = WorldScene.SPRITE_SIZE * posY;
-
-        //Aumentar el tamaño del mesh si hace falta
-        /*if (this.vertexArraySize < this.vertexArray.length + this.vertexSize *4) {
-
-
-            int previousVertexArrayLength = this.vertexArray.length;
-            this.vertexArraySize = previousVertexArrayLength + this.vertexSize *4;
-            this.vertexArray = Arrays.copyOf(this.vertexArray, previousVertexArrayLength + this.vertexSize *4);
-            Logger.sendMessage("Se ha aumentado el tamaño de un mesh", Logger.LogMessageType.DEBUG);
-            int previousElementArrayLength = this.elementArray.length;
-            this.elementArray = Arrays.copyOf(this.elementArray, previousElementArrayLength + 2 *3);
-        }*/
-
+        int[] uvCoords = this.UV_COORDS_RANDOMIZER.getUVCoords();
 
         //Primer vértice: abajo derecha
         //Posición
@@ -43,8 +66,8 @@ public class WorldMesh extends Mesh {
         this.vertexArray[this.previousVertexArrayPos++] = screenPosY;
 
         //Coordenadas UV
-        this.vertexArray[this.previousVertexArrayPos++] = 1f;
-        this.vertexArray[this.previousVertexArrayPos++] = 1f;
+        this.vertexArray[this.previousVertexArrayPos++] = uvCoords[0];
+        this.vertexArray[this.previousVertexArrayPos++] = uvCoords[1];
 
         for (float attribute: attributes) {
             this.vertexArray[this.previousVertexArrayPos++] = attribute;
@@ -56,8 +79,8 @@ public class WorldMesh extends Mesh {
         this.vertexArray[this.previousVertexArrayPos++] = screenPosY + WorldScene.SPRITE_SIZE * sizeY;
 
         //Coordenadas UV
-        this.vertexArray[this.previousVertexArrayPos++] = 0f;
-        this.vertexArray[this.previousVertexArrayPos++] = 0f;
+        this.vertexArray[this.previousVertexArrayPos++] = uvCoords[2];
+        this.vertexArray[this.previousVertexArrayPos++] = uvCoords[3];
 
         for (float attribute: attributes) {
             this.vertexArray[this.previousVertexArrayPos++] = attribute;
@@ -69,8 +92,8 @@ public class WorldMesh extends Mesh {
         this.vertexArray[this.previousVertexArrayPos++] = screenPosY + WorldScene.SPRITE_SIZE * sizeY;
 
         //Coordenadas UV
-        this.vertexArray[this.previousVertexArrayPos++] = 1f;
-        this.vertexArray[this.previousVertexArrayPos++] = 0f;
+        this.vertexArray[this.previousVertexArrayPos++] = uvCoords[4];
+        this.vertexArray[this.previousVertexArrayPos++] = uvCoords[5];
 
         for (float attribute: attributes) {
             this.vertexArray[this.previousVertexArrayPos++] = attribute;
@@ -82,8 +105,8 @@ public class WorldMesh extends Mesh {
         this.vertexArray[this.previousVertexArrayPos++] = screenPosY;
 
         //Coordenadas UV
-        this.vertexArray[this.previousVertexArrayPos++] = 0f;
-        this.vertexArray[this.previousVertexArrayPos++] = 1f;
+        this.vertexArray[this.previousVertexArrayPos++] = uvCoords[6];
+        this.vertexArray[this.previousVertexArrayPos++] = uvCoords[7];
 
         for (float attribute: attributes) {
             this.vertexArray[this.previousVertexArrayPos++] = attribute;
@@ -101,5 +124,15 @@ public class WorldMesh extends Mesh {
         this.elementArray[this.previousElementArrayPos++] = this.elementsCount +3;
 
         this.elementsCount += 4;
+    }
+
+    /**
+     * Interfaz que define un método que devuelve las coordendadas UV.
+     */
+    public interface UVCoordsGenerator {
+        /**
+         * @return Array que contiene las coordenadas UV de los 4 vértices.
+         */
+        int[] getUVCoords();
     }
 }

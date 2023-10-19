@@ -1,10 +1,8 @@
 package world.entity;
 
-import main.Main;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import utils.render.mesh.EntityMesh;
-import utils.render.mesh.WorldMesh;
 import utils.render.texture.StaticTexture;
 import utils.render.texture.Texture;
 import world.location.Location;

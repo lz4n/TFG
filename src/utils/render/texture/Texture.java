@@ -16,11 +16,15 @@ import java.util.List;
  * @author Izan
  */
 public abstract class Texture {
-    private static final List<AtlasTexture> ATLAS = new LinkedList<>();
+    /**
+     * Lista que almacena todas las texturas que se van a guardar en la caché durante la totalidad del proceaso de ejecución del juego,
+     * para poder cargarlas cuando se carga <code>LWJGL</code> y eliminarlas cuando se cierre el juego y libere la memoria.
+     */
+    private static final List<CacheTexture> CACHE_TEXTURES = new LinkedList<>();
 
     public Texture() {
-        if (this instanceof AtlasTexture atlasTexture) {
-            Texture.ATLAS.add(atlasTexture);
+        if (this instanceof CacheTexture cacheTexture) {
+            Texture.CACHE_TEXTURES.add(cacheTexture);
         }
     }
 
@@ -37,6 +41,10 @@ public abstract class Texture {
         GL20.glBindTexture(GL20.GL_TEXTURE_2D, 0);
     }
 
+    /**
+     * @return Devuelve el identificador numérico de la textura. Si es animada devuelve el identificador de la textura
+     * correspondiente el frame actual.
+     */
     public abstract int getTextureId();
 
     /**
@@ -73,17 +81,23 @@ public abstract class Texture {
         return textureId;
     }
 
-    public static final void initAtlas() {
-        Texture.ATLAS.forEach(atlasTexture -> {
-            atlasTexture.init();
-            Logger.sendMessage("Se ha generado la textura %s: %s.", Logger.LogMessageType.INFO, ((Texture) atlasTexture).getTextureId(), atlasTexture);
+    /**
+     * Sube las texturas a la cache.
+     */
+    public static void initCacheTextures() {
+        Texture.CACHE_TEXTURES.forEach(cacheTexture -> {
+            cacheTexture.init();
+            Logger.sendMessage("Se ha generado la textura %s: %s.", Logger.LogMessageType.INFO, ((Texture) cacheTexture).getTextureId(), cacheTexture);
         });
     }
 
-    public static final void removeAtlas() {
-        Texture.ATLAS.forEach(atlasTexture -> {
-            Logger.sendMessage("Se ha eliminado la textura %s: %s.", Logger.LogMessageType.INFO, ((Texture) atlasTexture).getTextureId(), atlasTexture);
-            atlasTexture.remove();
+    /**
+     * Elimina las texturas de la caché y libera la memoria.
+     */
+    public static void removeCacheTextures() {
+        Texture.CACHE_TEXTURES.forEach(cacheTexture -> {
+            Logger.sendMessage("Se ha eliminado la textura %s: %s.", Logger.LogMessageType.INFO, ((Texture) cacheTexture).getTextureId(), cacheTexture);
+            cacheTexture.remove();
         });
     }
 }

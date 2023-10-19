@@ -9,7 +9,7 @@ import java.util.Arrays;
  *
  * @author Izan
  */
-public class AnimatedTexture extends Texture implements AtlasTexture {
+public class AnimatedTexture extends Texture implements CacheTexture {
     /**
      * Dirección de cada una de las texturas de los frames.
      */

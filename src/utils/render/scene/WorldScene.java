@@ -17,7 +17,6 @@ import utils.render.Shader;
 import utils.render.texture.Graphics2dTexture;
 import utils.render.texture.StaticTexture;
 import utils.render.texture.Texture;
-import world.World;
 import world.WorldGenerator;
 import world.entity.Entity;
 import world.feature.Feature;
@@ -32,7 +31,6 @@ import java.awt.*;
  * @author Izan
  */
 public class WorldScene extends Scene {
-
     /**
      * Tamaño base (sin contar el zoom) de los sprites.
      */
@@ -44,78 +42,36 @@ public class WorldScene extends Scene {
     public static Camera CAMERA = new Camera(new Vector2f(0, 0)); //Iniciamos la cámara en 0,0.
 
     /**
+     * Textura del selector del ratón
+     */
+    private static final Texture MOUSE_TEXTURE = new StaticTexture("assets/textures/ui/selector.png");
+
+    /**
      * <code>Mesh</code> anónimo utilizado para el selector del ratón.
      * @see Mesh
      */
-    private final MouseSelectionMesh MOUSE_SELECTION_MESH = new MouseSelectionMesh(3, 2) {
-        {
-            this.vertexArray = new float[9*4];
-            this.elementArray = new int[]{2, 1, 0, 0, 1, 3};
-        }
+    private final MouseSelectionMesh MOUSE_SELECTION_MESH = new MouseSelectionMesh(3, 2);
 
-        @Override
-        public void setVertex(float x, float y, int sizeX, int sizeY) {
-            float screenPosX = WorldScene.SPRITE_SIZE * x, screenPosY = WorldScene.SPRITE_SIZE * y;
-            int previousVertexArrayLength = 0;
-
-            //Primer vértice: abajo derecha
-            //Posición
-            this.vertexArray[previousVertexArrayLength++] = screenPosX + WorldScene.SPRITE_SIZE * sizeX;
-            this.vertexArray[previousVertexArrayLength++] = screenPosY;
-            this.vertexArray[previousVertexArrayLength++] = 0f;
-            //Coordenadas UV
-            this.vertexArray[previousVertexArrayLength++] = 1f;
-            this.vertexArray[previousVertexArrayLength++] = 1f;
-
-            //Segundo vértice: arriba izquierda
-            //Posición
-            this.vertexArray[previousVertexArrayLength++] = screenPosX;
-            this.vertexArray[previousVertexArrayLength++] = screenPosY + WorldScene.SPRITE_SIZE * sizeY;
-            this.vertexArray[previousVertexArrayLength++] = 0f;
-            //Coordenadas UV
-            this.vertexArray[previousVertexArrayLength++] = 0f;
-            this.vertexArray[previousVertexArrayLength++] = 0f;
-
-            //Tercer vértice: arriba derecha
-            //Posición
-            this.vertexArray[previousVertexArrayLength++] = screenPosX + WorldScene.SPRITE_SIZE * sizeX;
-            this.vertexArray[previousVertexArrayLength++] = screenPosY + WorldScene.SPRITE_SIZE * sizeY;
-            this.vertexArray[previousVertexArrayLength++] = 0f;
-            //Coordenadas UV
-            this.vertexArray[previousVertexArrayLength++] = 1f;
-            this.vertexArray[previousVertexArrayLength++] = 0f;
-
-            //cuarto vértice: abajo izquierda
-            //Posición
-            this.vertexArray[previousVertexArrayLength++] = screenPosX;
-            this.vertexArray[previousVertexArrayLength++] = screenPosY;
-            this.vertexArray[previousVertexArrayLength++] = 0f;
-            //Coordenadas UV
-            this.vertexArray[previousVertexArrayLength++] = 0f;
-            this.vertexArray[previousVertexArrayLength] = 1f;
-        }
-    };
+    /**
+     * Mesh utilizado para dibujar el HUD.
+     */
     private final HUDMesh HUD_MESH = new HUDMesh();
 
+    /**
+     * Inventario del jugador en la escena.
+     */
     private final Inventory INVENTORY = new Inventory();
-
-    private final Texture MOUSE_TEXTURE = new StaticTexture("assets/textures/ui/selector.png");
 
     @Override
     public void init() {
         new WorldGenerator(Main.WORLD, this).run();
-        /*for (Terrain.TerrainType terrainType: Terrain.TerrainType.values()) {
-            terrainType.getMesh().adjust();
-        }
-        for (Feature.FeatureType featureType: Feature.FeatureType.values()) {
-            featureType.getMesh().adjust();
-        }*/
         drawTerrain();
 
         HUD_MESH.load();
 
-        WorldScene.CAMERA.moveCamera(new Vector2f(Main.WORLD.getSize() / 2));
+        WorldScene.CAMERA.moveCamera(new Vector2f((float) Main.WORLD.getSize() / 2));
 
+        //Generamos la estructura de widgets del inventario.
         this.INVENTORY.addWidget(new SeparatorWidget(20, 0));
         this.INVENTORY.addWidget(new SlotWidget(40, 4, Feature.FeatureType.TREE.getTexture()));
         this.INVENTORY.addWidget(new TextWidget(40, 23, "kkkkkkkkk"));
@@ -160,13 +116,7 @@ public class WorldScene extends Scene {
      */
     @Override
     public void update(long dTime) {
-        Shader.WORLD.use();
-
-        //Subimos variables uniform al shader .glsl
-        Shader.WORLD.uploadMatrix4f("uProjection", CAMERA.getProjectionMatrix());
-        Shader.WORLD.uploadMatrix4f("uView", CAMERA.getViewMatrix());
-        Shader.WORLD.uploadFloat("daylight", (float) Main.WORLD.getDayLight());
-
+        //Borramos los contenidos de la ventana y establecemos el color del fondo.
         GL20.glClearColor(0.1f, 0.1f, 0.1f, 0.1f);
         GL20.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
@@ -174,6 +124,13 @@ public class WorldScene extends Scene {
         GL20.glEnable(GL20.GL_BLEND);
         GL20.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
+        //Activamos el shader y subimos variables uniform al shader .glsl
+        Shader.WORLD.use();
+        Shader.WORLD.uploadMatrix4f("uProjection", CAMERA.getProjectionMatrix());
+        Shader.WORLD.uploadMatrix4f("uView", CAMERA.getViewMatrix());
+        Shader.WORLD.uploadFloat("daylight", (float) Main.WORLD.getDayLight());
+
+        //Dibujamos el terreno.
         for (Terrain.TerrainType terrainType: Terrain.TerrainType.values()) {
             Shader.WORLD.uploadInt("texture_sampler", 0);
             GL20.glActiveTexture(GL20.GL_TEXTURE0);
@@ -183,6 +140,7 @@ public class WorldScene extends Scene {
             Texture.unbind();
         }
 
+        //Dibujamos las features.
         for (Feature.FeatureType featureType: Feature.FeatureType.values()) {
             Shader.WORLD.uploadInt("texture_sampler", 0);
             GL20.glActiveTexture(GL20.GL_TEXTURE0);
@@ -192,6 +150,7 @@ public class WorldScene extends Scene {
             Texture.unbind();
         }
 
+        //Dibujamos las entidades.
         Shader.ENTITY.use();
         Shader.ENTITY.uploadMatrix4f("uProjection", CAMERA.getProjectionMatrix());
         Shader.ENTITY.uploadMatrix4f("uView", CAMERA.getViewMatrix());
@@ -204,17 +163,17 @@ public class WorldScene extends Scene {
                 Shader.ENTITY.upload2f("inInstancePosition", entity.getLocation().getX() * WorldScene.SPRITE_SIZE, entity.getLocation().getY() * WorldScene.SPRITE_SIZE);
                 entityType.getMesh().draw();
             }
-            entityType.getTexture().unbind();
+            Texture.unbind();
         }
 
-
+        //Dibujamos el selector del ratón
         if (!MouseListener.inGameLocation.isOutOfTheWorld()) {
             Shader.WORLD.use();
             Shader.WORLD.uploadMatrix4f("uProjection", CAMERA.getProjectionMatrix());
             Shader.WORLD.uploadMatrix4f("uView", CAMERA.getViewMatrix());
             Shader.WORLD.uploadInt("texture_sampler", 0);
             GL20.glActiveTexture(GL20.GL_TEXTURE0);
-            this.MOUSE_TEXTURE.bind();
+            WorldScene.MOUSE_TEXTURE.bind();
             this.MOUSE_SELECTION_MESH.draw();
             Texture.unbind();
         }
@@ -222,6 +181,8 @@ public class WorldScene extends Scene {
         Shader.HUD.use();
         Shader.HUD.uploadMatrix4f("uProjection", new Matrix4f().ortho(0, Window.getWidth(), Window.getHeight(), 0, -1, 1));
         Shader.HUD.uploadMatrix4f("uView", new Matrix4f().identity());
+
+        //Generamos la pantalla de debug
         if (Main.isDebugging) {
             Shader.HUD.upload2f("hudPosition", 0, 0);
             Shader.HUD.upload2f("hudSize", Window.getWidth() /2f, Window.getHeight());

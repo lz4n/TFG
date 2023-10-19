@@ -5,8 +5,9 @@ import utils.render.mesh.WorldMesh;
 import utils.render.texture.AnimatedTexture;
 import utils.render.texture.StaticTexture;
 import utils.render.texture.Texture;
-import world.feature.Feature;
 import world.worldBuilder.Biome;
+
+import java.util.Random;
 
 public class Terrain {
     private final TerrainType TYPE;
@@ -53,12 +54,17 @@ public class Terrain {
         private final Texture TEXTURE;
 
         TerrainType(Texture texture, boolean hasRandomUV) {
-            this.MESH = new WorldMesh(Main.WORLD.getSize() * Main.WORLD.getSize(), new int[]{2, 2});
-            /*if (hasRandomUV) {
-                this.MESH = new MaxSizedRandomUVMesh(Main.WORLD.getSize() * Main.WORLD.getSize(), texture);
+            if (hasRandomUV) {
+                this.MESH = new WorldMesh(Main.WORLD.getSize() * Main.WORLD.getSize(), new int[]{2, 2},
+                        () -> switch (new Random().nextInt(4)) {
+                            case 0 -> new int[]{1, 1, 0, 0, 1, 0, 0, 1};
+                            case 1 -> new int[]{1, 1, 0, 0, 0, 1, 1, 0};
+                            case 2 -> new int[]{0, 0, 1, 1, 1, 0, 0, 1};
+                            default -> new int[]{0, 0, 1, 1, 0, 1, 1, 0};
+                });
             } else {
-                this.MESH = new MaxSizedMesh(Main.WORLD.getSize() * Main.WORLD.getSize(), texture);
-            }*/
+                this.MESH = new WorldMesh(Main.WORLD.getSize() * Main.WORLD.getSize(), 2, 2);
+            }
             this.TEXTURE = texture;
         }
 

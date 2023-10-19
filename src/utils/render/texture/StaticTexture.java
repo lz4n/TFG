@@ -7,7 +7,7 @@ import org.lwjgl.opengl.GL20;
  *
  * @author Izan
  */
-public class StaticTexture extends Texture implements AtlasTexture {
+public class StaticTexture extends Texture implements CacheTexture {
     /**
      * Ruta de la textura.
      */
