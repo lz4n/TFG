@@ -69,8 +69,8 @@ public class Inventory {
     public void draw(Mesh mesh) {
         Shader.HUD.uploadInt("texture_sampler", 0);
 
-        Shader.HUD.upload2f("hudPosition", 0, this.posY);
-        Shader.HUD.upload2f("hudSize", this.width, this.height);
+        Shader.HUD.upload2f("uHudPosition", 0, this.posY);
+        Shader.HUD.upload2f("uHudSize", this.width, this.height);
 
         Inventory.CONTAINER.bind();
         ARBVertexArrayObject.glBindVertexArray(mesh.getVaoId());
@@ -81,8 +81,8 @@ public class Inventory {
         Inventory.CONTAINER.bind();
 
         this.WIDGETS.forEach(widget -> {
-            Shader.HUD.upload2f("hudPosition", this.pixelSizeInScreen * widget.getPosX(), this.pixelSizeInScreen * widget.getPosY() + this.posY);
-            Shader.HUD.upload2f("hudSize", this.pixelSizeInScreen * widget.getWidth(), this.pixelSizeInScreen * widget.getHeight());
+            Shader.HUD.upload2f("uHudPosition", this.pixelSizeInScreen * widget.getPosX(), this.pixelSizeInScreen * widget.getPosY() + this.posY);
+            Shader.HUD.upload2f("uHudSize", this.pixelSizeInScreen * widget.getWidth(), this.pixelSizeInScreen * widget.getHeight());
 
             widget.getTexture().bind();
             ARBVertexArrayObject.glBindVertexArray(mesh.getVaoId());
@@ -101,7 +101,7 @@ public class Inventory {
     /**
      * Establece cuantos píxeles de pantalla equivales a un pixel de la interfaz in-game. Actualiza las dimensiones de
      * la interfaz y su posición en el eje Y.
-     * @param pixelSizeInScreen
+     * @param pixelSizeInScreen Equivalencia entre píxeles in-game y píxeles de pantalla.
      */
     public void setPixelSizeInScreen(float pixelSizeInScreen) {
         this.pixelSizeInScreen = pixelSizeInScreen;

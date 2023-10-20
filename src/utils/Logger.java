@@ -26,7 +26,7 @@ public class Logger {
      */
     public static void sendMessage(String content, LogMessageType messageType) {
         System.out.printf("%s[%s]: %s%s",  messageType.COLOR, messageType, content, Logger.RESET);
-        System.err.println();
+        System.out.println();
     }
 
     /**

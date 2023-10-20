@@ -1,20 +1,25 @@
 #version 330 core
 
-layout (location=0) in vec2 aPos;
-layout (location=1) in vec2 aTextureCoords;
+/**
+Shader de vértices del shader ENTITY.
+*/
 
-uniform vec2 inInstancePosition;
-uniform vec2 inInstanceScale = vec2(1, 1);
+layout (location=0) in vec2 position;
+layout (location=1) in vec2 uvCoords;
+
+uniform vec2 uInstancePosition;
+uniform vec2 uInstanceScale = vec2(1, 1);
 
 uniform mat4 uProjection;
 uniform mat4 uView;
 
-out vec4 fColor;
-out vec2 fTextureCoords;
+out vec4 color;
+out vec2 fragmentUVCoords;
 
 void main() {
-    vec4 transformedPosition = uProjection * uView * vec4(aPos.x * inInstanceScale.x + inInstancePosition.x, aPos.y * inInstanceScale.y + inInstancePosition.y, 0.0, 1.0);
-    gl_Position = transformedPosition;
+    fragmentUVCoords = uvCoords;
 
-    fTextureCoords = aTextureCoords;
+    //Instanciamos la entidad.
+    vec4 transformedPosition = uProjection * uView * vec4(position.x * uInstanceScale.x + uInstancePosition.x, position.y * uInstanceScale.y + uInstancePosition.y, 0.0, 1.0);
+    gl_Position = transformedPosition;
 }

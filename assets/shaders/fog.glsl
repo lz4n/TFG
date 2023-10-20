@@ -1,9 +1,13 @@
 #version 330 core
 
-uniform sampler2D texture_sampler;
-uniform float daylight;
+/**
+Shader de fragmentos común para los shaders WORLD y ENTITY. Dibuja la textura añadiendo una niebla al borde de la pantalla.
+*/
 
-in vec2 fTextureCoords;
+uniform sampler2D texture_sampler;
+uniform float uDaylight;
+
+in vec2 fragmentUVCoords;
 out vec4 color;
 
 vec4 calculateFog(sampler2D texture_sampler, vec2 uvCoords) {
@@ -15,7 +19,7 @@ vec4 calculateFog(sampler2D texture_sampler, vec2 uvCoords) {
     float fogFactor = clamp(distanceToCenter / 1600, 0.0, 1.0);
 
     // Define el color de la niebla
-    vec3 fogColor = vec3(0.1, 0.1, 0.1); // Color de la niebla
+    vec3 fogColor = vec3(0.1, 0.1, 0.1);
 
     //Si el fragmento es trasparente no se aplica la nievla.
     vec4 fragmentColor = texture(texture_sampler, uvCoords, 1);
@@ -26,5 +30,5 @@ vec4 calculateFog(sampler2D texture_sampler, vec2 uvCoords) {
 }
 
 void main() {
-    color = calculateFog(texture_sampler, fTextureCoords);
+    color = calculateFog(texture_sampler, fragmentUVCoords);
 }

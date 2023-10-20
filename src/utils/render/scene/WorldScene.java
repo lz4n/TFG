@@ -128,7 +128,7 @@ public class WorldScene extends Scene {
         Shader.WORLD.use();
         Shader.WORLD.uploadMatrix4f("uProjection", CAMERA.getProjectionMatrix());
         Shader.WORLD.uploadMatrix4f("uView", CAMERA.getViewMatrix());
-        Shader.WORLD.uploadFloat("daylight", (float) Main.WORLD.getDayLight());
+        Shader.WORLD.uploadFloat("uDaylight", (float) Main.WORLD.getDayLight());
 
         //Dibujamos el terreno.
         for (Terrain.TerrainType terrainType: Terrain.TerrainType.values()) {
@@ -160,7 +160,7 @@ public class WorldScene extends Scene {
             entityType.getTexture().bind();
 
             if (Main.WORLD.getEntitiesMap().containsKey(entityType)) for (Entity entity: Main.WORLD.getEntitiesMap().get(entityType)) {
-                Shader.ENTITY.upload2f("inInstancePosition", entity.getLocation().getX() * WorldScene.SPRITE_SIZE, entity.getLocation().getY() * WorldScene.SPRITE_SIZE);
+                Shader.ENTITY.upload2f("uInstancePosition", entity.getLocation().getX() * WorldScene.SPRITE_SIZE, entity.getLocation().getY() * WorldScene.SPRITE_SIZE);
                 entityType.getMesh().draw();
             }
             Texture.unbind();
@@ -184,8 +184,8 @@ public class WorldScene extends Scene {
 
         //Generamos la pantalla de debug
         if (Main.isDebugging) {
-            Shader.HUD.upload2f("hudPosition", 0, 0);
-            Shader.HUD.upload2f("hudSize", Window.getWidth() /2f, Window.getHeight());
+            Shader.HUD.upload2f("uHudPosition", 0, 0);
+            Shader.HUD.upload2f("uHudSize", Window.getWidth() /2f, Window.getHeight());
             Shader.HUD.uploadInt("texture_sampler", 0);
             GL20.glActiveTexture(GL20.GL_TEXTURE0);
             String debug = String.format("""
