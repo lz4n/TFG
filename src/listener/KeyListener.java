@@ -1,6 +1,8 @@
 package listener;
 
+import main.Main;
 import org.lwjgl.glfw.GLFW;
+import world.entity.Duck;
 
 /**
  * Listener para los eventos de teclado. Rastrea el estado de cada tecla y lanza un evento cuando se presiona una.
@@ -24,7 +26,7 @@ public class KeyListener {
      */
     public static void keyCallback(long window, int key, int scancode, int action, int mods) {
         if (key != GLFW.GLFW_KEY_UNKNOWN) {
-            KeyListener.isKeyPressed[key] = action == GLFW.GLFW_PRESS;
+            KeyListener.isKeyPressed[key] = action == GLFW.GLFW_PRESS || action ==  GLFW.GLFW_REPEAT;
         }
     }
 

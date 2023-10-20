@@ -2,9 +2,9 @@ package utils.render.mesh;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.ARBVertexArrayObject;
+import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15C;
 import org.lwjgl.opengl.GL20;
-import utils.render.texture.Texture;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -31,35 +31,28 @@ public abstract class Mesh {
     protected int[] elementArray;
 
     /**
+     * Array que almacena el tamaño de cada atributo de los vértices.
+     */
+    protected int[] vertexAttributesSize;
+
+    /**
      * Identificador del <code>mesh</code> dentro de <code>OpenGL</code>.
      */
     private int vaoId;
 
     /**
-     * Cantidad de vértices que forman parte de un triángulo, se usa para crear el <code>elementArray</code>.
+     * Tamaño del vértice en bytes y en unidades.
      */
-    protected int elementsCount = 0;
+    protected int vertexSizeBytes = 0, vertexSize = 0;
 
-    /**
-     * Textura del <code>Mesh</code>
-     */
-    private final Texture TEXTURE;
-
-    /**
-     * @param texture Textura que va a tener el mesh.
-     */
-    public Mesh(Texture texture) {
-        this.TEXTURE = texture;
+    public Mesh(int... attributesSize) {
+        this.vertexAttributesSize = attributesSize;
+        for (int attributeSize: this.vertexAttributesSize) {
+            this.vertexSizeBytes += attributeSize;
+            this.vertexSize += attributeSize;
+        }
+        this.vertexSizeBytes *= Float.BYTES;
     }
-
-    /**
-     * Crea un vértice y lo almacena en los respectivos arrays. No todos los <code>mesh</code> permiten añadir vértices.
-     * @param x posición X in-game del vértice.
-     * @param y posición Y in-game del vértice.
-     * @param sizeX tamaño del objeto a renderizar (en medidas in-game) en el eje X.
-     * @param sizeY tamaño del objeto a renderizar (en medidas in-game) en el eje Y.
-     */
-    public void addVertex(float x, float y, int sizeX, int sizeY) {}
 
     /**
      * Carga el <code>mesh</code> en la <code>GPU</code>.<br>
@@ -91,6 +84,26 @@ public abstract class Mesh {
         eboId = GL20.glGenBuffers();
         GL15C.glBindBuffer(GL20.GL_ELEMENT_ARRAY_BUFFER, eboId);
         GL15C.glBufferData(GL20.GL_ELEMENT_ARRAY_BUFFER, elementBuffer, GL20.GL_STATIC_DRAW);
+
+        //Añadimos los atributos a los vertices
+        for (int attributeIndex = 0, attributePosition = 0, attributeSize; attributeIndex < this.vertexAttributesSize.length; attributeIndex++) {
+            attributeSize = this.vertexAttributesSize[attributeIndex];
+            GL20.glVertexAttribPointer(attributeIndex, attributeSize, GL20.GL_FLOAT, false, this.vertexSizeBytes, (long) attributePosition * Float.BYTES);
+            GL20.glEnableVertexAttribArray(attributeIndex);
+            attributePosition += attributeSize;
+        }
+    }
+
+    public void draw() {
+        ARBVertexArrayObject.glBindVertexArray(this.vaoId);
+        for (int attributeIndex = 0; attributeIndex < this.vertexAttributesSize.length; attributeIndex++) {
+            GL20.glEnableVertexAttribArray(attributeIndex);
+        }
+        GL20.glDrawElements(GL20.GL_TRIANGLES, this.elementArray.length, GL11.GL_UNSIGNED_INT, 0);
+        for (int attributeIndex = 0; attributeIndex < this.vertexAttributesSize.length; attributeIndex++) {
+            GL20.glDisableVertexAttribArray(attributeIndex);
+        }
+        ARBVertexArrayObject.glBindVertexArray(0);
     }
 
     /**
@@ -112,12 +125,5 @@ public abstract class Mesh {
      */
     public int getVaoId() {
         return this.vaoId;
-    }
-
-    /**
-     * @return Textura correspondiente al <code>mesh</code>.
-     */
-    public final Texture getTexture() {
-        return this.TEXTURE;
     }
 }

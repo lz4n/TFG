@@ -5,7 +5,6 @@ import org.lwjgl.opengl.GL20;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.List;
-import java.util.function.Consumer;
 
 /**
  * Textura basada en <code>Graphics2D</code> nativos de Java. Cuanto más grande sea más recursos gasta, así que es preferible
@@ -48,9 +47,11 @@ public class Graphics2dTexture extends Texture {
 
     /**
      * Dibuja los gráficos 2D en el buffer de imagen y genera la textura.
-     * @return identificador numérico de la textura.
      */
     public void convert() {
+        //Borramos la textura anterior
+        this.remove();
+
         //Dibujamos los gráficos 2D en la imagen
         this.GRAPHICS.dispose();
 
@@ -75,19 +76,24 @@ public class Graphics2dTexture extends Texture {
                         this.BUFFERED_IMAGE.getWidth()));
 
         //Repetimos la textura en todas direcciones
-        List.of(GL20.GL_TEXTURE_WRAP_S, GL20.GL_TEXTURE_WRAP_T).forEach(textureRepeatDirection -> {
-            GL20.glTexParameteri(GL20.GL_TEXTURE_2D, textureRepeatDirection, GL20.GL_REPEAT);
-        });
+        List.of(GL20.GL_TEXTURE_WRAP_S, GL20.GL_TEXTURE_WRAP_T).forEach(textureRepeatDirection ->
+                GL20.glTexParameteri(GL20.GL_TEXTURE_2D, textureRepeatDirection, GL20.GL_REPEAT));
 
         //Cuando hagamos la textura más grande o más pequeña se pixele.
         GL20.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_MIN_FILTER, GL20.GL_NEAREST);
         GL20.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_MAG_FILTER, GL20.GL_NEAREST);
     }
 
-    @Override
-    public void unbind() {
+    /**
+     * Elimina la textura de la cache y libera la memoria.
+     */
+    public void remove() {
         GL20.glDeleteTextures(this.textureId);
-        super.unbind();
+    }
+
+    @Override
+    public int getTextureId() {
+        return this.textureId;
     }
 
     @Override

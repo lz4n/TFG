@@ -3,6 +3,7 @@ package utils.render;
 import org.joml.Matrix4f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL20;
+import utils.Logger;
 
 import java.io.IOException;
 import java.nio.FloatBuffer;
@@ -23,7 +24,12 @@ public enum Shader {
     /**
      * Shader utilizado para renderizar objetos dentro del mundo, cuya posición en pantalla depende de la posición de la cámara.
      */
-    TEXTURE("assets/shaders/texture"),
+    WORLD("assets/shaders/world/vertex.glsl", "assets/shaders/fog.glsl"),
+
+    /**
+     * Shader utilizado para renderizar entidades instanciables dentro del mundo, cuya posición en pantalla depende de la posición de la cámara.
+     */
+    ENTITY("assets/shaders/entity/vertex.glsl", "assets/shaders/fog.glsl"),
 
     /**
      * Shader utilizado para renderizar objetos sobre la pantalla. La posición de estos objetos siempre será la misma, sin importar la posición de la cámara.
@@ -58,22 +64,33 @@ public enum Shader {
     /**
      * Lee los shaders de vértices y fragmentos, pero ni los compila ni crea el programa de shaders. OpenGL no puede acceder
      * a la memoria antes de que se haya inicializado GLSL, por lo que hay que compilar los shaders después de la inicialización.
+     * @param sourceVertex dirección al archivo <code>.glsl</code> que contiene el código del shader de vértices.
+     * @param sourceFragment dirección al archivo <code>.glsl</code> que contiene el código del shader de fragmentos.
+     * @see Window
+     */
+    Shader(String sourceVertex, String sourceFragment) {
+        try {
+            this.vertexShader = Files.readString(Paths.get(sourceVertex));
+        } catch (IOException exception) {
+            Logger.sendMessage("Error cargando el shader: '%s'. El archivo '%s' no existe o no ha sido posible su lectura.", Logger.LogMessageType.WARNING, this, sourceVertex);
+        }
+        try {
+            this.fragmentShader = Files.readString(Paths.get(sourceFragment));
+        } catch (IOException exception) {
+            Logger.sendMessage("Error cargando el shader: '%s'. El archivo '%s' no existe o no ha sido posible su lectura.", Logger.LogMessageType.WARNING, this, sourceFragment);
+        }
+    }
+
+    /**
+     * Lee los shaders de vértices y fragmentos, pero ni los compila ni crea el programa de shaders. OpenGL no puede acceder
+     * a la memoria antes de que se haya inicializado GLSL, por lo que hay que compilar los shaders después de la inicialización.
      * @param source Dirección a un directorio que contiene los archivos <code>vertex.glsl</code> y <code>fragment.glsl</code>,
      *               que contienen el código de los shaders de vértices y fragmentos, respectivamente.
      *
      * @see Window
      */
     Shader(String source) {
-        try {
-            this.vertexShader = Files.readString(Paths.get(source + "/vertex.glsl"));
-        } catch (IOException exception) {
-            System.err.printf("Error cargando el shader: '%s.vertex'. El archivo '%s' no existe o no ha sido posible su lectura.\n", this, source + "/vertex.glsl");
-        }
-        try {
-            this.fragmentShader = Files.readString(Paths.get(source + "/fragment.glsl"));
-        } catch (IOException exception) {
-            System.err.printf("Error cargando el shader: '%s.fragment'. El archivo '%s' no existe o no ha sido posible su lectura.\n", this, source + "/fragment.glsl");
-        }
+        this(source  + "/vertex.glsl", source + "/fragment.glsl");
     }
 
     /**
@@ -88,7 +105,7 @@ public enum Shader {
         }
 
         if (GL20.glGetShaderi(this.vertexID, GL20.GL_COMPILE_STATUS) == GL20.GL_FALSE) {
-            System.err.printf("Error compilando el shader: '%s.vertex'. %s\n", this, GL20.glGetShaderInfoLog(this.vertexID));
+            Logger.sendMessage("Error compilando el shader: '%s.vertex'. %s", Logger.LogMessageType.FATAL,this, GL20.glGetShaderInfoLog(this.vertexID));
         }
 
         //Cargamos y compilamos el fragment shader
@@ -99,7 +116,7 @@ public enum Shader {
         }
 
         if (GL20.glGetShaderi(this.fragmentID, GL20.GL_COMPILE_STATUS) == GL20.GL_FALSE) {
-            System.err.printf("Error compilando el shader: '%s.fargment'. %s\n", this, GL20.glGetShaderInfoLog(this.fragmentID));
+            Logger.sendMessage("Error compilando el shader: '%s.fragment'. %s", Logger.LogMessageType.FATAL, this, GL20.glGetShaderInfoLog(this.fragmentID));
         }
 
         this.shaderProgramID = GL20.glCreateProgram();

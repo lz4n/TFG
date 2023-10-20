@@ -1,7 +1,5 @@
 package utils.render.scene;
 
-import javax.swing.plaf.PanelUI;
-
 /**
  * La escena es la encargada de la parte gráfica del juego, cada pantalla tiene una escena.
  *
@@ -20,7 +18,15 @@ public abstract class Scene {
      */
     public abstract void update(long dTime);
 
+    /**
+     * Método que se llama cuando se cámbia el tamaño de la ventana.
+     */
     public abstract void resizeWindow();
 
+    /**
+     * Método que se llama cuando se hace click en la ventana.
+     * @param mouseX Coordenadas del ratón en el eje X, en unidades de pantalla.
+     * @param mouseY Coordenadas del ratón en el eje Y, en unidades de pantalla.
+     */
     public abstract void click(float mouseX, float mouseY);
 }

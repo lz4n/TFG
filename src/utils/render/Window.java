@@ -14,6 +14,10 @@ import org.lwjgl.system.MemoryUtil;
 import utils.Time;
 import utils.render.scene.Scene;
 import utils.render.scene.WorldScene;
+import utils.render.texture.Texture;
+import world.entity.Duck;
+
+import java.util.Objects;
 
 /**
  * Representa la ventana en la que se ejecuta el juego.
@@ -43,13 +47,18 @@ public class Window {
     public static void run() {
         init();
         currentScene.init();
+
+        //Cargamos las texturas a la caché de texuras
+        Texture.initCacheTextures();
+
         loop();
 
         //Liberamos memoria
         Callbacks.glfwFreeCallbacks(window);
         GLFW.glfwDestroyWindow(window);
         GLFW.glfwTerminate();
-        GLFW.glfwSetErrorCallback(null).free();
+        Objects.requireNonNull(GLFW.glfwSetErrorCallback(null)).free();
+        Texture.removeCacheTextures();
     }
 
     /**
@@ -71,7 +80,7 @@ public class Window {
         GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, GLFW.GLFW_TRUE);
         GLFW.glfwWindowHint(GLFW.GLFW_MAXIMIZED, GLFW.GLFW_TRUE);
         GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 3);
-        GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 2);
+        GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 3);
 
         //Creamos la ventana
         window = GLFW.glfwCreateWindow(WIDTH, HEIGHT, "Test OpenGL", MemoryUtil.NULL, MemoryUtil.NULL);
@@ -97,6 +106,11 @@ public class Window {
 
         //Creamos la instancia de OpenGL
         GL.createCapabilities();
+
+        //Compilamos los shaders
+        for (Shader shader: Shader.values()) {
+            shader.compile();
+        }
     }
 
     /**
@@ -129,6 +143,10 @@ public class Window {
 
             if (KeyListener.isKeyPressed(GLFW.GLFW_KEY_D)) {
                 WorldScene.CAMERA.moveCamera(new Vector2f(10 * (float) WorldScene.CAMERA.getZoom(), 0));
+            }
+
+            if (KeyListener.isKeyPressed(GLFW.GLFW_KEY_E)) {
+                Main.WORLD.spawnEntity(new Duck(MouseListener.inGameLocation));
             }
 
             endTime = Time.getTimeInNanoseconds();

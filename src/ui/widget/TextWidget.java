@@ -12,6 +12,8 @@ import utils.render.texture.Texture;
 import java.awt.*;
 
 public class TextWidget extends Widget implements CustomDrawWidget {
+    private final static Texture TEXTURE = new StaticTexture("assets/textures/ui/inventory/text_field.png");
+
     private final Graphics2dTexture TEXT;
 
     public TextWidget(float posX, float posY, String text) {
@@ -36,13 +38,13 @@ public class TextWidget extends Widget implements CustomDrawWidget {
 
     @Override
     public Texture getTexture() {
-        return new StaticTexture("assets/textures/ui/inventory/text_field.png");
+        return TextWidget.TEXTURE;
     }
 
     @Override
     public void draw(Mesh mesh, float pixelSizeInScreen, float posX, float posY, float width, float height) {
-        Shader.HUD.upload2f("hudPosition", posX + 2.5f * pixelSizeInScreen, posY + 2.5f * pixelSizeInScreen);
-        Shader.HUD.upload2f("hudSize", (this.getWidth() -5) * pixelSizeInScreen, (this.getHeight() -5) * pixelSizeInScreen);
+        Shader.HUD.upload2f("uHudPosition", posX + 2.5f * pixelSizeInScreen, posY + 2.5f * pixelSizeInScreen);
+        Shader.HUD.upload2f("uHudSize", (this.getWidth() -5) * pixelSizeInScreen, (this.getHeight() -5) * pixelSizeInScreen);
 
         this.TEXT.bind();
         ARBVertexArrayObject.glBindVertexArray(mesh.getVaoId());

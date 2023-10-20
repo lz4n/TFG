@@ -1,11 +1,14 @@
 #version 330 core
 
-in vec2 TexCoord; // Coordenadas de textura de entrada desde el vertex shader
-out vec4 FragColor; // Color de salida
+/**
+Shader de fragmentos del shader HUD.
+*/
 
-uniform sampler2D hudTexture; // Textura del HUD
+in vec2 uvCoords; // Coordenadas de textura de entrada desde el vertex shader
+out vec4 color; // Color de salida
 
-void main()
-{
-    FragColor = texture(hudTexture, TexCoord);
+uniform sampler2D uHudTexture; // Textura del HUD
+
+void main() {
+    color = texture(uHudTexture, uvCoords);
 }

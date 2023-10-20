@@ -8,19 +8,22 @@ import world.feature.Feature;
 import world.terrain.Terrain;
 import world.worldBuilder.Biome;
 
-public class Location implements Cloneable {
-    private double x, y;
+import javax.swing.plaf.PanelUI;
+import java.security.PublicKey;
 
-    public Location(double x, double y) {
+public class Location implements Cloneable {
+    private float x, y;
+
+    public Location(float x, float y) {
         this.x = x;
         this.y = y;
     }
 
-    public double getX() {
+    public float getX() {
         return x;
     }
 
-    public double getY() {
+    public float getY() {
         return y;
     }
 
@@ -28,14 +31,16 @@ public class Location implements Cloneable {
         return !(x >= 0 && x < Main.WORLD.getSize() && y >= 0 && y < Main.WORLD.getSize());
     }
 
-    public Location add(double x, double y) {
+    public Location add(float x, float y) {
         this.x += x;
         this.y += y;
         return this;
     }
 
-    public Vector2d getVector2d() {
-        return new Vector2d(this.getX(), this.getY());
+    public Location truncate() {
+        this.x = (int) this.getX();
+        this.y = (int) this.getY();
+        return this;
     }
 
     public Vector2f getVector2f() {
@@ -59,8 +64,12 @@ public class Location implements Cloneable {
         try {
             return (Location) super.clone();
         } catch (CloneNotSupportedException exception) {
-            System.err.println(exception.getMessage());
+            return null;
         }
-        return null;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Location(x=%f,y=%f)", this.getX(), this.getY());
     }
 }

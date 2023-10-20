@@ -1,9 +1,11 @@
 package listener;
 
+import main.Main;
 import org.joml.Vector2f;
 import org.lwjgl.glfw.GLFW;
 import utils.render.Window;
 import utils.render.scene.WorldScene;
+import world.feature.Tree;
 import world.location.Location;
 
 /**
@@ -70,7 +72,12 @@ public class MouseListener {
     public static void mouseButtonCallback(long window, int button, int action, int mods) {
       if (action == GLFW.GLFW_PRESS) {
           MouseListener.setIsMouseButtonPressed(button, true);
-          if (button == GLFW.GLFW_MOUSE_BUTTON_1) Window.currentScene.click((float) MouseListener.posX, (float) MouseListener.posY);
+          if (button == GLFW.GLFW_MOUSE_BUTTON_1) {
+              Window.currentScene.click((float) MouseListener.posX, (float) MouseListener.posY);
+              if (MouseListener.inGameLocation.getFeature() == null) {
+                  Main.WORLD.addFeature(new Tree(MouseListener.inGameLocation.clone().truncate()));
+              }
+          }
       } else if (action == GLFW.GLFW_RELEASE) {
           MouseListener.setIsMouseButtonPressed(button, false);
           MouseListener.isDragging = false;

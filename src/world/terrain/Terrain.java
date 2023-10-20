@@ -1,12 +1,13 @@
 package world.terrain;
 
 import main.Main;
-import utils.render.mesh.MaxSizedMesh;
-import utils.render.mesh.MaxSizedRandomUVMesh;
+import utils.render.mesh.WorldMesh;
 import utils.render.texture.AnimatedTexture;
 import utils.render.texture.StaticTexture;
 import utils.render.texture.Texture;
 import world.worldBuilder.Biome;
+
+import java.util.Random;
 
 public class Terrain {
     private final TerrainType TYPE;
@@ -49,18 +50,30 @@ public class Terrain {
         SNOW(new StaticTexture("assets/textures/terrain/snow.png"), true),
         GRAVEL(new StaticTexture("assets/textures/terrain/gravel.png"), true);
 
-        private final MaxSizedMesh MESH;
+        private final WorldMesh MESH;
+        private final Texture TEXTURE;
 
         TerrainType(Texture texture, boolean hasRandomUV) {
             if (hasRandomUV) {
-                this.MESH = new MaxSizedRandomUVMesh(Main.WORLD.getSize() * Main.WORLD.getSize(), texture);
+                this.MESH = new WorldMesh(Main.WORLD.getSize() * Main.WORLD.getSize(), new int[]{2, 2},
+                        () -> switch (new Random().nextInt(4)) {
+                            case 0 -> new int[]{1, 1, 0, 0, 1, 0, 0, 1};
+                            case 1 -> new int[]{1, 1, 0, 0, 0, 1, 1, 0};
+                            case 2 -> new int[]{0, 0, 1, 1, 1, 0, 0, 1};
+                            default -> new int[]{0, 0, 1, 1, 0, 1, 1, 0};
+                });
             } else {
-                this.MESH = new MaxSizedMesh(Main.WORLD.getSize() * Main.WORLD.getSize(), texture);
+                this.MESH = new WorldMesh(Main.WORLD.getSize() * Main.WORLD.getSize(), 2, 2);
             }
+            this.TEXTURE = texture;
         }
 
-        public MaxSizedMesh getMesh() {
+        public WorldMesh getMesh() {
             return this.MESH;
+        }
+
+        public Texture getTexture() {
+            return this.TEXTURE;
         }
     }
 }
