@@ -126,6 +126,9 @@ public class WorldMesh extends Mesh {
         this.elementsCount += 4;
     }
 
+    public void adjust() {
+    }
+
     /**
      * Interfaz que define un método que devuelve las coordendadas UV.
      */

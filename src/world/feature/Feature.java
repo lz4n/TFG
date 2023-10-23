@@ -58,7 +58,8 @@ public abstract class Feature implements Comparable<Feature> {
 
     public enum FeatureType {
         BUSH(new StaticTexture("assets/textures/feature/bush.png")),
-        TREE(new StaticTexture("assets/textures/feature/tree.png"));
+        TREE(new StaticTexture("assets/textures/feature/tree.png")),
+        TREE2(new StaticTexture("assets/textures/feature/tree2.png"));
 
         private WorldMesh mesh;
         private final Texture TEXTURE;
