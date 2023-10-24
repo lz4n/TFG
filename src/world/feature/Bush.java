@@ -15,4 +15,9 @@ public class Bush extends Feature {
     public Vector2i getRandomOffset() {
         return Bush.RANDOM_OFFSET;
     }
+
+    @Override
+    public boolean canFeatureOverlapsWith(Feature feature) {
+        return false;
+    }
 }

@@ -24,6 +24,8 @@ import world.location.Location;
 import world.terrain.Terrain;
 
 import java.awt.*;
+import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryMXBean;
 
 /**
  * Escena encargada de renderizar el mundo.
@@ -65,6 +67,14 @@ public class WorldScene extends Scene {
     @Override
     public void init() {
         new WorldGenerator(Main.WORLD, this).run();
+
+        for (Terrain.TerrainType terrainType: Terrain.TerrainType.values()) {
+            terrainType.getMesh().adjust();
+        }
+        for (Feature.FeatureType featureType: Feature.FeatureType.values()) {
+            featureType.getMesh().adjust();
+        }
+
         drawTerrain();
 
         HUD_MESH.load();
@@ -117,7 +127,7 @@ public class WorldScene extends Scene {
     @Override
     public void update(long dTime) {
         //Borramos los contenidos de la ventana y establecemos el color del fondo.
-        GL20.glClearColor(0.1f, 0.1f, 0.1f, 0.1f);
+        GL20.glClearColor(38f / 255, 85f / 255, 144f /255, 0f);
         GL20.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         //Activamos las transparencias
@@ -188,6 +198,7 @@ public class WorldScene extends Scene {
             Shader.HUD.upload2f("uHudSize", Window.getWidth() /2f, Window.getHeight());
             Shader.HUD.uploadInt("texture_sampler", 0);
             GL20.glActiveTexture(GL20.GL_TEXTURE0);
+
             String debug = String.format("""
                             game:
                                 fps=%d

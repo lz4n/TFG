@@ -8,6 +8,7 @@ import utils.render.texture.Texture;
 import world.location.Location;
 
 import java.util.Random;
+import java.util.Set;
 
 public abstract class Feature implements Comparable<Feature> {
     protected static final Random RANDOM = new Random();
@@ -42,6 +43,8 @@ public abstract class Feature implements Comparable<Feature> {
 
     public abstract Vector2i getRandomOffset();
 
+    abstract public boolean canFeatureOverlapsWith(Feature feature);
+
     @Override
     public int hashCode() {
         return this.LOCATION.hashCode();
@@ -70,8 +73,9 @@ public abstract class Feature implements Comparable<Feature> {
         }
 
         public void updateMesh() {
-            this.mesh = new WorldMesh(Main.WORLD.getSize() * Main.WORLD.getSize(), 2, 2);
-            Main.WORLD.getFeaturesMap().get(this).forEach(feature ->
+            Set<Feature> features = Main.WORLD.getFeaturesMap().get(this);
+            this.mesh = new WorldMesh(features.size(), 2, 2);
+            features.forEach(feature ->
                     mesh.addVertex(feature.getLocation().getX(), feature.getLocation().getY(), feature.getSize().x(), feature.getSize().y()));
             this.mesh.load();
         }

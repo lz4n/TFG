@@ -2,6 +2,8 @@ package utils.render.mesh;
 
 import utils.render.scene.WorldScene;
 
+import java.util.Arrays;
+
 /**
  * Mesh utilizado para renderizar una cantidad de objetos igual al área total del mundo. A contrario de <code>EntityMesh</code>,
  * este mesh no se instancia para cada uno de los objetos. Este mesh contiene todos los vértices directamente, que habrá
@@ -59,6 +61,13 @@ public class WorldMesh extends Mesh {
     public void addVertex(float posX, float posY, float sizeX, float sizeY, float... attributes) {
         float screenPosX = WorldScene.SPRITE_SIZE * posX, screenPosY = WorldScene.SPRITE_SIZE * posY;
         int[] uvCoords = this.UV_COORDS_RANDOMIZER.getUVCoords();
+
+        if (this.previousVertexArrayPos >= this.vertexArray.length) {
+            this.vertexArray = Arrays.copyOf(this.vertexArray, this.previousVertexArrayPos +this.vertexSize *4);
+        }
+        if (this.previousElementArrayPos >= this.elementArray.length) {
+            this.elementArray = Arrays.copyOf(this.elementArray, this.previousElementArrayPos +6);
+        }
 
         //Primer vértice: abajo derecha
         //Posición
@@ -127,6 +136,8 @@ public class WorldMesh extends Mesh {
     }
 
     public void adjust() {
+        this.vertexArray = Arrays.copyOf(this.vertexArray, this.previousVertexArrayPos);
+        this.elementArray = Arrays.copyOf(this.elementArray, this.previousElementArrayPos);
     }
 
     /**

@@ -120,6 +120,7 @@ public class World extends Thread {
 
     public void addFeature(Feature feature) {
         this.addFeature(feature, true);
+        System.err.println(Feature.FeatureType.TREE2.getMesh().getVertexArray().length);
     }
 
     public boolean canFeatureOverlapsWithOtherFeature(Feature feature) {
