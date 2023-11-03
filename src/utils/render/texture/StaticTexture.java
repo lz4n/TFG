@@ -36,7 +36,8 @@ public class StaticTexture extends Texture implements CacheTexture {
     }
 
     @Override
-    public void bind() {
+    public void bind(int unit) {
+        super.bind(unit);
         GL20.glBindTexture(GL20.GL_TEXTURE_2D, this.getTextureId());
     }
 

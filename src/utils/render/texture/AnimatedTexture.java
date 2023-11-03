@@ -59,12 +59,13 @@ public class AnimatedTexture extends Texture implements CacheTexture {
     }
 
     @Override
-    public void bind(){
+    public void bind(int unit){
         this.currentSprite++;
         if (this.currentSprite / this.FPS >= this.FRAMES.length) {
             this.currentSprite = 0;
         }
 
+        super.bind(unit);
         GL20.glBindTexture(GL20.GL_TEXTURE_2D, this.getTextureId());
     }
 

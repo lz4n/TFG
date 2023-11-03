@@ -109,7 +109,7 @@ public class World extends Thread {
                 if (updateMesh) {
                     featureType.updateMesh();
                 } else {
-                    featureType.getMesh().addVertex(feature.getLocation().getX(), feature.getLocation().getY(), feature.getSize().x(), feature.getSize().y());
+                    featureType.getMesh().addVertex(feature.getLocation().getX(), feature.getLocation().getY(), feature.getSize().x(), feature.getSize().y(), new Random().nextInt(2));
                 }
 
                 this.featuresCount++;

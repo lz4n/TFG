@@ -2,6 +2,8 @@ package world.feature;
 
 import main.Main;
 import org.joml.Vector2i;
+import utils.render.mesh.EntityMesh;
+import utils.render.mesh.Mesh;
 import utils.render.mesh.WorldMesh;
 import utils.render.texture.StaticTexture;
 import utils.render.texture.Texture;
@@ -68,15 +70,18 @@ public abstract class Feature implements Comparable<Feature> {
         private final Texture TEXTURE;
 
         FeatureType(Texture texture) {
-            this.mesh = new WorldMesh(Main.WORLD.getSize() * Main.WORLD.getSize(), 2, 2);
+            this.mesh = new WorldMesh(Main.WORLD.getSize() * Main.WORLD.getSize(), 2, 2, 1);
             this.TEXTURE = texture;
         }
 
         public void updateMesh() {
             Set<Feature> features = Main.WORLD.getFeaturesMap().get(this);
-            this.mesh = new WorldMesh(features.size(), 2, 2);
-            features.forEach(feature ->
-                    mesh.addVertex(feature.getLocation().getX(), feature.getLocation().getY(), feature.getSize().x(), feature.getSize().y()));
+            this.mesh = new WorldMesh(features.size(), 2, 2, 1);
+            features.forEach(feature -> {
+                int a = 1;
+                System.out.println(a);
+                mesh.addVertex(feature.getLocation().getX(), feature.getLocation().getY(), feature.getSize().x(), feature.getSize().y(), a);
+                });
             this.mesh.load();
         }
 

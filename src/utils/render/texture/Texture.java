@@ -1,6 +1,7 @@
 package utils.render.texture;
 
 import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.stb.STBImage;
 import utils.Logger;
@@ -31,7 +32,13 @@ public abstract class Texture {
     /**
      * Sube la textura a la <code>GPU</code>.
      */
-    public abstract void bind();
+    public void bind() {
+        this.bind(0);
+    }
+
+    public void bind(int unit) {
+        GL20.glActiveTexture(GL13.GL_TEXTURE0 +unit);
+    }
 
     /**
      * Limpia la textura de la <code>GPU</code>, y limpia la memoria.<br>

@@ -26,6 +26,7 @@ import world.terrain.Terrain;
 import java.awt.*;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
+import java.util.Random;
 
 /**
  * Escena encargada de renderizar el mundo.
@@ -71,9 +72,9 @@ public class WorldScene extends Scene {
         for (Terrain.TerrainType terrainType: Terrain.TerrainType.values()) {
             terrainType.getMesh().adjust();
         }
-        for (Feature.FeatureType featureType: Feature.FeatureType.values()) {
+        /*for (Feature.FeatureType featureType: Feature.FeatureType.values()) {
             featureType.getMesh().adjust();
-        }
+        }*/
 
         drawTerrain();
 
@@ -141,32 +142,34 @@ public class WorldScene extends Scene {
         Shader.WORLD.uploadFloat("uDaylight", (float) Main.WORLD.getDayLight());
 
         //Dibujamos el terreno.
+        Shader.WORLD.uploadInt("customTextureUnit", 0);
         for (Terrain.TerrainType terrainType: Terrain.TerrainType.values()) {
-            Shader.WORLD.uploadInt("texture_sampler", 0);
-            GL20.glActiveTexture(GL20.GL_TEXTURE0);
-
+            Shader.WORLD.uploadInt("textureSampler1", 0);
             terrainType.getTexture().bind();
             terrainType.getMesh().draw();
             Texture.unbind();
         }
 
         //Dibujamos las features.
+        Shader.WORLD.uploadInt("customTextureUnit", -1);
         for (Feature.FeatureType featureType: Feature.FeatureType.values()) {
-            Shader.WORLD.uploadInt("texture_sampler", 0);
-            GL20.glActiveTexture(GL20.GL_TEXTURE0);
-            featureType.getTexture().bind();
+            //Shader.WORLD.uploadInt("customTextureUnit", new Random().nextInt(2));
+            Shader.WORLD.uploadInt("textureSampler1", 0);
+            Shader.WORLD.uploadInt("textureSampler2", 1);
+            featureType.getTexture().bind(0);
+            MOUSE_TEXTURE.bind(1);
+            MOUSE_TEXTURE.bind(2);
 
             featureType.getMesh().draw();
             Texture.unbind();
         }
 
-        //Dibujamos las entidades.
+        //Dibujamos las entidades y features.
         Shader.ENTITY.use();
         Shader.ENTITY.uploadMatrix4f("uProjection", CAMERA.getProjectionMatrix());
         Shader.ENTITY.uploadMatrix4f("uView", CAMERA.getViewMatrix());
+
         for (Entity.EntityType entityType: Entity.EntityType.values()) {
-            Shader.ENTITY.uploadInt("texture_sampler", 0);
-            GL20.glActiveTexture(GL20.GL_TEXTURE0);
             entityType.getTexture().bind();
 
             if (Main.WORLD.getEntitiesMap().containsKey(entityType)) for (Entity entity: Main.WORLD.getEntitiesMap().get(entityType)) {
@@ -182,7 +185,6 @@ public class WorldScene extends Scene {
             Shader.WORLD.uploadMatrix4f("uProjection", CAMERA.getProjectionMatrix());
             Shader.WORLD.uploadMatrix4f("uView", CAMERA.getViewMatrix());
             Shader.WORLD.uploadInt("texture_sampler", 0);
-            GL20.glActiveTexture(GL20.GL_TEXTURE0);
             WorldScene.MOUSE_TEXTURE.bind();
             this.MOUSE_SELECTION_MESH.draw();
             Texture.unbind();
@@ -197,7 +199,6 @@ public class WorldScene extends Scene {
             Shader.HUD.upload2f("uHudPosition", 0, 0);
             Shader.HUD.upload2f("uHudSize", Window.getWidth() /2f, Window.getHeight());
             Shader.HUD.uploadInt("texture_sampler", 0);
-            GL20.glActiveTexture(GL20.GL_TEXTURE0);
 
             String debug = String.format("""
                             game:
