@@ -5,6 +5,7 @@ import utils.Logger;
 import world.entity.Entity;
 import world.feature.Bush;
 import world.feature.Feature;
+import world.feature.Flower;
 import world.feature.Tree;
 import world.location.Location;
 import world.terrain.Terrain;
@@ -57,12 +58,13 @@ public class World extends Thread {
             case FOREST -> {
                 if (World.RANDOM.nextFloat() >= 0.75)
                     feature = new Tree(new Location(x + World.RANDOM.nextFloat() / 4, y + World.RANDOM.nextFloat() / 4));
-                else if (World.RANDOM.nextFloat() >= 0.8) feature = new Bush(new Location(x, y + World.RANDOM.nextFloat() / 2));
+                else if (World.RANDOM.nextFloat() >= 0.84) feature = new Bush(new Location(x, y + World.RANDOM.nextFloat() / 2));
             }
             case PLAINS -> {
                 if (World.RANDOM.nextFloat() >= 0.97)
                     feature = new Tree(new Location(x + World.RANDOM.nextFloat() / 2, y + World.RANDOM.nextFloat() / 4));
-                else if (World.RANDOM.nextFloat() >= 0.6) feature = new Bush(new Location(x, y + World.RANDOM.nextFloat() / 2));
+                else if (World.RANDOM.nextFloat() >= 0.87) feature = new Bush(new Location(x, y + World.RANDOM.nextFloat() / 2));
+                else if (World.RANDOM.nextFloat() >= 0.75) feature = new Flower(new Location(x, y + World.RANDOM.nextFloat() / 4));
             }
         }
         if (feature != null) {
@@ -109,7 +111,7 @@ public class World extends Thread {
                 if (updateMesh) {
                     featureType.updateMesh();
                 } else {
-                    featureType.getMesh().addVertex(feature.getLocation().getX(), feature.getLocation().getY(), feature.getSize().x(), feature.getSize().y(), new Random().nextInt(2));
+                    featureType.getMesh().addVertex(feature.getLocation().getX(), feature.getLocation().getY(), feature.getSize().x(), feature.getSize().y(), feature.getVariant());
                 }
 
                 this.featuresCount++;
@@ -120,7 +122,6 @@ public class World extends Thread {
 
     public void addFeature(Feature feature) {
         this.addFeature(feature, true);
-        System.err.println(Feature.FeatureType.TREE2.getMesh().getVertexArray().length);
     }
 
     public boolean canFeatureOverlapsWithOtherFeature(Feature feature) {

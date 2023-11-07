@@ -14,6 +14,7 @@ import org.joml.Vector2f;
 import org.lwjgl.opengl.*;
 import utils.render.Camera;
 import utils.render.Shader;
+import utils.render.texture.AnimatedTexture;
 import utils.render.texture.Graphics2dTexture;
 import utils.render.texture.StaticTexture;
 import utils.render.texture.Texture;
@@ -24,8 +25,7 @@ import world.location.Location;
 import world.terrain.Terrain;
 
 import java.awt.*;
-import java.lang.management.ManagementFactory;
-import java.lang.management.MemoryMXBean;
+import java.util.Arrays;
 import java.util.Random;
 
 /**
@@ -37,7 +37,7 @@ public class WorldScene extends Scene {
     /**
      * Tamaño base (sin contar el zoom) de los sprites.
      */
-    public static final int SPRITE_SIZE = 20;
+    public static final int SPRITE_SIZE = 16;
 
     /**
      * Camara de la escena.
@@ -50,7 +50,7 @@ public class WorldScene extends Scene {
     private static final Texture MOUSE_TEXTURE = new StaticTexture("assets/textures/ui/selector.png");
 
     /**
-     * <code>Mesh</code> anónimo utilizado para el selector del ratón.
+     * <code>Mesh</code> utilizado para el selector del ratón.
      * @see Mesh
      */
     private final MouseSelectionMesh MOUSE_SELECTION_MESH = new MouseSelectionMesh(3, 2);
@@ -59,6 +59,9 @@ public class WorldScene extends Scene {
      * Mesh utilizado para dibujar el HUD.
      */
     private final HUDMesh HUD_MESH = new HUDMesh();
+
+    private final Texture WORLD_BORDER_TEXTURE = new AnimatedTexture("assets/textures/terrain/border", 5, 5);
+    private final WorldMesh WORLD_BORDER_MESH = new WorldMesh(1, 2, 2);
 
     /**
      * Inventario del jugador en la escena.
@@ -72,19 +75,22 @@ public class WorldScene extends Scene {
         for (Terrain.TerrainType terrainType: Terrain.TerrainType.values()) {
             terrainType.getMesh().adjust();
         }
-        /*for (Feature.FeatureType featureType: Feature.FeatureType.values()) {
+        for (Feature.FeatureType featureType: Feature.FeatureType.values()) {
             featureType.getMesh().adjust();
-        }*/
+        }
 
         drawTerrain();
 
         HUD_MESH.load();
 
+        this.WORLD_BORDER_MESH.addVertex(-1, -1, 502, 502);
+        this.WORLD_BORDER_MESH.load();
+
         WorldScene.CAMERA.moveCamera(new Vector2f((float) Main.WORLD.getSize() / 2));
 
         //Generamos la estructura de widgets del inventario.
         this.INVENTORY.addWidget(new SeparatorWidget(20, 0));
-        this.INVENTORY.addWidget(new SlotWidget(40, 4, Feature.FeatureType.TREE.getTexture()));
+        this.INVENTORY.addWidget(new SlotWidget(40, 4, Feature.FeatureType.TREE.getTextures().get(0)));
         this.INVENTORY.addWidget(new TextWidget(40, 23, "kkkkkkkkk"));
     }
 
@@ -141,10 +147,19 @@ public class WorldScene extends Scene {
         Shader.WORLD.uploadMatrix4f("uView", CAMERA.getViewMatrix());
         Shader.WORLD.uploadFloat("uDaylight", (float) Main.WORLD.getDayLight());
 
+        //Dibujamos el borde del mundo
+        Shader.WORLD.uploadInt("customTextureUnit", 0);
+        Shader.WORLD.uploadInt("textureSampler0", 0);
+        Shader.WORLD.uploadInt("repeatingTimes", 502);
+        this.WORLD_BORDER_TEXTURE.bind();
+        this.WORLD_BORDER_MESH.draw();
+        Texture.unbind();
+        Shader.WORLD.uploadInt("repeatingTimes", 1);
+
         //Dibujamos el terreno.
         Shader.WORLD.uploadInt("customTextureUnit", 0);
         for (Terrain.TerrainType terrainType: Terrain.TerrainType.values()) {
-            Shader.WORLD.uploadInt("textureSampler1", 0);
+            Shader.WORLD.uploadInt("textureSampler0", 0);
             terrainType.getTexture().bind();
             terrainType.getMesh().draw();
             Texture.unbind();
@@ -153,14 +168,17 @@ public class WorldScene extends Scene {
         //Dibujamos las features.
         Shader.WORLD.uploadInt("customTextureUnit", -1);
         for (Feature.FeatureType featureType: Feature.FeatureType.values()) {
-            //Shader.WORLD.uploadInt("customTextureUnit", new Random().nextInt(2));
-            Shader.WORLD.uploadInt("textureSampler1", 0);
-            Shader.WORLD.uploadInt("textureSampler2", 1);
-            featureType.getTexture().bind(0);
-            MOUSE_TEXTURE.bind(1);
-            MOUSE_TEXTURE.bind(2);
+            Shader.WORLD.uploadInt("textureSampler0", 0);
+            Shader.WORLD.uploadInt("textureSampler1", 1);
+            Shader.WORLD.uploadInt("textureSampler2", 2);
+            Shader.WORLD.uploadInt("textureSampler3", 3);
+            Shader.WORLD.uploadInt("textureSampler4", 4);
+            for (int variant = 0; variant < featureType.getVariants(); variant++) {
+                featureType.getTextures().get(variant).bind(variant);
+            }
 
             featureType.getMesh().draw();
+
             Texture.unbind();
         }
 
@@ -184,7 +202,6 @@ public class WorldScene extends Scene {
             Shader.WORLD.use();
             Shader.WORLD.uploadMatrix4f("uProjection", CAMERA.getProjectionMatrix());
             Shader.WORLD.uploadMatrix4f("uView", CAMERA.getViewMatrix());
-            Shader.WORLD.uploadInt("texture_sampler", 0);
             WorldScene.MOUSE_TEXTURE.bind();
             this.MOUSE_SELECTION_MESH.draw();
             Texture.unbind();
@@ -228,9 +245,10 @@ public class WorldScene extends Scene {
                                     """,
                             MouseListener.inGameLocation.getTerrain(),
                             MouseListener.inGameLocation.getTerrain().getType(),
-                            MouseListener.inGameLocation.getFeature() == null ? "feature: null" : String.format("feature: %s type=%s",
+                            MouseListener.inGameLocation.getFeature() == null ? "feature: null" : String.format("feature: %s type=%s,variant=%d",
                                     MouseListener.inGameLocation.getFeature(),
-                                    MouseListener.inGameLocation.getFeature().getFeatureType()),
+                                    MouseListener.inGameLocation.getFeature().getFeatureType(),
+                                    MouseListener.inGameLocation.getFeature().getVariant()),
                             MouseListener.inGameLocation.getTerrain().getBiome(),
                             MouseListener.inGameLocation.getTerrain().getContinentalityNoise(),
                             MouseListener.inGameLocation.getTerrain().getWeirdnessNoise(),

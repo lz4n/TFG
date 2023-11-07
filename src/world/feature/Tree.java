@@ -13,7 +13,7 @@ public class Tree extends Feature {
     private static final Vector2i FEATURE_SIZE = new Vector2i(1, 2), RANDOM_OFFSET = new Vector2i(4, 4);
 
     public Tree(Location location) {
-        super(location, Tree.FEATURE_SIZE, Feature.RANDOM.nextFloat()>0.2?FeatureType.TREE:FeatureType.TREE2);
+        super(location, Tree.FEATURE_SIZE, FeatureType.TREE);
     }
 
     @Override

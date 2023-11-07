@@ -6,6 +6,7 @@ Shader de fragmentos común para los shaders WORLD y ENTITY. Dibuja la textura a
 
 
 uniform float uDaylight;
+uniform sampler2D textureSampler0;
 uniform sampler2D textureSampler1;
 uniform sampler2D textureSampler2;
 uniform sampler2D textureSampler3;
@@ -34,15 +35,16 @@ vec4 calculateFog(sampler2D texture_sampler, vec2 uvCoords) {
     return vec4(mix(fragmentColor.rgb, fogColor, fogFactor), fragmentColor.a);
 }
 
-void main() {
-
+void main() {;
     if (textureUnit == 0) {
-        color = calculateFog(textureSampler1, fragmentUVCoords);
+        color = calculateFog(textureSampler0, fragmentUVCoords);
     } else if (textureUnit == 1) {
-        color = calculateFog(textureSampler2, fragmentUVCoords);
+        color = calculateFog(textureSampler1, fragmentUVCoords);
     } else if (textureUnit == 2) {
-        color = calculateFog(textureSampler3, fragmentUVCoords);
+        color = calculateFog(textureSampler2, fragmentUVCoords);
     } else if (textureUnit == 3) {
+        color = calculateFog(textureSampler3, fragmentUVCoords);
+    } else if (textureUnit == 4) {
         color = calculateFog(textureSampler4, fragmentUVCoords);
     }
 }

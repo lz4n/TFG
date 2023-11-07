@@ -2,21 +2,19 @@ package world.feature;
 
 import main.Main;
 import org.joml.Vector2i;
-import utils.render.mesh.EntityMesh;
-import utils.render.mesh.Mesh;
 import utils.render.mesh.WorldMesh;
 import utils.render.texture.StaticTexture;
 import utils.render.texture.Texture;
 import world.location.Location;
 
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 public abstract class Feature implements Comparable<Feature> {
     protected static final Random RANDOM = new Random();
     private final Location LOCATION;
     private final Vector2i SIZE_IN_BLOCKS;
     private final FeatureType FEATURE_TYPE;
+    private final int VARIANT;
 
     public Feature(Location location, Vector2i sizeInBlocks, FeatureType featureType) {
         float offsetX = 0, offsetY = 0;
@@ -29,6 +27,9 @@ public abstract class Feature implements Comparable<Feature> {
         this.LOCATION = location.add(offsetX, offsetY);
         this.SIZE_IN_BLOCKS = sizeInBlocks;
         this.FEATURE_TYPE = featureType;
+        this.VARIANT = Feature.RANDOM.nextInt(featureType.VARIANTS);
+
+        System.out.println(VARIANT);
     }
 
     public Location getLocation() {
@@ -41,6 +42,10 @@ public abstract class Feature implements Comparable<Feature> {
 
     public Vector2i getSize() {
         return new Vector2i(this.SIZE_IN_BLOCKS);
+    }
+
+    public int getVariant() {
+        return this.VARIANT;
     }
 
     public abstract Vector2i getRandomOffset();
@@ -62,26 +67,35 @@ public abstract class Feature implements Comparable<Feature> {
     }
 
     public enum FeatureType {
-        BUSH(new StaticTexture("assets/textures/feature/bush.png")),
-        TREE(new StaticTexture("assets/textures/feature/tree.png")),
-        TREE2(new StaticTexture("assets/textures/feature/tree2.png"));
+        FLOWER(
+                new StaticTexture("assets/textures/feature/flower/tulip.png"),
+                new StaticTexture("assets/textures/feature/flower/tulip2.png"),
+                new StaticTexture("assets/textures/feature/flower/blue_orchid.png"),
+                new StaticTexture("assets/textures/feature/flower/dandelion.png"),
+                new StaticTexture("assets/textures/feature/flower/red_lily.png")
+        ),
+        BUSH(
+                new StaticTexture("assets/textures/feature/bush.png")
+        ),
+        TREE(
+                new StaticTexture("assets/textures/feature/tree.png"),
+                new StaticTexture("assets/textures/feature/tree2.png")
+        );
 
         private WorldMesh mesh;
-        private final Texture TEXTURE;
+        private final List<Texture> TEXTURES;
+        private final int VARIANTS;
 
-        FeatureType(Texture texture) {
+        FeatureType(Texture... textures) {
             this.mesh = new WorldMesh(Main.WORLD.getSize() * Main.WORLD.getSize(), 2, 2, 1);
-            this.TEXTURE = texture;
+            this.TEXTURES = Arrays.asList(textures);
+            this.VARIANTS = textures.length;
         }
 
         public void updateMesh() {
             Set<Feature> features = Main.WORLD.getFeaturesMap().get(this);
             this.mesh = new WorldMesh(features.size(), 2, 2, 1);
-            features.forEach(feature -> {
-                int a = 1;
-                System.out.println(a);
-                mesh.addVertex(feature.getLocation().getX(), feature.getLocation().getY(), feature.getSize().x(), feature.getSize().y(), a);
-                });
+            features.forEach(feature -> mesh.addVertex(feature.getLocation().getX(), feature.getLocation().getY(), feature.getSize().x(), feature.getSize().y(), feature.VARIANT));
             this.mesh.load();
         }
 
@@ -89,8 +103,12 @@ public abstract class Feature implements Comparable<Feature> {
             return this.mesh;
         }
 
-        public Texture getTexture() {
-            return this.TEXTURE;
+        public List<Texture> getTextures() {
+            return new LinkedList<>(this.TEXTURES);
+        }
+
+        public int getVariants() {
+            return this.VARIANTS;
         }
     }
 }
