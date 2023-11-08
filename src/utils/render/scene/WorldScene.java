@@ -74,7 +74,7 @@ public class WorldScene extends Scene {
         //Generamos la estructura de widgets del inventario.
         this.INVENTORY.addWidget(new SeparatorWidget(20, 0));
         this.INVENTORY.addWidget(new SlotWidget(40, 4, Feature.FeatureType.TREE.getTexture()));
-        this.INVENTORY.addWidget(new TextWidget(40, 23, "kkkkkkkkk"));
+        this.INVENTORY.addWidget(new TextWidget(40, 23, "Hola buenos dias AaAAa"));
     }
 
     /**

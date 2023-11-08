@@ -3,6 +3,7 @@ package ui.widget;
 import org.lwjgl.opengl.ARBVertexArrayObject;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
+import utils.GameFont;
 import utils.render.Shader;
 import utils.render.mesh.Mesh;
 import utils.render.texture.Graphics2dTexture;
@@ -18,10 +19,10 @@ public class TextWidget extends Widget implements CustomDrawWidget {
 
     public TextWidget(float posX, float posY, String text) {
         super(posX, posY);
-        this.TEXT = new Graphics2dTexture((int) (this.getWidth() *100), (int) (this.getHeight() *100));
+        this.TEXT = new Graphics2dTexture((int) (this.getWidth()*100), (int) (this.getHeight()*100));
 
         Graphics2D graphics2D = this.TEXT.getGraphics();
-        graphics2D.setFont(new Font(Font.DIALOG, Font.BOLD, 1000));
+        graphics2D.setFont(GameFont.PIXEL.getFont(Font.PLAIN, 500));
         graphics2D.drawString(text, 0, this.getHeight() *100);
         this.TEXT.convert();
     }
