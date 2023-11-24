@@ -6,6 +6,8 @@ Shader de fragmentos común para los shaders WORLD y ENTITY. Dibuja la textura a
 
 
 uniform float uDaylight;
+uniform float uRotationAngle = 0;
+uniform float uScale = 1;
 uniform sampler2D textureSampler0;
 uniform sampler2D textureSampler1;
 uniform sampler2D textureSampler2;
@@ -26,6 +28,14 @@ vec4 calculateFog(sampler2D texture_sampler, vec2 uvCoords) {
 
     // Define el color de la niebla
     vec3 fogColor = vec3(0.1, 0.1, 0.1);
+
+    //Aplicamos la rotación
+    mat2 rotationMatrix = mat2(cos(uRotationAngle), -sin(uRotationAngle),
+                               sin(uRotationAngle), cos(uRotationAngle));
+    uvCoords = rotationMatrix * (uvCoords -0.5) +0.5;
+
+    //Aplicamos la escala. Usamos fract para asegurarnos de que las coordenadas UV estén en el rango 0..1.
+    uvCoords /= uScale;
 
     //Si el fragmento es trasparente no se aplica la nievla.
     vec4 fragmentColor = texture(texture_sampler, uvCoords);

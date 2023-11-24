@@ -16,6 +16,11 @@ public class AnimatedTexture extends Texture implements CacheTexture {
     private final String[] PATHS;
 
     /**
+     * Tipo de envoltura.
+     */
+    private final int PARAM;
+
+    /**
      * Identificador de cada uno de los frames de la textura.
      */
     private final int[] FRAMES;
@@ -35,8 +40,10 @@ public class AnimatedTexture extends Texture implements CacheTexture {
      * @param path Ruta al directorio que contiene todos los sprites. Cada sprite se llama con el índice (empezando por el 0) seguido de la extensión .png.
      * @param spriteCount Número de sprites que tiene la textura animada.
      * @param fps Número de frames que tiene que pasar para que pase al siguiente sprite.
+     * @param param Tipo de envoltura de la textura.
      */
-    public AnimatedTexture(String path, int spriteCount, int fps) {
+    public AnimatedTexture(String path, int spriteCount, int fps, int param) {
+        this.PARAM = param;
         this.FPS = fps;
         this.FRAMES = new int[spriteCount];
         this.PATHS = new String[spriteCount];
@@ -44,6 +51,17 @@ public class AnimatedTexture extends Texture implements CacheTexture {
         for (int sprite = 0; sprite < spriteCount; sprite++) {
             this.PATHS[sprite] = String.format("%s/%s.png", path, sprite);
         }
+    }
+
+    /**
+     * Establece la envoltura en <code>GL20.GL_CLAMP_TO_EDGE</code> por defecto.
+     * @param path Ruta al directorio que contiene todos los sprites. Cada sprite se llama con el índice (empezando por el 0) seguido de la extensión .png.
+     * @param spriteCount Número de sprites que tiene la textura animada.
+     * @param fps Número de frames que tiene que pasar para que pase al siguiente sprite.
+     * @see AnimatedTexture#AnimatedTexture(String, int, int, int)
+     */
+    public AnimatedTexture(String path, int spriteCount, int fps) {
+        this(path, spriteCount, fps, GL20.GL_CLAMP_TO_EDGE);
     }
 
     @Override
@@ -72,7 +90,7 @@ public class AnimatedTexture extends Texture implements CacheTexture {
     @Override
     public void init() {
         for (int sprite = 0; sprite < this.FRAMES.length; sprite++) {
-            this.FRAMES[sprite] = this.generateSprite(this.PATHS[sprite]);
+            this.FRAMES[sprite] = this.generateSprite(this.PATHS[sprite], this.PARAM);
         }
     }
 

@@ -17,6 +17,6 @@ public class Flower extends Feature {
 
     @Override
     public boolean canFeatureOverlapsWith(Feature feature) {
-        return feature instanceof Flower;
+        return false;
     }
 }

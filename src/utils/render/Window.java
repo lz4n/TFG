@@ -16,6 +16,9 @@ import utils.render.scene.Scene;
 import utils.render.scene.WorldScene;
 import utils.render.texture.Texture;
 import world.entity.Duck;
+import world.feature.Feature;
+import world.particle.BulldozerParticle;
+import world.particle.PositiveParticle;
 
 import java.util.Objects;
 
@@ -124,7 +127,7 @@ public class Window {
             GLFW.glfwSwapBuffers(window);
 
             if (dTime >= 0) {
-                Main.WORLD.onTick();
+                Main.WORLD.tick(dTime);
                 Window.currentScene.update(dTime);
                 GLFW.glfwSetWindowTitle(window, "EL PATO JUEGO");
             }
@@ -147,6 +150,10 @@ public class Window {
 
             if (KeyListener.isKeyPressed(GLFW.GLFW_KEY_E)) {
                 Main.WORLD.spawnEntity(new Duck(MouseListener.inGameLocation));
+            }
+
+            if (KeyListener.isKeyPressed(GLFW.GLFW_KEY_P)) {
+                Main.WORLD.spawnParticle(new BulldozerParticle(MouseListener.inGameLocation));
             }
 
             endTime = Time.getTimeInNanoseconds();

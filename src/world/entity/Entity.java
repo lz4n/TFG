@@ -6,10 +6,11 @@ import utils.render.mesh.EntityMesh;
 import utils.render.texture.StaticTexture;
 import utils.render.texture.Texture;
 import world.location.Location;
+import world.tick.Ticking;
 
 import java.util.Random;
 
-public abstract class Entity {
+public abstract class Entity extends Ticking {
     protected static final Random RANDOM = new Random();
 
     protected Location location;
@@ -31,8 +32,6 @@ public abstract class Entity {
     public EntityType getEntityType() {
         return this.ENTITY_TYPE;
     }
-
-    public abstract void tick();
 
     public enum EntityType {
         DUCK(new EntityMesh(new Vector2i(1, 1)), new StaticTexture("assets/textures/entity/duck.png"));

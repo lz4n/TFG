@@ -5,8 +5,12 @@ import org.joml.Vector2f;
 import org.lwjgl.glfw.GLFW;
 import utils.render.Window;
 import utils.render.scene.WorldScene;
+import world.feature.Feature;
 import world.feature.Tree;
 import world.location.Location;
+import world.particle.BulldozerParticle;
+import world.particle.NegativeParticle;
+import world.particle.PositiveParticle;
 
 /**
  * Listener para eventos de ratón. Registra la posición y si se está presionando algún botón del ratón.
@@ -75,7 +79,28 @@ public class MouseListener {
           if (button == GLFW.GLFW_MOUSE_BUTTON_1) {
               Window.currentScene.click((float) MouseListener.posX, (float) MouseListener.posY);
               if (MouseListener.inGameLocation.getFeature() == null) {
-                  Main.WORLD.addFeature(new Tree(MouseListener.inGameLocation.clone().truncate()));
+                  Feature selectedFeature = Main.WORLD.addFeature(new Tree(MouseListener.inGameLocation.clone().truncate()));
+                  if (selectedFeature != null) {
+                      for (int particles = 0; particles < selectedFeature.getSize().x() *selectedFeature.getSize().y() *5; particles++) {
+                          Main.WORLD.spawnParticle(new PositiveParticle(MouseListener.inGameLocation.clone().truncate().add(-0.5f, -0.5f).add(
+                                  Main.RANDOM.nextFloat(0, selectedFeature.getSize().x()),
+                                  Main.RANDOM.nextFloat(0, selectedFeature.getSize().y())
+                          )));
+                      }
+                  } else {
+                      Main.WORLD.spawnParticle(new NegativeParticle(MouseListener.inGameLocation.clone().add(-0.5f, -0.5f)));
+                  }
+              }
+          } else if (button == GLFW.GLFW_MOUSE_BUTTON_2) {
+              Feature selectedFeature = MouseListener.inGameLocation.getFeature();
+              if (selectedFeature != null) {
+                  Main.WORLD.removeFeature(selectedFeature);
+                  for (int particles = 0; particles < selectedFeature.getSize().x() *selectedFeature.getSize().y() *5; particles++) {
+                      Main.WORLD.spawnParticle(new BulldozerParticle(MouseListener.inGameLocation.clone().truncate().add(-0.5f, -0.5f).add(
+                              Main.RANDOM.nextFloat(0, selectedFeature.getSize().x()),
+                              Main.RANDOM.nextFloat(0, selectedFeature.getSize().y())
+                      )));
+                  }
               }
           }
       } else if (action == GLFW.GLFW_RELEASE) {

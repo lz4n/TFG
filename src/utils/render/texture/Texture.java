@@ -59,7 +59,7 @@ public abstract class Texture {
      * @param path ruta a la textura.
      * @return identificador numérico de la textura.
      */
-    protected final int generateSprite(String path) {
+    protected final int generateSprite(String path, int param) {
         IntBuffer width = BufferUtils.createIntBuffer(1), height = BufferUtils.createIntBuffer(1), channels = BufferUtils.createIntBuffer(1);
         ByteBuffer image;
         int textureId = GL20.glGenTextures();
@@ -75,8 +75,8 @@ public abstract class Texture {
         GL20.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_MAG_FILTER, GL20.GL_NEAREST);
 
         //Envoltura vertical y horizontal
-        GL20.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_WRAP_S, GL20.GL_REPEAT);
-        GL20.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_WRAP_T, GL20.GL_REPEAT);
+        GL20.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_WRAP_S, param);
+        GL20.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_WRAP_T, param);
 
         image = STBImage.stbi_load(path, width, height, channels, 0);
         if (image != null) {

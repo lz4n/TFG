@@ -28,8 +28,6 @@ public abstract class Feature implements Comparable<Feature> {
         this.SIZE_IN_BLOCKS = sizeInBlocks;
         this.FEATURE_TYPE = featureType;
         this.VARIANT = Feature.RANDOM.nextInt(featureType.VARIANTS);
-
-        System.out.println(VARIANT);
     }
 
     public Location getLocation() {
@@ -67,6 +65,9 @@ public abstract class Feature implements Comparable<Feature> {
     }
 
     public enum FeatureType {
+        ROCK(
+                new StaticTexture("assets/textures/feature/rock/rock.png")
+        ),
         FLOWER(
                 new StaticTexture("assets/textures/feature/flower/tulip.png"),
                 new StaticTexture("assets/textures/feature/flower/tulip2.png"),

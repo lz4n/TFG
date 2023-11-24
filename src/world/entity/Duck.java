@@ -9,7 +9,7 @@ public class Duck extends Entity {
     }
 
     @Override
-    public void tick() {
+    public void onTick(long deltaTime) {
         if (Entity.RANDOM.nextFloat() >= 0.7) {
             this.move(new Vector2f(Entity.RANDOM.nextFloat() -0.5f, Entity.RANDOM.nextFloat() -0.5f));
         }

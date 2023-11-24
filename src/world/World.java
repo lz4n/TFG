@@ -1,17 +1,18 @@
 package world;
 
 import main.Main;
+import org.joml.Vector2f;
 import utils.Logger;
 import world.entity.Entity;
-import world.feature.Bush;
-import world.feature.Feature;
-import world.feature.Flower;
-import world.feature.Tree;
+import world.feature.*;
 import world.location.Location;
+import world.particle.Particle;
 import world.terrain.Terrain;
+import world.tick.Ticking;
 import world.worldBuilder.Biome;
 import world.worldBuilder.WorldBuilder;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 public class World extends Thread {
@@ -25,6 +26,7 @@ public class World extends Thread {
     private final Feature[] FEATURES;
     private final Map<Feature.FeatureType, TreeSet<Feature>> FEATURES_MAP = new TreeMap<>();
     private final Map<Entity.EntityType, LinkedList<Entity>> ENTITITES_MAP = new HashMap<>();
+    private final List<Particle> PARTICLES_LIST = new LinkedList<>();
     private int dayTime, featuresCount, entitiesCount;
 
     public World(int seed, int worldSize) {
@@ -66,6 +68,10 @@ public class World extends Thread {
                 else if (World.RANDOM.nextFloat() >= 0.87) feature = new Bush(new Location(x, y + World.RANDOM.nextFloat() / 2));
                 else if (World.RANDOM.nextFloat() >= 0.75) feature = new Flower(new Location(x, y + World.RANDOM.nextFloat() / 4));
             }
+            case MOUNTAIN -> {
+                if (World.RANDOM.nextFloat() >= 0.98)
+                    feature = new Rock(new Location(x + World.RANDOM.nextFloat() / 4, y + World.RANDOM.nextFloat() / 6));
+            }
         }
         if (feature != null) {
             Main.WORLD.addFeature(feature, false);
@@ -95,14 +101,15 @@ public class World extends Thread {
         }
     }
 
-    public void addFeature(Feature feature, boolean updateMesh) {
+    public Feature addFeature(Feature feature, boolean updateMesh) {
         int posX = (int) feature.getLocation().getX(), posY = (int) feature.getLocation().getY();
         if (this.canFeatureOverlapsWithOtherFeature(feature)) {
             try {
-                for (int x = 0; x < feature.getSize().x(); x++)
+                for (int x = 0; x < feature.getSize().x(); x++) {
                     for (int y = 0; y < feature.getSize().y(); y++) {
-                        this.FEATURES[this.mapCoordinatesToIndex(posX +x, posY +y)] = feature;
+                        this.FEATURES[this.mapCoordinatesToIndex(posX + x, posY + y)] = feature;
                     }
+                }
                 Feature.FeatureType featureType = feature.getFeatureType();
                 TreeSet<Feature> featureSet = this.FEATURES_MAP.getOrDefault(featureType, new TreeSet<>());
                 featureSet.add(feature);
@@ -115,13 +122,54 @@ public class World extends Thread {
                 }
 
                 this.featuresCount++;
+                return feature;
             } catch (ArrayIndexOutOfBoundsException ignore) {
             }
         }
+        return null;
     }
 
-    public void addFeature(Feature feature) {
-        this.addFeature(feature, true);
+    public Feature addFeature(Feature feature) {
+        return this.addFeature(feature, true);
+    }
+
+    public void removeFeature(Feature feature) {
+        int posX = (int) feature.getLocation().getX(), posY = (int) feature.getLocation().getY();
+
+        try {
+            for (int x = -1; x <= feature.getSize().x(); x++) {
+                for (int y = -1; y <= feature.getSize().y(); y++) {
+                    this.removeOverlapping(posX +x, posY +y, feature);
+
+                }
+            }
+            Feature.FeatureType featureType = feature.getFeatureType();
+            TreeSet<Feature> featureSet = this.FEATURES_MAP.getOrDefault(featureType, new TreeSet<>());
+            featureSet.remove(feature);
+            this.FEATURES_MAP.put(featureType, featureSet);
+
+            featureType.updateMesh();
+
+            this.featuresCount--;
+        } catch (ArrayIndexOutOfBoundsException ignore) {
+        }
+    }
+
+    private void removeOverlapping(int posX, int posY, Feature origninalFeature) {
+        Feature overlapsFeature = this.getFeature(posX, posY);
+        if (overlapsFeature != null) {
+            if (overlapsFeature == origninalFeature) {
+                this.FEATURES[this.mapCoordinatesToIndex(posX, posY)] = null;
+            } else {
+                for (int overlapsX = posX; overlapsX < posX +overlapsFeature.getSize().x(); overlapsX++) {
+                    for (int overlapsY = posY; overlapsY < posY +overlapsFeature.getSize().y(); overlapsY++) {
+                        if (this.FEATURES[this.mapCoordinatesToIndex(overlapsX, overlapsY)] == null) {
+                            this.FEATURES[this.mapCoordinatesToIndex(overlapsX, overlapsY)] = overlapsFeature;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     public boolean canFeatureOverlapsWithOtherFeature(Feature feature) {
@@ -142,6 +190,15 @@ public class World extends Thread {
         this.ENTITITES_MAP.put(entityType, entitiesList);
 
         this.entitiesCount++;
+    }
+
+    public void spawnParticle(Particle particle) {
+        this.PARTICLES_LIST.add(particle);
+    }
+
+    public void removeParticle(Particle particle) {
+        this.PARTICLES_LIST.remove(particle);
+        particle.removeTicking();
     }
 
     public int getSeed() {
@@ -184,17 +241,17 @@ public class World extends Thread {
         return new HashMap<>(this.ENTITITES_MAP);
     }
 
-    public void onTick() {
+    public List<Particle> getParticlesList() {
+        return new LinkedList<>(this.PARTICLES_LIST);
+    }
+
+    public void tick(long deltaTime) {
         dayTime++;
         if (dayTime > World.DAY_DURATION) {
             Logger.sendMessage("DÍA", Logger.LogMessageType.DEBUG);
             dayTime = 0;
         }
 
-        this.getEntitiesMap().forEach(((entityType, entities) -> {
-            entities.forEach(entity -> {
-                entity.tick();
-            });
-        }));
+        Ticking.getTickableObjets().forEach(tickable -> tickable.onTick(deltaTime));
     }
 }

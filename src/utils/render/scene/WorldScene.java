@@ -22,11 +22,13 @@ import world.WorldGenerator;
 import world.entity.Entity;
 import world.feature.Feature;
 import world.location.Location;
+import world.particle.BulldozerParticle;
+import world.particle.NegativeParticle;
+import world.particle.Particle;
+import world.particle.PositiveParticle;
 import world.terrain.Terrain;
 
 import java.awt.*;
-import java.util.Arrays;
-import java.util.Random;
 
 /**
  * Escena encargada de renderizar el mundo.
@@ -60,7 +62,7 @@ public class WorldScene extends Scene {
      */
     private final HUDMesh HUD_MESH = new HUDMesh();
 
-    private final Texture WORLD_BORDER_TEXTURE = new AnimatedTexture("assets/textures/terrain/border", 5, 5);
+    private final Texture WORLD_BORDER_TEXTURE = new AnimatedTexture("assets/textures/terrain/border", 5, 5, GL20.GL_REPEAT);
     private final WorldMesh WORLD_BORDER_MESH = new WorldMesh(1, 2, 2);
 
     /**
@@ -126,6 +128,9 @@ public class WorldScene extends Scene {
         for (Entity.EntityType entityType: Entity.EntityType.values()) {
             entityType.getMesh().load();
         }
+        new BulldozerParticle(new Location(0, 0)).getMesh().load();
+        new NegativeParticle(new Location(0, 0)).getMesh().load();
+        new PositiveParticle(new Location(0, 0)).getMesh().load();
     }
 
     /**
@@ -197,6 +202,15 @@ public class WorldScene extends Scene {
             Texture.unbind();
         }
 
+        for (Particle particle: Main.WORLD.getParticlesList()) {
+            particle.getTexture().bind();
+            Shader.ENTITY.upload2f("uInstancePosition", particle.getLocation().getX() * WorldScene.SPRITE_SIZE, particle.getLocation().getY() * WorldScene.SPRITE_SIZE);
+            Shader.ENTITY.uploadFloat("uRotationAngle", particle.getRotation());
+            Shader.ENTITY.uploadFloat("uScale", particle.getScale());
+            particle.getMesh().draw();
+            Texture.unbind();
+        }
+
         //Dibujamos el selector del ratón
         if (!MouseListener.inGameLocation.isOutOfTheWorld()) {
             Shader.WORLD.use();
@@ -232,7 +246,7 @@ public class WorldScene extends Scene {
                             world:
                                 seed=%d
                                 daytime=%d
-                                features = %d, entities = %d
+                                features = %d, entities = %d, particles = %d
                             """,
                     (int) (1/ Time.nanosecondsToSeconds(dTime)),
                     MouseListener.inGameLocation.getX(),
@@ -259,7 +273,8 @@ public class WorldScene extends Scene {
                     Main.WORLD.getSeed(),
                     Main.WORLD.getDayTime(),
                     Main.WORLD.getFeaturesCount(),
-                    Main.WORLD.getEntitiesCount());
+                    Main.WORLD.getEntitiesCount(),
+                    Main.WORLD.getParticlesList().size());
             Graphics2dTexture texture = new Graphics2dTexture(Window.getWidth() / 2, Window.getHeight());
             Graphics2D graphics2D = texture.getGraphics();
             int posY = 10;
