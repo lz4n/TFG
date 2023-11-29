@@ -15,6 +15,7 @@ import utils.Logger;
 import utils.Time;
 import utils.render.scene.Scene;
 import utils.render.scene.WorldScene;
+import utils.render.texture.AnimatedTexture;
 import utils.render.texture.CacheTexture;
 import utils.render.texture.Texture;
 import utils.render.texture.Textures;
@@ -23,6 +24,7 @@ import world.feature.Feature;
 import world.particle.BulldozerParticle;
 import world.particle.PositiveParticle;
 
+import java.lang.ref.PhantomReference;
 import java.lang.reflect.Field;
 import java.util.Objects;
 
@@ -67,7 +69,7 @@ public class Window {
             } catch (IllegalAccessException | ClassCastException ignore) {}
         }
 
-        loop();
+        Window.loop();
 
         //Liberamos memoria
         Callbacks.glfwFreeCallbacks(window);
@@ -149,6 +151,7 @@ public class Window {
             GLFW.glfwSwapBuffers(window);
 
             if (dTime >= 0) {
+                AnimatedTexture.animate();
                 Main.WORLD.tick(dTime);
                 Window.currentScene.update(dTime);
                 GLFW.glfwSetWindowTitle(window, "EL PATO JUEGO");
@@ -176,6 +179,16 @@ public class Window {
 
             if (KeyListener.isKeyPressed(GLFW.GLFW_KEY_P)) {
                 Main.WORLD.spawnParticle(new BulldozerParticle(MouseListener.inGameLocation));
+            }
+
+            if (currentScene instanceof WorldScene worldScene) {
+                if (KeyListener.isKeyPressed(GLFW.GLFW_KEY_RIGHT)) {
+                    worldScene.INVENTORY.currentSliderPosX -= 0.7f;
+                }
+
+                if (KeyListener.isKeyPressed(GLFW.GLFW_KEY_LEFT)) {
+                    worldScene.INVENTORY.currentSliderPosX += 0.7f;
+                }
             }
 
             endTime = Time.getTimeInNanoseconds();

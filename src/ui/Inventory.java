@@ -31,6 +31,8 @@ public class Inventory {
      */
     private float posY;
 
+    public float currentSliderPosX = 0;
+
     /**
      * Píxeles de patalla que ocupa un pixel de la interfaz in-game.
      */
@@ -75,8 +77,9 @@ public class Inventory {
         GL20.glDisableVertexAttribArray(0);
         ARBVertexArrayObject.glBindVertexArray(0);
 
+
         this.WIDGETS.forEach(widget -> {
-            Shader.HUD.upload2f("uHudPosition", this.pixelSizeInScreen * widget.getPosX(), this.pixelSizeInScreen * widget.getPosY() + this.posY);
+            Shader.HUD.upload2f("uHudPosition", this.pixelSizeInScreen * (widget.getPosX() + this.currentSliderPosX), this.pixelSizeInScreen * widget.getPosY() + this.posY);
             Shader.HUD.upload2f("uHudSize", this.pixelSizeInScreen * widget.getWidth(), this.pixelSizeInScreen * widget.getHeight());
 
             widget.getTexture().bind();
@@ -88,7 +91,7 @@ public class Inventory {
             widget.getTexture().bind();
 
             if (widget instanceof CustomDrawWidget customDrawWidget) {
-                customDrawWidget.draw(mesh, this.pixelSizeInScreen, this.pixelSizeInScreen * widget.getPosX(), this.pixelSizeInScreen * widget.getPosY() + this.posY, this.pixelSizeInScreen * widget.getWidth(), this.pixelSizeInScreen * widget.getHeight());
+                customDrawWidget.draw(mesh, this.pixelSizeInScreen, this.pixelSizeInScreen * (widget.getPosX() + this.currentSliderPosX), this.pixelSizeInScreen * widget.getPosY() + this.posY, this.pixelSizeInScreen * widget.getWidth(), this.pixelSizeInScreen * widget.getHeight());
             }
         });
     }
@@ -112,7 +115,7 @@ public class Inventory {
      * @param mouseY Posición en el eje Y del ratón, en píxeles de pantalla.
      */
     public void click(float mouseX, float mouseY) {
-        float interfaceX = mouseX / this.pixelSizeInScreen;
+        float interfaceX = (mouseX / this.pixelSizeInScreen) - this.currentSliderPosX;
         float interfaceY = (mouseY - this.posY) / this.pixelSizeInScreen;
 
         this.CLICKABLE_WIDGETS.forEach(clickableWidget -> {
