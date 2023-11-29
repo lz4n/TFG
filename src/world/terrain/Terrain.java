@@ -44,12 +44,12 @@ public class Terrain {
     }
 
     public enum TerrainType {
-        WATER(Textures.WATER.getTexture(), false),
-        GRASS(Textures.GRASS.getTexture(), true),
-        SAND(Textures.SAND.getTexture(), true),
-        STONE(Textures.STONE.getTexture(), true),
-        SNOW(Textures.SNOW.getTexture(), true),
-        GRAVEL(Textures.GRAVEL.getTexture(), true);
+        WATER(Textures.WATER, false),
+        GRASS(Textures.GRASS, true),
+        SAND(Textures.SAND, true),
+        STONE(Textures.STONE, true),
+        SNOW(Textures.SNOW, true),
+        GRAVEL(Textures.GRAVEL, true);
 
         private final WorldMesh MESH;
         private final Texture TEXTURE;

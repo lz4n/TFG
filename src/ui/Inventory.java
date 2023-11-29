@@ -68,7 +68,7 @@ public class Inventory {
         Shader.HUD.upload2f("uHudPosition", 0, this.posY);
         Shader.HUD.upload2f("uHudSize", this.width, this.height);
 
-        Textures.CONTAINER.getTexture().bind();
+        Textures.CONTAINER.bind();
         ARBVertexArrayObject.glBindVertexArray(mesh.getVaoId());
         GL20.glEnableVertexAttribArray(0);
         GL20.glDrawElements(GL20.GL_TRIANGLES, mesh.getElementArray().length, GL11.GL_UNSIGNED_INT, 0);

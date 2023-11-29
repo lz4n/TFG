@@ -6,10 +6,10 @@ import org.joml.Vector2i;
 import utils.render.mesh.EntityMesh;
 import utils.render.texture.StaticTexture;
 import utils.render.texture.Texture;
+import utils.render.texture.Textures;
 import world.location.Location;
 
 public class PositiveParticle extends AbstractPhysicsParticle {
-    private static final Texture TEXTURE = new StaticTexture("assets/textures/particle/positive.png");
     private static final EntityMesh MESH = new EntityMesh(new Vector2i(1, 1));
 
     public PositiveParticle(Location location) {
@@ -29,7 +29,7 @@ public class PositiveParticle extends AbstractPhysicsParticle {
 
     @Override
     public Texture getTexture() {
-        return PositiveParticle.TEXTURE;
+        return Textures.POSITIVE_PARTICLE;
     }
 
     @Override

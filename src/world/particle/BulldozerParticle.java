@@ -6,10 +6,10 @@ import org.joml.Vector2i;
 import utils.render.mesh.EntityMesh;
 import utils.render.texture.StaticTexture;
 import utils.render.texture.Texture;
+import utils.render.texture.Textures;
 import world.location.Location;
 
 public class BulldozerParticle extends AbstractPhysicsParticle {
-    private static final Texture TEXTURE = new StaticTexture("assets/textures/particle/bulldozer.png");
     private static final EntityMesh MESH = new EntityMesh(new Vector2i(1, 1));
 
     public BulldozerParticle(Location location) {
@@ -31,7 +31,7 @@ public class BulldozerParticle extends AbstractPhysicsParticle {
 
     @Override
     public Texture getTexture() {
-        return BulldozerParticle.TEXTURE;
+        return Textures.BULLDOZER_PARTICLE;
     }
 
     @Override

@@ -23,6 +23,7 @@ import world.feature.Feature;
 import world.particle.BulldozerParticle;
 import world.particle.PositiveParticle;
 
+import java.lang.reflect.Field;
 import java.util.Objects;
 
 /**
@@ -55,9 +56,15 @@ public class Window {
         currentScene.init();
 
         //Cargamos las texturas a la caché de texuras
-        for (Textures texture: Textures.values()) if (texture.getTexture() instanceof CacheTexture) {
-            ((CacheTexture) texture.getTexture()).init();
-            Logger.sendMessage("Se ha generado la textura %s: %s.", Logger.LogMessageType.INFO, texture.getTexture().getTextureId(), texture.getTexture());
+        Texture texture;
+        for (Field field: Textures.class.getDeclaredFields()) {
+            try {
+                texture = (Texture) field.get(new Object());
+                if (texture instanceof CacheTexture) {
+                    ((CacheTexture) texture).init();
+                    Logger.sendMessage("Se ha generado la textura %s: %s.", Logger.LogMessageType.INFO, texture.getTextureId(), texture);
+                }
+            } catch (IllegalAccessException | ClassCastException ignore) {}
         }
 
         loop();
@@ -68,9 +75,14 @@ public class Window {
         GLFW.glfwTerminate();
         Objects.requireNonNull(GLFW.glfwSetErrorCallback(null)).free();
 
-        for (Textures texture: Textures.values()) if (texture.getTexture() instanceof CacheTexture) {
-            ((CacheTexture) texture.getTexture()).remove();
-            Logger.sendMessage("Se ha eliminado la textura %s: %s.", Logger.LogMessageType.INFO, texture.getTexture().getTextureId(), texture.getTexture());
+        for (Field field: Textures.class.getDeclaredFields()) {
+            try {
+                texture = (Texture) field.get(new Object());
+                if (texture instanceof CacheTexture) {
+                    ((CacheTexture) texture).remove();
+                    Logger.sendMessage("Se ha eliminado la textura %s: %s.", Logger.LogMessageType.INFO, texture.getTextureId(), texture);
+                }
+            } catch (IllegalAccessException | ClassCastException exception) {}
         }
     }
 

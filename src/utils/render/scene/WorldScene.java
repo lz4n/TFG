@@ -147,7 +147,7 @@ public class WorldScene extends Scene {
         Shader.WORLD.uploadInt("customTextureUnit", 0);
         Shader.WORLD.uploadInt("textureSampler0", 0);
         Shader.WORLD.uploadInt("repeatingTimes", 502);
-        Textures.WORLD_BORDER.getTexture().bind();
+        Textures.WORLD_BORDER.bind();
         this.WORLD_BORDER_MESH.draw();
         Texture.unbind();
         Shader.WORLD.uploadInt("repeatingTimes", 1);
@@ -207,7 +207,7 @@ public class WorldScene extends Scene {
             Shader.WORLD.use();
             Shader.WORLD.uploadMatrix4f("uProjection", CAMERA.getProjectionMatrix());
             Shader.WORLD.uploadMatrix4f("uView", CAMERA.getViewMatrix());
-            Textures.SELECTOR.getTexture().bind();
+            Textures.SELECTOR.bind();
             this.MOUSE_SELECTION_MESH.draw();
             Texture.unbind();
         }

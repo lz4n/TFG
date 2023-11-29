@@ -4,10 +4,11 @@ import org.joml.Vector2i;
 import utils.render.mesh.EntityMesh;
 import utils.render.texture.StaticTexture;
 import utils.render.texture.Texture;
+import utils.render.texture.Textures;
 import world.location.Location;
 
 public class NegativeParticle extends Particle {
-    private static final Texture TEXTURE = new StaticTexture("assets/textures/particle/negative.png");
+    private static final Texture TEXTURE = Textures.NEGATIVE_PARTICLE;
     private static final EntityMesh MESH = new EntityMesh(new Vector2i(1, 1));
 
     public NegativeParticle(Location location) {

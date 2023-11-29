@@ -5,6 +5,7 @@ import org.joml.Vector2i;
 import utils.render.mesh.EntityMesh;
 import utils.render.texture.StaticTexture;
 import utils.render.texture.Texture;
+import utils.render.texture.Textures;
 import world.location.Location;
 import world.tick.Ticking;
 
@@ -34,7 +35,7 @@ public abstract class Entity extends Ticking {
     }
 
     public enum EntityType {
-        DUCK(new EntityMesh(new Vector2i(1, 1)), new StaticTexture("assets/textures/entity/duck.png"));
+        DUCK(new EntityMesh(new Vector2i(1, 1)), Textures.DUCK);
 
         private final EntityMesh MESH;
         private final Texture TEXTURE;
