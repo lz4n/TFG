@@ -3,6 +3,8 @@ package utils.render.texture;
 import org.lwjgl.opengl.GL20;
 
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Representa una textura animada que cambia su sprite según el tiempo.
@@ -10,6 +12,8 @@ import java.util.Arrays;
  * @author Izan
  */
 public class AnimatedTexture extends Texture implements CacheTexture {
+    private static final List<AnimatedTexture> ANIMATED_TEXTURES_LIST = new LinkedList<>();
+
     /**
      * Dirección de cada una de las texturas de los frames.
      */
@@ -42,7 +46,7 @@ public class AnimatedTexture extends Texture implements CacheTexture {
      * @param fps Número de frames que tiene que pasar para que pase al siguiente sprite.
      * @param param Tipo de envoltura de la textura.
      */
-    public AnimatedTexture(String path, int spriteCount, int fps, int param) {
+    protected AnimatedTexture(String path, int spriteCount, int fps, int param) {
         this.PARAM = param;
         this.FPS = fps;
         this.FRAMES = new int[spriteCount];
@@ -51,6 +55,8 @@ public class AnimatedTexture extends Texture implements CacheTexture {
         for (int sprite = 0; sprite < spriteCount; sprite++) {
             this.PATHS[sprite] = String.format("%s/%s.png", path, sprite);
         }
+
+        AnimatedTexture.ANIMATED_TEXTURES_LIST.add(this);
     }
 
     /**
@@ -60,7 +66,7 @@ public class AnimatedTexture extends Texture implements CacheTexture {
      * @param fps Número de frames que tiene que pasar para que pase al siguiente sprite.
      * @see AnimatedTexture#AnimatedTexture(String, int, int, int)
      */
-    public AnimatedTexture(String path, int spriteCount, int fps) {
+    protected AnimatedTexture(String path, int spriteCount, int fps) {
         this(path, spriteCount, fps, GL20.GL_CLAMP_TO_EDGE);
     }
 
@@ -77,12 +83,7 @@ public class AnimatedTexture extends Texture implements CacheTexture {
     }
 
     @Override
-    public void bind(int unit){
-        this.currentSprite++;
-        if (this.currentSprite / this.FPS >= this.FRAMES.length) {
-            this.currentSprite = 0;
-        }
-
+    public void bind(int unit) {
         super.bind(unit);
         GL20.glBindTexture(GL20.GL_TEXTURE_2D, this.getTextureId());
     }
@@ -97,5 +98,14 @@ public class AnimatedTexture extends Texture implements CacheTexture {
     @Override
     public String toString() {
         return String.format("AnimatedTexture(paths=%s)", Arrays.toString(this.PATHS));
+    }
+
+    public static void animate() {
+        AnimatedTexture.ANIMATED_TEXTURES_LIST.forEach(animatedTexture -> {
+            animatedTexture.currentSprite++;
+            if (animatedTexture.currentSprite / animatedTexture.FPS >= animatedTexture.FRAMES.length) {
+                animatedTexture.currentSprite = 0;
+            }
+        });
     }
 }

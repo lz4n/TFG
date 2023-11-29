@@ -14,10 +14,7 @@ import org.joml.Vector2f;
 import org.lwjgl.opengl.*;
 import utils.render.Camera;
 import utils.render.Shader;
-import utils.render.texture.AnimatedTexture;
-import utils.render.texture.Graphics2dTexture;
-import utils.render.texture.StaticTexture;
-import utils.render.texture.Texture;
+import utils.render.texture.*;
 import world.WorldGenerator;
 import world.entity.Entity;
 import world.feature.Feature;
@@ -47,11 +44,6 @@ public class WorldScene extends Scene {
     public static Camera CAMERA = new Camera(new Vector2f(0, 0)); //Iniciamos la cámara en 0,0.
 
     /**
-     * Textura del selector del ratón
-     */
-    private static final Texture MOUSE_TEXTURE = new StaticTexture("assets/textures/ui/selector.png");
-
-    /**
      * <code>Mesh</code> utilizado para el selector del ratón.
      * @see Mesh
      */
@@ -62,13 +54,12 @@ public class WorldScene extends Scene {
      */
     private final HUDMesh HUD_MESH = new HUDMesh();
 
-    private final Texture WORLD_BORDER_TEXTURE = new AnimatedTexture("assets/textures/terrain/border", 5, 5, GL20.GL_REPEAT);
     private final WorldMesh WORLD_BORDER_MESH = new WorldMesh(1, 2, 2);
 
     /**
      * Inventario del jugador en la escena.
      */
-    private final Inventory INVENTORY = new Inventory();
+    public final Inventory INVENTORY = new Inventory();
 
     @Override
     public void init() {
@@ -92,7 +83,28 @@ public class WorldScene extends Scene {
 
         //Generamos la estructura de widgets del inventario.
         this.INVENTORY.addWidget(new SeparatorWidget(20, 0));
-        this.INVENTORY.addWidget(new SlotWidget(40, 4, Feature.FeatureType.TREE.getTextures().get(0)));
+        this.INVENTORY.addWidget(new SlotWidget(40, 4, Textures.DUCK));
+        this.INVENTORY.addWidget(new SlotWidget(60, 4, Textures.TULIP));
+        this.INVENTORY.addWidget(new SlotWidget(80, 4, Textures.TULIP_2));
+        this.INVENTORY.addWidget(new SlotWidget(100, 4, Textures.BLUE_ORCHID));
+        this.INVENTORY.addWidget(new SlotWidget(120, 4, Textures.DANDELION));
+        this.INVENTORY.addWidget(new SlotWidget(140, 4, Textures.RED_LILY));
+        this.INVENTORY.addWidget(new SlotWidget(160, 4, Textures.TREE1));
+        this.INVENTORY.addWidget(new SlotWidget(180, 4, Textures.TREE2));
+        this.INVENTORY.addWidget(new SlotWidget(200, 4, Textures.POSITIVE_PARTICLE));
+        this.INVENTORY.addWidget(new SlotWidget(220, 4, Textures.NEGATIVE_PARTICLE));
+        this.INVENTORY.addWidget(new SlotWidget(240, 4, Textures.BULLDOZER_PARTICLE));
+        this.INVENTORY.addWidget(new SlotWidget(260, 4, Textures.WORLD_BORDER));
+        this.INVENTORY.addWidget(new SlotWidget(280, 4, Textures.GRASS));
+        this.INVENTORY.addWidget(new SlotWidget(300, 4, Textures.SAND));
+        this.INVENTORY.addWidget(new SlotWidget(320, 4, Textures.GRAVEL));
+        this.INVENTORY.addWidget(new SlotWidget(340, 4, Textures.STONE));
+        this.INVENTORY.addWidget(new SlotWidget(360, 4, Textures.SNOW));
+        this.INVENTORY.addWidget(new SlotWidget(380, 4, Textures.WATER));
+        this.INVENTORY.addWidget(new SlotWidget(400, 4, Textures.ROCK));
+        this.INVENTORY.addWidget(new SlotWidget(420, 4, Textures.SELECTOR));
+        this.INVENTORY.addWidget(new SlotWidget(440, 4, Textures.BUSH));
+
         this.INVENTORY.addWidget(new TextWidget(40, 23, "kkkkkkkkk"));
     }
 
@@ -156,7 +168,7 @@ public class WorldScene extends Scene {
         Shader.WORLD.uploadInt("customTextureUnit", 0);
         Shader.WORLD.uploadInt("textureSampler0", 0);
         Shader.WORLD.uploadInt("repeatingTimes", 502);
-        this.WORLD_BORDER_TEXTURE.bind();
+        Textures.WORLD_BORDER.bind();
         this.WORLD_BORDER_MESH.draw();
         Texture.unbind();
         Shader.WORLD.uploadInt("repeatingTimes", 1);
@@ -216,7 +228,7 @@ public class WorldScene extends Scene {
             Shader.WORLD.use();
             Shader.WORLD.uploadMatrix4f("uProjection", CAMERA.getProjectionMatrix());
             Shader.WORLD.uploadMatrix4f("uView", CAMERA.getViewMatrix());
-            WorldScene.MOUSE_TEXTURE.bind();
+            Textures.SELECTOR.bind();
             this.MOUSE_SELECTION_MESH.draw();
             Texture.unbind();
         }

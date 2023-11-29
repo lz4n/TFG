@@ -12,6 +12,7 @@ import utils.render.Window;
 import utils.render.mesh.Mesh;
 import utils.render.texture.StaticTexture;
 import utils.render.texture.Texture;
+import utils.render.texture.Textures;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -21,11 +22,6 @@ import java.util.List;
  */
 public class Inventory {
     /**
-     * Textura del contenedor del inventario. La textura se deforma en el eje X para que ocupe el espacio necesario.
-     */
-    public static final Texture CONTAINER = new StaticTexture("assets/textures/ui/inventory/container.png");
-
-    /**
      * Dimensiones del inventario, en unidades in-game, no píxeles de pantalla.
      */
     private float width, height;
@@ -34,6 +30,8 @@ public class Inventory {
      * Posición del inventario en el eje Y. Se cuenta de arriba a abajo.
      */
     private float posY;
+
+    public float currentSliderPosX = 0;
 
     /**
      * Píxeles de patalla que ocupa un pixel de la interfaz in-game.
@@ -72,16 +70,16 @@ public class Inventory {
         Shader.HUD.upload2f("uHudPosition", 0, this.posY);
         Shader.HUD.upload2f("uHudSize", this.width, this.height);
 
-        Inventory.CONTAINER.bind();
+        Textures.CONTAINER.bind();
         ARBVertexArrayObject.glBindVertexArray(mesh.getVaoId());
         GL20.glEnableVertexAttribArray(0);
         GL20.glDrawElements(GL20.GL_TRIANGLES, mesh.getElementArray().length, GL11.GL_UNSIGNED_INT, 0);
         GL20.glDisableVertexAttribArray(0);
         ARBVertexArrayObject.glBindVertexArray(0);
-        Inventory.CONTAINER.bind();
+
 
         this.WIDGETS.forEach(widget -> {
-            Shader.HUD.upload2f("uHudPosition", this.pixelSizeInScreen * widget.getPosX(), this.pixelSizeInScreen * widget.getPosY() + this.posY);
+            Shader.HUD.upload2f("uHudPosition", this.pixelSizeInScreen * (widget.getPosX() + this.currentSliderPosX), this.pixelSizeInScreen * widget.getPosY() + this.posY);
             Shader.HUD.upload2f("uHudSize", this.pixelSizeInScreen * widget.getWidth(), this.pixelSizeInScreen * widget.getHeight());
 
             widget.getTexture().bind();
@@ -93,7 +91,7 @@ public class Inventory {
             widget.getTexture().bind();
 
             if (widget instanceof CustomDrawWidget customDrawWidget) {
-                customDrawWidget.draw(mesh, this.pixelSizeInScreen, this.pixelSizeInScreen * widget.getPosX(), this.pixelSizeInScreen * widget.getPosY() + this.posY, this.pixelSizeInScreen * widget.getWidth(), this.pixelSizeInScreen * widget.getHeight());
+                customDrawWidget.draw(mesh, this.pixelSizeInScreen, this.pixelSizeInScreen * (widget.getPosX() + this.currentSliderPosX), this.pixelSizeInScreen * widget.getPosY() + this.posY, this.pixelSizeInScreen * widget.getWidth(), this.pixelSizeInScreen * widget.getHeight());
             }
         });
     }
@@ -117,7 +115,7 @@ public class Inventory {
      * @param mouseY Posición en el eje Y del ratón, en píxeles de pantalla.
      */
     public void click(float mouseX, float mouseY) {
-        float interfaceX = mouseX / this.pixelSizeInScreen;
+        float interfaceX = (mouseX / this.pixelSizeInScreen) - this.currentSliderPosX;
         float interfaceY = (mouseY - this.posY) / this.pixelSizeInScreen;
 
         this.CLICKABLE_WIDGETS.forEach(clickableWidget -> {

@@ -5,6 +5,7 @@ import org.joml.Vector2i;
 import utils.render.mesh.WorldMesh;
 import utils.render.texture.StaticTexture;
 import utils.render.texture.Texture;
+import utils.render.texture.Textures;
 import world.location.Location;
 
 import java.util.*;
@@ -66,21 +67,21 @@ public abstract class Feature implements Comparable<Feature> {
 
     public enum FeatureType {
         ROCK(
-                new StaticTexture("assets/textures/feature/rock/rock.png")
+                Textures.ROCK
         ),
         FLOWER(
-                new StaticTexture("assets/textures/feature/flower/tulip.png"),
-                new StaticTexture("assets/textures/feature/flower/tulip2.png"),
-                new StaticTexture("assets/textures/feature/flower/blue_orchid.png"),
-                new StaticTexture("assets/textures/feature/flower/dandelion.png"),
-                new StaticTexture("assets/textures/feature/flower/red_lily.png")
+                Textures.TULIP,
+                Textures.TULIP_2,
+                Textures.BLUE_ORCHID,
+                Textures.DANDELION,
+                Textures.RED_LILY
         ),
         BUSH(
-                new StaticTexture("assets/textures/feature/bush.png")
+                Textures.BUSH
         ),
         TREE(
-                new StaticTexture("assets/textures/feature/tree.png"),
-                new StaticTexture("assets/textures/feature/tree2.png")
+                Textures.TREE1,
+                Textures.TREE2
         );
 
         private WorldMesh mesh;

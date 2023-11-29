@@ -8,12 +8,11 @@ import utils.render.mesh.Mesh;
 import utils.render.texture.Graphics2dTexture;
 import utils.render.texture.StaticTexture;
 import utils.render.texture.Texture;
+import utils.render.texture.Textures;
 
 import java.awt.*;
 
 public class TextWidget extends Widget implements CustomDrawWidget {
-    private final static Texture TEXTURE = new StaticTexture("assets/textures/ui/inventory/text_field.png");
-
     private final Graphics2dTexture TEXT;
 
     public TextWidget(float posX, float posY, String text) {
@@ -38,7 +37,7 @@ public class TextWidget extends Widget implements CustomDrawWidget {
 
     @Override
     public Texture getTexture() {
-        return TextWidget.TEXTURE;
+        return Textures.TEXT_WIDGET;
     }
 
     @Override

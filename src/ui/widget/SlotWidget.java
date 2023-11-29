@@ -8,12 +8,9 @@ import utils.render.Shader;
 import utils.render.mesh.Mesh;
 import utils.render.texture.StaticTexture;
 import utils.render.texture.Texture;
+import utils.render.texture.Textures;
 
 public class SlotWidget extends Widget implements CustomDrawWidget, ClickableWidget {
-
-    private static final Texture SELECTED_SLOT = new StaticTexture("assets/textures/ui/inventory/selected_slot.png"),
-        UNSELECTED_SLOT = new StaticTexture("assets/textures/ui/inventory/unselected_slot.png");
-
     private final Texture CONTENT;
     private boolean isSelected = false;
 
@@ -34,7 +31,7 @@ public class SlotWidget extends Widget implements CustomDrawWidget, ClickableWid
 
     @Override
     public Texture getTexture() {
-        return this.isSelected?SlotWidget.SELECTED_SLOT:SlotWidget.UNSELECTED_SLOT;
+        return this.isSelected? Textures.SELECTED_SLOT_WIDGET :Textures.UNSELECTED_SLOT_WIDGET;
     }
 
     @Override

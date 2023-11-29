@@ -11,15 +11,21 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryUtil;
+import utils.Logger;
 import utils.Time;
 import utils.render.scene.Scene;
 import utils.render.scene.WorldScene;
+import utils.render.texture.AnimatedTexture;
+import utils.render.texture.CacheTexture;
 import utils.render.texture.Texture;
+import utils.render.texture.Textures;
 import world.entity.Duck;
 import world.feature.Feature;
 import world.particle.BulldozerParticle;
 import world.particle.PositiveParticle;
 
+import java.lang.ref.PhantomReference;
+import java.lang.reflect.Field;
 import java.util.Objects;
 
 /**
@@ -52,16 +58,34 @@ public class Window {
         currentScene.init();
 
         //Cargamos las texturas a la caché de texuras
-        Texture.initCacheTextures();
+        Texture texture;
+        for (Field field: Textures.class.getDeclaredFields()) {
+            try {
+                texture = (Texture) field.get(new Object());
+                if (texture instanceof CacheTexture) {
+                    ((CacheTexture) texture).init();
+                    Logger.sendMessage("Se ha generado la textura %s: %s.", Logger.LogMessageType.INFO, texture.getTextureId(), texture);
+                }
+            } catch (IllegalAccessException | ClassCastException ignore) {}
+        }
 
-        loop();
+        Window.loop();
 
         //Liberamos memoria
         Callbacks.glfwFreeCallbacks(window);
         GLFW.glfwDestroyWindow(window);
         GLFW.glfwTerminate();
         Objects.requireNonNull(GLFW.glfwSetErrorCallback(null)).free();
-        Texture.removeCacheTextures();
+
+        for (Field field: Textures.class.getDeclaredFields()) {
+            try {
+                texture = (Texture) field.get(new Object());
+                if (texture instanceof CacheTexture) {
+                    ((CacheTexture) texture).remove();
+                    Logger.sendMessage("Se ha eliminado la textura %s: %s.", Logger.LogMessageType.INFO, texture.getTextureId(), texture);
+                }
+            } catch (IllegalAccessException | ClassCastException exception) {}
+        }
     }
 
     /**
@@ -127,6 +151,7 @@ public class Window {
             GLFW.glfwSwapBuffers(window);
 
             if (dTime >= 0) {
+                AnimatedTexture.animate();
                 Main.WORLD.tick(dTime);
                 Window.currentScene.update(dTime);
                 GLFW.glfwSetWindowTitle(window, "EL PATO JUEGO");
@@ -154,6 +179,16 @@ public class Window {
 
             if (KeyListener.isKeyPressed(GLFW.GLFW_KEY_P)) {
                 Main.WORLD.spawnParticle(new BulldozerParticle(MouseListener.inGameLocation));
+            }
+
+            if (currentScene instanceof WorldScene worldScene) {
+                if (KeyListener.isKeyPressed(GLFW.GLFW_KEY_RIGHT)) {
+                    worldScene.INVENTORY.currentSliderPosX -= 0.7f;
+                }
+
+                if (KeyListener.isKeyPressed(GLFW.GLFW_KEY_LEFT)) {
+                    worldScene.INVENTORY.currentSliderPosX += 0.7f;
+                }
             }
 
             endTime = Time.getTimeInNanoseconds();
