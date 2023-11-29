@@ -1,15 +1,10 @@
 package world.location;
 
 import main.Main;
-import org.joml.Vector2d;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import world.feature.Feature;
 import world.terrain.Terrain;
-import world.worldBuilder.Biome;
-
-import javax.swing.plaf.PanelUI;
-import java.security.PublicKey;
 
 public class Location implements Cloneable {
     private float x, y;
@@ -43,11 +38,11 @@ public class Location implements Cloneable {
         return this;
     }
 
-    public Vector2f getVector2f() {
-        return new Vector2f((float) this.getX(), (float) this.getY());
+    public Vector2f toVector2f() {
+        return new Vector2f(this.getX(), this.getY());
     }
 
-    public Vector2i getVector2i() {
+    public Vector2i toVector2i() {
         return new Vector2i((int) this.getX(), (int) this.getY());
     }
 

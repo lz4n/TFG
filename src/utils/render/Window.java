@@ -11,10 +11,13 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryUtil;
+import utils.Logger;
 import utils.Time;
 import utils.render.scene.Scene;
 import utils.render.scene.WorldScene;
+import utils.render.texture.CacheTexture;
 import utils.render.texture.Texture;
+import utils.render.texture.Textures;
 import world.entity.Duck;
 import world.feature.Feature;
 import world.particle.BulldozerParticle;
@@ -52,7 +55,10 @@ public class Window {
         currentScene.init();
 
         //Cargamos las texturas a la caché de texuras
-        Texture.initCacheTextures();
+        for (Textures texture: Textures.values()) if (texture.getTexture() instanceof CacheTexture) {
+            ((CacheTexture) texture.getTexture()).init();
+            Logger.sendMessage("Se ha generado la textura %s: %s.", Logger.LogMessageType.INFO, texture.getTexture().getTextureId(), texture.getTexture());
+        }
 
         loop();
 
@@ -61,7 +67,11 @@ public class Window {
         GLFW.glfwDestroyWindow(window);
         GLFW.glfwTerminate();
         Objects.requireNonNull(GLFW.glfwSetErrorCallback(null)).free();
-        Texture.removeCacheTextures();
+
+        for (Textures texture: Textures.values()) if (texture.getTexture() instanceof CacheTexture) {
+            ((CacheTexture) texture.getTexture()).remove();
+            Logger.sendMessage("Se ha eliminado la textura %s: %s.", Logger.LogMessageType.INFO, texture.getTexture().getTextureId(), texture.getTexture());
+        }
     }
 
     /**

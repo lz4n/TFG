@@ -27,7 +27,7 @@ public class StaticTexture extends Texture implements CacheTexture {
      * @param path Ruta al archivo .png de la textura.
      * @param param Tipo de envoltura de la textura.
      */
-    public StaticTexture(String path, int param) {
+    StaticTexture(String path, int param) {
         this.PATH = path;
         this.PARAM = param;
     }
@@ -37,7 +37,7 @@ public class StaticTexture extends Texture implements CacheTexture {
      * @param path Ruta al archivo .png de la textura.
      * @see StaticTexture#StaticTexture(String, int)
      */
-    public StaticTexture(String path) {
+    protected StaticTexture(String path) {
         this(path, GL20.GL_CLAMP_TO_EDGE);
     }
 

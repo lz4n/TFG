@@ -42,7 +42,7 @@ public class AnimatedTexture extends Texture implements CacheTexture {
      * @param fps Número de frames que tiene que pasar para que pase al siguiente sprite.
      * @param param Tipo de envoltura de la textura.
      */
-    public AnimatedTexture(String path, int spriteCount, int fps, int param) {
+    protected AnimatedTexture(String path, int spriteCount, int fps, int param) {
         this.PARAM = param;
         this.FPS = fps;
         this.FRAMES = new int[spriteCount];
@@ -60,7 +60,7 @@ public class AnimatedTexture extends Texture implements CacheTexture {
      * @param fps Número de frames que tiene que pasar para que pase al siguiente sprite.
      * @see AnimatedTexture#AnimatedTexture(String, int, int, int)
      */
-    public AnimatedTexture(String path, int spriteCount, int fps) {
+    protected AnimatedTexture(String path, int spriteCount, int fps) {
         this(path, spriteCount, fps, GL20.GL_CLAMP_TO_EDGE);
     }
 

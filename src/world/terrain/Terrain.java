@@ -5,6 +5,7 @@ import utils.render.mesh.WorldMesh;
 import utils.render.texture.AnimatedTexture;
 import utils.render.texture.StaticTexture;
 import utils.render.texture.Texture;
+import utils.render.texture.Textures;
 import world.worldBuilder.Biome;
 
 import java.util.Random;
@@ -43,12 +44,12 @@ public class Terrain {
     }
 
     public enum TerrainType {
-        WATER(new AnimatedTexture("assets/textures/terrain/water", 5, 8), false),
-        GRASS(new StaticTexture("assets/textures/terrain/grass.png"), true),
-        SAND(new StaticTexture("assets/textures/terrain/sand.png"), true),
-        STONE(new StaticTexture("assets/textures/terrain/stone.png"), true),
-        SNOW(new StaticTexture("assets/textures/terrain/snow.png"), true),
-        GRAVEL(new StaticTexture("assets/textures/terrain/gravel.png"), true);
+        WATER(Textures.WATER.getTexture(), false),
+        GRASS(Textures.GRASS.getTexture(), true),
+        SAND(Textures.SAND.getTexture(), true),
+        STONE(Textures.STONE.getTexture(), true),
+        SNOW(Textures.SNOW.getTexture(), true),
+        GRAVEL(Textures.GRAVEL.getTexture(), true);
 
         private final WorldMesh MESH;
         private final Texture TEXTURE;

@@ -12,6 +12,7 @@ import utils.render.Window;
 import utils.render.mesh.Mesh;
 import utils.render.texture.StaticTexture;
 import utils.render.texture.Texture;
+import utils.render.texture.Textures;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -20,11 +21,6 @@ import java.util.List;
  * Representa un inventario y se encarga de registrar los clicks y dibujar el inventario en pantalla.
  */
 public class Inventory {
-    /**
-     * Textura del contenedor del inventario. La textura se deforma en el eje X para que ocupe el espacio necesario.
-     */
-    public static final Texture CONTAINER = new StaticTexture("assets/textures/ui/inventory/container.png");
-
     /**
      * Dimensiones del inventario, en unidades in-game, no píxeles de pantalla.
      */
@@ -72,13 +68,12 @@ public class Inventory {
         Shader.HUD.upload2f("uHudPosition", 0, this.posY);
         Shader.HUD.upload2f("uHudSize", this.width, this.height);
 
-        Inventory.CONTAINER.bind();
+        Textures.CONTAINER.getTexture().bind();
         ARBVertexArrayObject.glBindVertexArray(mesh.getVaoId());
         GL20.glEnableVertexAttribArray(0);
         GL20.glDrawElements(GL20.GL_TRIANGLES, mesh.getElementArray().length, GL11.GL_UNSIGNED_INT, 0);
         GL20.glDisableVertexAttribArray(0);
         ARBVertexArrayObject.glBindVertexArray(0);
-        Inventory.CONTAINER.bind();
 
         this.WIDGETS.forEach(widget -> {
             Shader.HUD.upload2f("uHudPosition", this.pixelSizeInScreen * widget.getPosX(), this.pixelSizeInScreen * widget.getPosY() + this.posY);

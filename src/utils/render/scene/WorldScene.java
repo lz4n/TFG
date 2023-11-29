@@ -14,10 +14,7 @@ import org.joml.Vector2f;
 import org.lwjgl.opengl.*;
 import utils.render.Camera;
 import utils.render.Shader;
-import utils.render.texture.AnimatedTexture;
-import utils.render.texture.Graphics2dTexture;
-import utils.render.texture.StaticTexture;
-import utils.render.texture.Texture;
+import utils.render.texture.*;
 import world.WorldGenerator;
 import world.entity.Entity;
 import world.feature.Feature;
@@ -47,11 +44,6 @@ public class WorldScene extends Scene {
     public static Camera CAMERA = new Camera(new Vector2f(0, 0)); //Iniciamos la cámara en 0,0.
 
     /**
-     * Textura del selector del ratón
-     */
-    private static final Texture MOUSE_TEXTURE = new StaticTexture("assets/textures/ui/selector.png");
-
-    /**
      * <code>Mesh</code> utilizado para el selector del ratón.
      * @see Mesh
      */
@@ -62,7 +54,6 @@ public class WorldScene extends Scene {
      */
     private final HUDMesh HUD_MESH = new HUDMesh();
 
-    private final Texture WORLD_BORDER_TEXTURE = new AnimatedTexture("assets/textures/terrain/border", 5, 5, GL20.GL_REPEAT);
     private final WorldMesh WORLD_BORDER_MESH = new WorldMesh(1, 2, 2);
 
     /**
@@ -156,7 +147,7 @@ public class WorldScene extends Scene {
         Shader.WORLD.uploadInt("customTextureUnit", 0);
         Shader.WORLD.uploadInt("textureSampler0", 0);
         Shader.WORLD.uploadInt("repeatingTimes", 502);
-        this.WORLD_BORDER_TEXTURE.bind();
+        Textures.WORLD_BORDER.getTexture().bind();
         this.WORLD_BORDER_MESH.draw();
         Texture.unbind();
         Shader.WORLD.uploadInt("repeatingTimes", 1);
@@ -216,7 +207,7 @@ public class WorldScene extends Scene {
             Shader.WORLD.use();
             Shader.WORLD.uploadMatrix4f("uProjection", CAMERA.getProjectionMatrix());
             Shader.WORLD.uploadMatrix4f("uView", CAMERA.getViewMatrix());
-            WorldScene.MOUSE_TEXTURE.bind();
+            Textures.SELECTOR.getTexture().bind();
             this.MOUSE_SELECTION_MESH.draw();
             Texture.unbind();
         }
