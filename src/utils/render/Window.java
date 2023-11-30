@@ -183,11 +183,11 @@ public class Window {
 
             if (currentScene instanceof WorldScene worldScene) {
                 if (KeyListener.isKeyPressed(GLFW.GLFW_KEY_RIGHT)) {
-                    worldScene.INVENTORY.currentSliderPosX -= 0.7f;
+                    worldScene.INVENTORY.moveSlider(-.7f);
                 }
 
                 if (KeyListener.isKeyPressed(GLFW.GLFW_KEY_LEFT)) {
-                    worldScene.INVENTORY.currentSliderPosX += 0.7f;
+                    worldScene.INVENTORY.moveSlider(.7f);
                 }
             }
 
