@@ -76,7 +76,7 @@ public class WorldScene extends Scene {
 
         HUD_MESH.load();
 
-        this.WORLD_BORDER_MESH.addVertex(-1, -1, 502, 502);
+        this.WORLD_BORDER_MESH.addVertex(-1, -1, Main.WORLD.getSize() +2,  Main.WORLD.getSize() +2);
         this.WORLD_BORDER_MESH.load();
 
         WorldScene.CAMERA.moveCamera(new Vector2f((float) Main.WORLD.getSize() / 2));
@@ -167,7 +167,7 @@ public class WorldScene extends Scene {
         //Dibujamos el borde del mundo
         Shader.WORLD.uploadInt("customTextureUnit", 0);
         Shader.WORLD.uploadInt("textureSampler0", 0);
-        Shader.WORLD.uploadInt("repeatingTimes", 502);
+        Shader.WORLD.uploadInt("repeatingTimes", Main.WORLD.getSize() +2);
         Textures.WORLD_BORDER.bind();
         this.WORLD_BORDER_MESH.draw();
         Texture.unbind();

@@ -1,13 +1,16 @@
 package ui.widget;
 
+import utils.BoundingBox;
 import utils.render.texture.Texture;
 
 public abstract class Widget {
     private float posX, posY;
+    private BoundingBox boundingBox;
 
-    public Widget(float posX, float posY) {
+    public Widget(float posX, float posY, BoundingBox baseBoundingBox) {
         this.posX = posX;
         this.posY = posY;
+        this.boundingBox = baseBoundingBox.clone().move(posX, posY);
     }
 
     public float getPosX() {
@@ -18,8 +21,9 @@ public abstract class Widget {
         return this.posY;
     }
 
-    public abstract float getHeight();
-    public abstract float getWidth();
+    public BoundingBox getBoundingBox() {
+        return this.boundingBox.clone();
+    }
 
     public abstract Texture getTexture();
 }

@@ -37,6 +37,7 @@ public class Inventory {
     private float pixelSizeInScreen;
 
     private boolean isShowingLeftArrow, isShowingRightArrow;
+    private int clickTimeLeftArrow = -1, clickTimeRightArrow = -1;
 
     /**
      * Widgets que contiene el inventario.
@@ -58,8 +59,8 @@ public class Inventory {
      * @param widget Widget que se quiere insertar.
      */
     public void addWidget(Widget widget) {
-        if (this.width + widget.getWidth() +4 > this.width) {
-            this.width += widget.getWidth() +4;
+        if (this.width + widget.getBoundingBox().getWidth() +4 > this.width) {
+            this.width += widget.getBoundingBox().getWidth() +4;
         }
 
         this.WIDGETS.add(widget);
@@ -86,7 +87,7 @@ public class Inventory {
 
         this.WIDGETS.forEach(widget -> {
             Shader.HUD.upload2f("uHudPosition", this.pixelSizeInScreen * (widget.getPosX() + this.currentSliderPosX), this.pixelSizeInScreen * widget.getPosY() + this.posY);
-            Shader.HUD.upload2f("uHudSize", this.pixelSizeInScreen * widget.getWidth(), this.pixelSizeInScreen * widget.getHeight());
+            Shader.HUD.upload2f("uHudSize", this.pixelSizeInScreen * widget.getBoundingBox().getWidth(), this.pixelSizeInScreen * widget.getBoundingBox().getHeight());
 
             widget.getTexture().bind();
             ARBVertexArrayObject.glBindVertexArray(mesh.getVaoId());
@@ -96,7 +97,7 @@ public class Inventory {
             ARBVertexArrayObject.glBindVertexArray(0);
 
             if (widget instanceof CustomDrawWidget customDrawWidget) {
-                customDrawWidget.draw(mesh, this.pixelSizeInScreen, this.pixelSizeInScreen * (widget.getPosX() + this.currentSliderPosX), this.pixelSizeInScreen * widget.getPosY() + this.posY, this.pixelSizeInScreen * widget.getWidth(), this.pixelSizeInScreen * widget.getHeight());
+                customDrawWidget.draw(mesh, this.pixelSizeInScreen, this.pixelSizeInScreen * (widget.getPosX() + this.currentSliderPosX), this.pixelSizeInScreen * widget.getPosY() + this.posY, this.pixelSizeInScreen * widget.getBoundingBox().getWidth(), this.pixelSizeInScreen * widget.getBoundingBox().getHeight());
             }
         });
 
@@ -104,24 +105,32 @@ public class Inventory {
             Shader.HUD.upload2f("uHudPosition", 0, this.posY);
             Shader.HUD.upload2f("uHudSize", this.pixelSizeInScreen * 7, this.height);
 
-            Textures.UNSELECTED_LEFT_ARROW.bind();
+            (this.clickTimeLeftArrow>-1?Textures.SELECTED_LEFT_ARROW:Textures.UNSELECTED_LEFT_ARROW).bind();
             ARBVertexArrayObject.glBindVertexArray(mesh.getVaoId());
             GL20.glEnableVertexAttribArray(0);
             GL20.glDrawElements(GL20.GL_TRIANGLES, mesh.getElementArray().length, GL11.GL_UNSIGNED_INT, 0);
             GL20.glDisableVertexAttribArray(0);
             ARBVertexArrayObject.glBindVertexArray(0);
+
+            if (this.clickTimeLeftArrow > -1) {
+                this.clickTimeLeftArrow--;
+            }
         }
 
         if (this.isShowingRightArrow) {
             Shader.HUD.upload2f("uHudPosition", Window.getWidth() - this.pixelSizeInScreen *7, this.posY);
             Shader.HUD.upload2f("uHudSize", this.pixelSizeInScreen * 7, this.height);
 
-            Textures.UNSELECTED_RIGHT_ARROW.bind();
+            (this.clickTimeRightArrow>-1?Textures.SELECTED_RIGHT_ARROW:Textures.UNSELECTED_RIGHT_ARROW).bind();
             ARBVertexArrayObject.glBindVertexArray(mesh.getVaoId());
             GL20.glEnableVertexAttribArray(0);
             GL20.glDrawElements(GL20.GL_TRIANGLES, mesh.getElementArray().length, GL11.GL_UNSIGNED_INT, 0);
             GL20.glDisableVertexAttribArray(0);
             ARBVertexArrayObject.glBindVertexArray(0);
+            
+            if (this.clickTimeRightArrow > -1) {
+                this.clickTimeRightArrow--;
+            }
         }
     }
 
@@ -147,30 +156,49 @@ public class Inventory {
         float interfaceX = (mouseX / this.pixelSizeInScreen) - this.currentSliderPosX;
         float interfaceY = (mouseY - this.posY) / this.pixelSizeInScreen;
 
-        this.CLICKABLE_WIDGETS.forEach(clickableWidget -> {
-            Vector4f clickableArea = clickableWidget.getClickArea();
+        if (this.isShowingLeftArrow &&
+                interfaceX + this.currentSliderPosX <= 7 &&
+                interfaceY <= this.height
+        ) {
+            this.moveSlider(.7f);
+            return;
+        }
 
-            if (
-                    interfaceX >= clickableArea.x &&
-                    interfaceX <= clickableArea.z &&
-                    interfaceY >= clickableArea.y &&
-                    interfaceY <= clickableArea.w
-            ) {
+        if (this.isShowingRightArrow &&
+                interfaceX + this.currentSliderPosX >= Window.getWidth() /this.pixelSizeInScreen -7 &&
+                interfaceY <= this.height
+        ) {
+            this.moveSlider(-.7f);
+            return;
+        }
+
+        this.CLICKABLE_WIDGETS.forEach(clickableWidget -> {
+            if (clickableWidget.getBoundingBox().containsLocation(interfaceX, interfaceY)) {
                 clickableWidget.click();
                 return;
             }
         });
     }
 
-    public void moveSlider(float amount) {
+    public boolean moveSlider(float amount) {
         float originalSliderPos = this.currentSliderPosX;
 
         this.currentSliderPosX += amount;
         if (this.currentSliderPosX > this.getMaxLeftSliderPos() || this.currentSliderPosX <= this.getMaxRightSliderPos()) {
             this.currentSliderPosX = originalSliderPos;
+            return false;
+        }
+
+        if (amount > 0) {
+            this.clickTimeLeftArrow = 10;
+            this.clickTimeRightArrow = -1;
+        } else {
+            this.clickTimeLeftArrow = -1;
+            this.clickTimeRightArrow = 10;
         }
 
         this.updateShowArrows();
+        return true;
     }
 
     private double getMaxLeftSliderPos() {

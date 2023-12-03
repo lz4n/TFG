@@ -176,7 +176,7 @@ public class World extends Thread {
         Feature feature1;
         for (int x = 0; x < feature.getSize().x(); x++) for (int y = 0; y < feature.getSize().y(); y++) {
             feature1 = feature.getLocation().add(x, y).getFeature();
-            if (feature1 != null && !feature1.getFeatureType().equals(feature.getFeatureType())) {
+            if (feature1 != null) {
                 return false;
             }
         }

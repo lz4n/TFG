@@ -158,19 +158,19 @@ public class Window {
             }
 
             if (KeyListener.isKeyPressed(GLFW.GLFW_KEY_W)) {
-                WorldScene.CAMERA.moveCamera(new Vector2f(0, 10 * (float) WorldScene.CAMERA.getZoom()));
+                WorldScene.CAMERA.moveCamera(new Vector2f(0, (KeyListener.isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT)?2:1) *10 *(float) WorldScene.CAMERA.getZoom()));
             }
 
             if (KeyListener.isKeyPressed(GLFW.GLFW_KEY_A)) {
-                WorldScene.CAMERA.moveCamera(new Vector2f(-10 * (float) WorldScene.CAMERA.getZoom(), 0));
+                WorldScene.CAMERA.moveCamera(new Vector2f((KeyListener.isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT)?2:1) *-10 *(float) WorldScene.CAMERA.getZoom(), 0));
             }
 
             if (KeyListener.isKeyPressed(GLFW.GLFW_KEY_S)) {
-                WorldScene.CAMERA.moveCamera(new Vector2f(0, -10 * (float) WorldScene.CAMERA.getZoom()));
+                WorldScene.CAMERA.moveCamera(new Vector2f(0, (KeyListener.isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT)?2:1) *-10 *(float) WorldScene.CAMERA.getZoom()));
             }
 
             if (KeyListener.isKeyPressed(GLFW.GLFW_KEY_D)) {
-                WorldScene.CAMERA.moveCamera(new Vector2f(10 * (float) WorldScene.CAMERA.getZoom(), 0));
+                WorldScene.CAMERA.moveCamera(new Vector2f((KeyListener.isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT)?2:1) *10 *(float) WorldScene.CAMERA.getZoom(), 0));
             }
 
             if (KeyListener.isKeyPressed(GLFW.GLFW_KEY_E)) {
@@ -183,11 +183,11 @@ public class Window {
 
             if (currentScene instanceof WorldScene worldScene) {
                 if (KeyListener.isKeyPressed(GLFW.GLFW_KEY_RIGHT)) {
-                    worldScene.INVENTORY.moveSlider(-.7f);
+                    worldScene.INVENTORY.moveSlider((KeyListener.isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT)?2:1) *-.7f);
                 }
 
                 if (KeyListener.isKeyPressed(GLFW.GLFW_KEY_LEFT)) {
-                    worldScene.INVENTORY.moveSlider(.7f);
+                    worldScene.INVENTORY.moveSlider((KeyListener.isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT)?2:1) *.7f);
                 }
             }
 

@@ -4,6 +4,7 @@ import org.joml.Vector4f;
 import org.lwjgl.opengl.ARBVertexArrayObject;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
+import utils.BoundingBox;
 import utils.render.Shader;
 import utils.render.mesh.Mesh;
 import utils.render.texture.StaticTexture;
@@ -11,22 +12,14 @@ import utils.render.texture.Texture;
 import utils.render.texture.Textures;
 
 public class SlotWidget extends Widget implements CustomDrawWidget, ClickableWidget {
+    private final static BoundingBox BASE_BOUNDING_BOX = new BoundingBox(16, 16);
+
     private final Texture CONTENT;
     private boolean isSelected = false;
 
     public SlotWidget(float posX, float posY, Texture content) {
-        super(posX, posY);
+        super(posX, posY, SlotWidget.BASE_BOUNDING_BOX);
         this.CONTENT = content;
-    }
-
-    @Override
-    public float getHeight() {
-        return 16;
-    }
-
-    @Override
-    public float getWidth() {
-        return 16;
     }
 
     @Override
@@ -37,7 +30,7 @@ public class SlotWidget extends Widget implements CustomDrawWidget, ClickableWid
     @Override
     public void draw(Mesh mesh, float pixelSizeInScreen, float posX, float posY, float width, float height) {
         Shader.HUD.upload2f("uHudPosition", posX + 2.5f * pixelSizeInScreen, posY + 2.5f * pixelSizeInScreen);
-        Shader.HUD.upload2f("uHudSize", (this.getWidth() -5) * pixelSizeInScreen, (this.getHeight() -5) * pixelSizeInScreen);
+        Shader.HUD.upload2f("uHudSize", (SlotWidget.BASE_BOUNDING_BOX.getWidth() -5) * pixelSizeInScreen, (SlotWidget.BASE_BOUNDING_BOX.getHeight() -5) * pixelSizeInScreen);
 
         this.CONTENT.bind();
         ARBVertexArrayObject.glBindVertexArray(mesh.getVaoId());
@@ -51,10 +44,5 @@ public class SlotWidget extends Widget implements CustomDrawWidget, ClickableWid
     @Override
     public void click() {
         this.isSelected = !this.isSelected;
-    }
-
-    @Override
-    public Vector4f getClickArea() {
-        return new Vector4f(this.getPosX(), this.getPosY(), this.getPosX() + this.getWidth(), this.getPosY() + this.getHeight());
     }
 }

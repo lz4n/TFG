@@ -23,6 +23,6 @@ public class Tree extends Feature {
 
     @Override
     public boolean canFeatureOverlapsWith(Feature feature) {
-        return feature instanceof Tree;
+        return false;
     }
 }
