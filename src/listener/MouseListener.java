@@ -42,8 +42,8 @@ public class MouseListener {
      * Actualiza la posición del ratón dentro del juego y actualiza el selector.
      */
     public static void updateInGameLocation() {
-        if (Window.currentScene instanceof WorldScene worldScene) {
-            MouseListener.inGameLocation = WorldScene.CAMERA.getInGameLocationMousePosition(new Vector2f((float) MouseListener.posX, (float) MouseListener.posY));
+        if (Window.currentScene instanceof WorldScene worldScene && Main.PLAYER != null) {
+            MouseListener.inGameLocation = Main.PLAYER.getCamera().getInGameLocationMousePosition(new Vector2f((float) MouseListener.posX, (float) MouseListener.posY));
             worldScene.updateSelection((int) MouseListener.inGameLocation.getX(), (int) MouseListener.inGameLocation.getY());
         }
     }
@@ -64,6 +64,8 @@ public class MouseListener {
         MouseListener.updateInGameLocation();
 
         MouseListener.isDragging = MouseListener.isMouseButtonPressed[0] || MouseListener.isMouseButtonPressed[1] || MouseListener.isMouseButtonPressed[2];
+
+        Window.currentScene.moveMouse((float) posX, (float) posY);
     }
 
     /**
@@ -117,9 +119,9 @@ public class MouseListener {
      */
     public static void mouseScrollCallback(long window, double offsetX, double offsetY) {
         if (offsetY >= 1) {
-            WorldScene.CAMERA.zoomIn();
+            Main.PLAYER.getCamera().zoomIn();
         } else if (offsetY <= -1) {
-            WorldScene.CAMERA.zoomOut();
+            Main.PLAYER.getCamera().zoomOut();
         }
     }
 
@@ -132,6 +134,10 @@ public class MouseListener {
         if (button < MouseListener.isMouseButtonPressed.length) {
             MouseListener.isMouseButtonPressed[button] = isPressed;
         }
+    }
+
+    public static boolean isMouseButtonPressed(int button) {
+        return MouseListener.isMouseButtonPressed[button];
     }
 
     /**

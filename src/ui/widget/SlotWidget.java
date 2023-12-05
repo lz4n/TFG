@@ -11,8 +11,8 @@ import utils.render.texture.StaticTexture;
 import utils.render.texture.Texture;
 import utils.render.texture.Textures;
 
-public class SlotWidget extends Widget implements CustomDrawWidget, ClickableWidget {
-    private final static BoundingBox BASE_BOUNDING_BOX = new BoundingBox(16, 16);
+public class SlotWidget extends Widget implements CustomDrawWidget {
+    public final static BoundingBox BASE_BOUNDING_BOX = new BoundingBox(16, 16);
 
     private final Texture CONTENT;
     private boolean isSelected = false;
@@ -24,7 +24,7 @@ public class SlotWidget extends Widget implements CustomDrawWidget, ClickableWid
 
     @Override
     public Texture getTexture() {
-        return this.isSelected? Textures.SELECTED_SLOT_WIDGET :Textures.UNSELECTED_SLOT_WIDGET;
+        return this.isSelected? Textures.SELECTED_SLOT_WIDGET :(this.isHovered()? Textures.HOVERED_SLOT_WIDGET :Textures.UNSELECTED_SLOT_WIDGET);
     }
 
     @Override
@@ -42,7 +42,12 @@ public class SlotWidget extends Widget implements CustomDrawWidget, ClickableWid
     }
 
     @Override
-    public void click() {
+    public void onClickEvent() {
         this.isSelected = !this.isSelected;
+        super.onClickEvent();
+    }
+
+    public void setSelected(boolean isSelected) {
+        this.isSelected = isSelected;
     }
 }

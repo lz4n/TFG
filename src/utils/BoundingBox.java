@@ -1,6 +1,7 @@
 package utils;
 
 import org.joml.Vector2f;
+import org.joml.Vector4f;
 import world.location.Location;
 
 public class BoundingBox implements Cloneable {
@@ -61,6 +62,10 @@ public class BoundingBox implements Cloneable {
         return this.yMax - this.yMin;
     }
 
+    public Vector4f getComponents() {
+        return new Vector4f(this.xMin, this.yMin, this.xMax, this.yMax);
+    }
+
     @Override
     public BoundingBox clone() {
         try {
@@ -69,5 +74,15 @@ public class BoundingBox implements Cloneable {
             Logger.sendMessage("Error de clonación: %s.", Logger.LogMessageType.FATAL, exception.getMessage());
         }
         return null;
+    }
+
+    @Override
+    public String toString() {
+        return "BoundingBox{" +
+                "xMin=" + xMin +
+                ", yMin=" + yMin +
+                ", xMax=" + xMax +
+                ", yMax=" + yMax +
+                '}';
     }
 }

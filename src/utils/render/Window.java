@@ -56,6 +56,7 @@ public class Window {
     public static void run() {
         init();
         currentScene.init();
+        Main.PLAYER.init();
 
         //Cargamos las texturas a la caché de texuras
         Texture texture;
@@ -158,19 +159,19 @@ public class Window {
             }
 
             if (KeyListener.isKeyPressed(GLFW.GLFW_KEY_W)) {
-                WorldScene.CAMERA.moveCamera(new Vector2f(0, (KeyListener.isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT)?2:1) *10 *(float) WorldScene.CAMERA.getZoom()));
+                Main.PLAYER.getCamera().moveCamera(new Vector2f(0, (KeyListener.isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT)?2:1) *10 *(float) Main.PLAYER.getCamera().getZoom()));
             }
 
             if (KeyListener.isKeyPressed(GLFW.GLFW_KEY_A)) {
-                WorldScene.CAMERA.moveCamera(new Vector2f((KeyListener.isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT)?2:1) *-10 *(float) WorldScene.CAMERA.getZoom(), 0));
+                Main.PLAYER.getCamera().moveCamera(new Vector2f((KeyListener.isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT)?2:1) *-10 *(float) Main.PLAYER.getCamera().getZoom(), 0));
             }
 
             if (KeyListener.isKeyPressed(GLFW.GLFW_KEY_S)) {
-                WorldScene.CAMERA.moveCamera(new Vector2f(0, (KeyListener.isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT)?2:1) *-10 *(float) WorldScene.CAMERA.getZoom()));
+                Main.PLAYER.getCamera().moveCamera(new Vector2f(0, (KeyListener.isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT)?2:1) *-10 *(float) Main.PLAYER.getCamera().getZoom()));
             }
 
             if (KeyListener.isKeyPressed(GLFW.GLFW_KEY_D)) {
-                WorldScene.CAMERA.moveCamera(new Vector2f((KeyListener.isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT)?2:1) *10 *(float) WorldScene.CAMERA.getZoom(), 0));
+                Main.PLAYER.getCamera().moveCamera(new Vector2f((KeyListener.isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT)?2:1) *10 *(float) Main.PLAYER.getCamera().getZoom(), 0));
             }
 
             if (KeyListener.isKeyPressed(GLFW.GLFW_KEY_E)) {
@@ -183,11 +184,11 @@ public class Window {
 
             if (currentScene instanceof WorldScene worldScene) {
                 if (KeyListener.isKeyPressed(GLFW.GLFW_KEY_RIGHT)) {
-                    worldScene.INVENTORY.moveSlider((KeyListener.isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT)?2:1) *-.7f);
+                    Main.PLAYER.getInventory().moveSlider((KeyListener.isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT)?2:1) *-.7f);
                 }
 
                 if (KeyListener.isKeyPressed(GLFW.GLFW_KEY_LEFT)) {
-                    worldScene.INVENTORY.moveSlider((KeyListener.isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT)?2:1) *.7f);
+                    Main.PLAYER.getInventory().moveSlider((KeyListener.isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT)?2:1) *.7f);
                 }
             }
 

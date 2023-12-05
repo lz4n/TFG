@@ -38,11 +38,16 @@ public final class Textures {
         CONTAINER = new StaticTexture("assets/textures/ui/inventory/container.png"),
         SELECTED_RIGHT_ARROW = new StaticTexture("assets/textures/ui/inventory/arrow/selected_right_arrow.png"),
         UNSELECTED_RIGHT_ARROW = new StaticTexture("assets/textures/ui/inventory/arrow/unselected_right_arrow.png"),
+        HOVERED_RIGHT_ARROW = new StaticTexture("assets/textures/ui/inventory/arrow/hovered_right_arrow.png"),
         SELECTED_LEFT_ARROW = new StaticTexture("assets/textures/ui/inventory/arrow/selected_left_arrow.png"),
         UNSELECTED_LEFT_ARROW = new StaticTexture("assets/textures/ui/inventory/arrow/unselected_left_arrow.png"),
+        HOVERED_LEFT_ARROW = new StaticTexture("assets/textures/ui/inventory/arrow/hovered_left_arrow.png"),
         SEPARATOR_WIDGET = new StaticTexture("assets/textures/ui/inventory/separator.png"),
         SELECTED_SLOT_WIDGET = new StaticTexture("assets/textures/ui/inventory/slot/selected_slot.png"),
         UNSELECTED_SLOT_WIDGET = new StaticTexture("assets/textures/ui/inventory/slot/unselected_slot.png"),
+        HOVERED_SLOT_WIDGET = new StaticTexture("assets/textures/ui/inventory/slot/hovered_slot.png"),
+        SCREEN_INDICATOR = new StaticTexture("assets/textures/ui/inventory/screen_indicator/screen_indicator.png"),
+        HOVERED_SCREEN_INDICATOR = new StaticTexture("assets/textures/ui/inventory/screen_indicator/hovered_screen_indicator.png"),
         TEXT_WIDGET = new StaticTexture("assets/textures/ui/inventory/text_field.png");
 
 

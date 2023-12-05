@@ -29,4 +29,6 @@ public abstract class Scene {
      * @param mouseY Coordenadas del ratón en el eje Y, en unidades de pantalla.
      */
     public abstract void click(float mouseX, float mouseY);
+
+    public abstract void moveMouse(float mouseX, float moseY);
 }

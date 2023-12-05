@@ -4,6 +4,7 @@ import listener.MouseListener;
 import main.Main;
 import org.joml.Matrix4f;
 import ui.Inventory;
+import ui.widget.ScreenIndicatorWidget;
 import ui.widget.SeparatorWidget;
 import ui.widget.SlotWidget;
 import ui.widget.TextWidget;
@@ -39,11 +40,6 @@ public class WorldScene extends Scene {
     public static final int SPRITE_SIZE = 16;
 
     /**
-     * Camara de la escena.
-     */
-    public static Camera CAMERA = new Camera(new Vector2f(0, 0)); //Iniciamos la cámara en 0,0.
-
-    /**
      * <code>Mesh</code> utilizado para el selector del ratón.
      * @see Mesh
      */
@@ -56,10 +52,6 @@ public class WorldScene extends Scene {
 
     private final WorldMesh WORLD_BORDER_MESH = new WorldMesh(1, 2, 2);
 
-    /**
-     * Inventario del jugador en la escena.
-     */
-    public final Inventory INVENTORY = new Inventory();
 
     @Override
     public void init() {
@@ -78,34 +70,6 @@ public class WorldScene extends Scene {
 
         this.WORLD_BORDER_MESH.addVertex(-1, -1, Main.WORLD.getSize() +2,  Main.WORLD.getSize() +2);
         this.WORLD_BORDER_MESH.load();
-
-        WorldScene.CAMERA.moveCamera(new Vector2f((float) Main.WORLD.getSize() / 2));
-
-        //Generamos la estructura de widgets del inventario.
-        this.INVENTORY.addWidget(new SeparatorWidget(20, 0));
-        this.INVENTORY.addWidget(new SlotWidget(40, 4, Textures.DUCK));
-        this.INVENTORY.addWidget(new SlotWidget(60, 4, Textures.TULIP));
-        this.INVENTORY.addWidget(new SlotWidget(80, 4, Textures.TULIP_2));
-        this.INVENTORY.addWidget(new SlotWidget(100, 4, Textures.BLUE_ORCHID));
-        this.INVENTORY.addWidget(new SlotWidget(120, 4, Textures.DANDELION));
-        this.INVENTORY.addWidget(new SlotWidget(140, 4, Textures.RED_LILY));
-        this.INVENTORY.addWidget(new SlotWidget(160, 4, Textures.TREE1));
-        this.INVENTORY.addWidget(new SlotWidget(180, 4, Textures.TREE2));
-        this.INVENTORY.addWidget(new SlotWidget(200, 4, Textures.POSITIVE_PARTICLE));
-        this.INVENTORY.addWidget(new SlotWidget(220, 4, Textures.NEGATIVE_PARTICLE));
-        this.INVENTORY.addWidget(new SlotWidget(240, 4, Textures.BULLDOZER_PARTICLE));
-        this.INVENTORY.addWidget(new SlotWidget(260, 4, Textures.WORLD_BORDER));
-        this.INVENTORY.addWidget(new SlotWidget(280, 4, Textures.GRASS));
-        this.INVENTORY.addWidget(new SlotWidget(300, 4, Textures.SAND));
-        this.INVENTORY.addWidget(new SlotWidget(320, 4, Textures.GRAVEL));
-        this.INVENTORY.addWidget(new SlotWidget(340, 4, Textures.STONE));
-        this.INVENTORY.addWidget(new SlotWidget(360, 4, Textures.SNOW));
-        this.INVENTORY.addWidget(new SlotWidget(380, 4, Textures.WATER));
-        this.INVENTORY.addWidget(new SlotWidget(400, 4, Textures.ROCK));
-        this.INVENTORY.addWidget(new SlotWidget(420, 4, Textures.SELECTOR));
-        this.INVENTORY.addWidget(new SlotWidget(440, 4, Textures.BUSH));
-
-        this.INVENTORY.addWidget(new TextWidget(40, 23, "kkkkkkkkk"));
     }
 
     /**
@@ -160,8 +124,8 @@ public class WorldScene extends Scene {
 
         //Activamos el shader y subimos variables uniform al shader .glsl
         Shader.WORLD.use();
-        Shader.WORLD.uploadMatrix4f("uProjection", CAMERA.getProjectionMatrix());
-        Shader.WORLD.uploadMatrix4f("uView", CAMERA.getViewMatrix());
+        Shader.WORLD.uploadMatrix4f("uProjection", Main.PLAYER.getCamera().getProjectionMatrix());
+        Shader.WORLD.uploadMatrix4f("uView", Main.PLAYER.getCamera().getViewMatrix());
         Shader.WORLD.uploadFloat("uDaylight", (float) Main.WORLD.getDayLight());
 
         //Dibujamos el borde del mundo
@@ -201,8 +165,8 @@ public class WorldScene extends Scene {
 
         //Dibujamos las entidades y features.
         Shader.ENTITY.use();
-        Shader.ENTITY.uploadMatrix4f("uProjection", CAMERA.getProjectionMatrix());
-        Shader.ENTITY.uploadMatrix4f("uView", CAMERA.getViewMatrix());
+        Shader.ENTITY.uploadMatrix4f("uProjection", Main.PLAYER.getCamera().getProjectionMatrix());
+        Shader.ENTITY.uploadMatrix4f("uView", Main.PLAYER.getCamera().getViewMatrix());
 
         for (Entity.EntityType entityType: Entity.EntityType.values()) {
             entityType.getTexture().bind();
@@ -224,10 +188,10 @@ public class WorldScene extends Scene {
         }
 
         //Dibujamos el selector del ratón
-        if (!MouseListener.inGameLocation.isOutOfTheWorld()) {
+        if (MouseListener.inGameLocation != null && !MouseListener.inGameLocation.isOutOfTheWorld()) {
             Shader.WORLD.use();
-            Shader.WORLD.uploadMatrix4f("uProjection", CAMERA.getProjectionMatrix());
-            Shader.WORLD.uploadMatrix4f("uView", CAMERA.getViewMatrix());
+            Shader.WORLD.uploadMatrix4f("uProjection", Main.PLAYER.getCamera().getProjectionMatrix());
+            Shader.WORLD.uploadMatrix4f("uView", Main.PLAYER.getCamera().getViewMatrix());
             Textures.SELECTOR.bind();
             this.MOUSE_SELECTION_MESH.draw();
             Texture.unbind();
@@ -279,9 +243,9 @@ public class WorldScene extends Scene {
                             MouseListener.inGameLocation.getTerrain().getContinentalityNoise(),
                             MouseListener.inGameLocation.getTerrain().getWeirdnessNoise(),
                             MouseListener.inGameLocation.getTerrain().getRiversNoise()),
-                    WorldScene.CAMERA.getCameraPosition().x(),
-                    WorldScene.CAMERA.getCameraPosition().y(),
-                    WorldScene.CAMERA.getZoom(),
+                    Main.PLAYER.getCamera().getCameraPosition().x(),
+                    Main.PLAYER.getCamera().getCameraPosition().y(),
+                    Main.PLAYER.getCamera().getZoom(),
                     Main.WORLD.getSeed(),
                     Main.WORLD.getDayTime(),
                     Main.WORLD.getFeaturesCount(),
@@ -301,18 +265,26 @@ public class WorldScene extends Scene {
             texture.remove();
             Texture.unbind();
         }
-        this.INVENTORY.draw(this.HUD_MESH);
+
+        Main.PLAYER.getInventory().onHoverEvent();
+        Main.PLAYER.getInventory().draw(this.HUD_MESH);
 
         Shader.detach();
     }
 
     @Override
     public void resizeWindow() {
-        this.INVENTORY.setPixelSizeInScreen(Window.getHeight() / 205f);
+        Main.PLAYER.getInventory().setPixelSizeInScreen(Window.getHeight() / 205f);
+        Main.PLAYER.getInventory().onResizeWindowEvent(Window.getWidth(), Window.getHeight());
     }
 
     @Override
     public void click(float mouseX, float mouseY) {
-        this.INVENTORY.click(mouseX, mouseY);
+        Main.PLAYER.getInventory().onClickEvent(mouseX, mouseY);
+    }
+
+    @Override
+    public void moveMouse(float mouseX, float mouseY) {
+        Main.PLAYER.getInventory().onMouseMoveEvent(mouseX, mouseY);
     }
 }
