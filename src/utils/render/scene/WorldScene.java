@@ -275,6 +275,7 @@ public class WorldScene extends Scene {
             Texture.unbind();
         }
 
+        Main.PLAYER.updateTime(Main.WORLD.getFormattedDayTime());
         Main.PLAYER.getInventory().onHoverEvent();
         Main.PLAYER.getInventory().draw(this.HUD_MESH);
 

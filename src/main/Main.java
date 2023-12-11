@@ -12,7 +12,6 @@ public class Main {
     public static final World WORLD = new World(new Random().nextInt(100000000), 500);
     public static final int TICK_SPEED = 1;
     public static final Player PLAYER = new Player();
-
     public static final Random RANDOM = new Random();
 
     /**

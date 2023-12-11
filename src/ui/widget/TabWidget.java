@@ -27,8 +27,8 @@ public class TabWidget extends Widget implements CustomDrawWidget {
         this.UNSELECTED_CONTENT = unselectedContent;
     }
 
-    public void unselect() {
-        this.isSelected = false;
+    public void setSelected(boolean isSelected) {
+        this.isSelected = isSelected;
     }
 
     @Override

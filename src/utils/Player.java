@@ -31,16 +31,14 @@ public class Player {
     private final HashMap<MenuItem, SlotWidget> MENU_ITEMS_MAP = new HashMap<>();
     private final Camera CAMERA = new Camera(new Vector2f(0, 0)); //Iniciamos la cámara en 0,0.
 
+    private TextWidget timeTextWidget;
+
     private MenuItem selectedFeatureToPlace;
 
     public Player() {
     }
 
     public void init() {
-        this.INVENTORY.addWidget(new SeparatorWidget(20, 0), Player.GENERAL_TAB);
-
-        int widgetSep = 20, widgetTopPos = 4, widgetBottomPos = 23, widgetCounter = 0, widgetXPos = 40;;
-
         this.INVENTORY.addTab(Player.GENERAL_TAB);
         this.INVENTORY.addTab(Player.ZONING_TAB);
         this.INVENTORY.addTab(Player.INDUSTRY_TAB);
@@ -48,8 +46,13 @@ public class Player {
         this.INVENTORY.addTab(Player.SERVICES_TAB);
         this.INVENTORY.addTab(Player.SPECIAL_TAB);
 
-        this.INVENTORY.addWidget(new TextWidget(40, 23, "kkkkkkkkk"), Player.SPECIAL_TAB);
+        this.timeTextWidget = new TextWidget(4, 4, "");
+        this.INVENTORY.addWidget(this.timeTextWidget, Player.GENERAL_TAB);
+        this.INVENTORY.addWidget(new SeparatorWidget(44, 0), Player.GENERAL_TAB);
+        this.INVENTORY.addWidget(new SlotWidget(4, 23, Textures.DUCK), Player.GENERAL_TAB);
+        this.INVENTORY.addWidget(new SlotWidget(24, 23, Textures.DUCK), Player.GENERAL_TAB);
 
+        int widgetSep = 20, widgetTopPos = 4, widgetBottomPos = 23, widgetCounter = 0, widgetXPos = 40;
         for (MenuItem item: Player.ITEMS) {
             SlotWidget slotWidget;
 
@@ -79,9 +82,11 @@ public class Player {
             this.INVENTORY.addWidget(slotWidget, Player.NATURE_TAB);
         }
 
-        this.INVENTORY.addWidget(new SlotWidget(440, 4, Textures.DUCK), Player.NATURE_TAB);
-
         this.INVENTORY.setCurrentTab(Player.GENERAL_TAB);
+    }
+
+    public void updateTime(String newTime) {
+        this.timeTextWidget.setText(newTime);
     }
 
     public Inventory getInventory() {

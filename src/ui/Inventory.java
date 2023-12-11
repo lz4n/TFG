@@ -296,11 +296,12 @@ public class Inventory {
     }
 
     public void unselectAllTabs() {
-        this.TABS.forEach(TabWidget::unselect);
+        this.TABS.forEach(tabWidget -> tabWidget.setSelected(false));
     }
 
     public void setCurrentTab(TabWidget currentTab) {
         this.currentTab = currentTab;
+        this.currentTab.setSelected(true);
         
         this.currentWidgets = this.WIDGETS_PER_TAB.getOrDefault(this.currentTab, new LinkedList<>());
         this.currentWidgets.addAll(this.TABS);
