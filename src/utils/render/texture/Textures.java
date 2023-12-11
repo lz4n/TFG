@@ -33,6 +33,8 @@ public final class Textures {
         NEGATIVE_PARTICLE = new StaticTexture("assets/textures/particle/negative.png"),
         BULLDOZER_PARTICLE = new StaticTexture("assets/textures/particle/bulldozer.png"),
         POSITIVE_PARTICLE = new StaticTexture("assets/textures/particle/positive.png"),
+        CLOUD_PARTICLE = new StaticTexture("assets/textures/particle/cloud/cloud_1.png"),
+        CLOUD_SHADOW_PARTICLE = new StaticTexture("assets/textures/particle/cloud/cloud_shadow_1.png"),
 
         /** USER INTERFACE **/
         CONTAINER = new StaticTexture("assets/textures/ui/inventory/container.png"),
@@ -48,6 +50,20 @@ public final class Textures {
         HOVERED_SLOT_WIDGET = new StaticTexture("assets/textures/ui/inventory/slot/hovered_slot.png"),
         SCREEN_INDICATOR = new StaticTexture("assets/textures/ui/inventory/screen_indicator/screen_indicator.png"),
         HOVERED_SCREEN_INDICATOR = new StaticTexture("assets/textures/ui/inventory/screen_indicator/hovered_screen_indicator.png"),
+        UNSELECTED_TAB = new StaticTexture("assets/textures/ui/inventory/tab/unselected_tab.png"),
+        SELECTED_TAB = new StaticTexture("assets/textures/ui/inventory/tab/selected_tab.png"),
+        UNSELECTED_GENERAL_TAB_ICON = new StaticTexture("assets/textures/ui/inventory/tab/general_tab/unselected_general_tab_icon.png"),
+        SELECTED_GENERAL_TAB_ICON = new StaticTexture("assets/textures/ui/inventory/tab/general_tab/selected_general_tab_icon.png"),
+        UNSELECTED_ZONING_TAB_ICON = new StaticTexture("assets/textures/ui/inventory/tab/zoning_tab/unselected_zoning_tab_icon.png"),
+        SELECTED_ZONING_TAB_ICON = new StaticTexture("assets/textures/ui/inventory/tab/zoning_tab/selected_zoning_tab_icon.png"),
+        UNSELECTED_INDUSTRY_TAB_ICON = new StaticTexture("assets/textures/ui/inventory/tab/industry_tab/unselected_industry_tab_icon.png"),
+        SELECTED_INDUSTRY_TAB_ICON = new StaticTexture("assets/textures/ui/inventory/tab/industry_tab/selected_industry_tab_icon.png"),
+        UNSELECTED_SERVICES_TAB_ICON = new StaticTexture("assets/textures/ui/inventory/tab/services_tab/unselected_services_tab_icon.png"),
+        SELECTED_SERVICES_TAB_ICON = new StaticTexture("assets/textures/ui/inventory/tab/services_tab/selected_services_tab_icon.png"),
+        UNSELECTED_NATURE_TAB_ICON = new StaticTexture("assets/textures/ui/inventory/tab/nature_tab/unselected_nature_tab_icon.png"),
+        SELECTED_NATURE_TAB_ICON = new StaticTexture("assets/textures/ui/inventory/tab/nature_tab/selected_nature_tab_icon.png"),
+        UNSELECTED_SPECIAL_TAB_ICON = new StaticTexture("assets/textures/ui/inventory/tab/special_tab/unselected_special_tab_icon.png"),
+        SELECTED_SPECIAL_TAB_ICON = new StaticTexture("assets/textures/ui/inventory/tab/special_tab/selected_special_tab_icon.png"),
         TEXT_WIDGET = new StaticTexture("assets/textures/ui/inventory/text_field.png");
 
 

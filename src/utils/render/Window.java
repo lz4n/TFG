@@ -152,8 +152,11 @@ public class Window {
             GLFW.glfwSwapBuffers(window);
 
             if (dTime >= 0) {
-                AnimatedTexture.animate();
-                Main.WORLD.tick(dTime);
+
+                for (int tick = 0; tick < Main.TICK_SPEED; tick++) {
+                    AnimatedTexture.animate();
+                    Main.WORLD.tick(dTime);
+                }
                 Window.currentScene.update(dTime);
                 GLFW.glfwSetWindowTitle(window, "EL PATO JUEGO");
             }

@@ -3,6 +3,7 @@ package world.location;
 import main.Main;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
+import utils.render.scene.WorldScene;
 import world.feature.Feature;
 import world.terrain.Terrain;
 
@@ -32,10 +33,20 @@ public class Location implements Cloneable {
         return this;
     }
 
+    public Location multiply(float factor) {
+        this.x *= factor;
+        this.y *= factor;
+        return this;
+    }
+
     public Location truncate() {
         this.x = (int) this.getX();
         this.y = (int) this.getY();
         return this;
+    }
+
+    public Location getInScreenCoords() {
+        return this.clone().multiply(WorldScene.SPRITE_SIZE);
     }
 
     public Vector2f toVector2f() {

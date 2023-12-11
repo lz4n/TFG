@@ -3,27 +3,17 @@ package utils.render.scene;
 import listener.MouseListener;
 import main.Main;
 import org.joml.Matrix4f;
-import ui.Inventory;
-import ui.widget.ScreenIndicatorWidget;
-import ui.widget.SeparatorWidget;
-import ui.widget.SlotWidget;
-import ui.widget.TextWidget;
 import utils.Time;
 import utils.render.Window;
 import utils.render.mesh.*;
-import org.joml.Vector2f;
 import org.lwjgl.opengl.*;
-import utils.render.Camera;
 import utils.render.Shader;
 import utils.render.texture.*;
 import world.WorldGenerator;
 import world.entity.Entity;
 import world.feature.Feature;
 import world.location.Location;
-import world.particle.BulldozerParticle;
-import world.particle.NegativeParticle;
-import world.particle.Particle;
-import world.particle.PositiveParticle;
+import world.particle.*;
 import world.terrain.Terrain;
 
 import java.awt.*;
@@ -104,9 +94,11 @@ public class WorldScene extends Scene {
         for (Entity.EntityType entityType: Entity.EntityType.values()) {
             entityType.getMesh().load();
         }
+
         new BulldozerParticle(new Location(0, 0)).getMesh().load();
         new NegativeParticle(new Location(0, 0)).getMesh().load();
         new PositiveParticle(new Location(0, 0)).getMesh().load();
+        new CloudParticle(new Location(0, 0), 0, true).getMesh().load();
     }
 
     /**
@@ -122,11 +114,14 @@ public class WorldScene extends Scene {
         GL20.glEnable(GL20.GL_BLEND);
         GL20.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
+
         //Activamos el shader y subimos variables uniform al shader .glsl
         Shader.WORLD.use();
         Shader.WORLD.uploadMatrix4f("uProjection", Main.PLAYER.getCamera().getProjectionMatrix());
         Shader.WORLD.uploadMatrix4f("uView", Main.PLAYER.getCamera().getViewMatrix());
-        Shader.WORLD.uploadFloat("uDaylight", (float) Main.WORLD.getDayLight());
+        Shader.WORLD.uploadFloat("uDaylight", Main.WORLD.getDayLight());
+        Shader.WORLD.uploadInt("uSeason", Main.WORLD.getSeason());
+        Shader.WORLD.uploadFloat("uHappiness", Main.WORLD.getHappiness());
 
         //Dibujamos el borde del mundo
         Shader.WORLD.uploadInt("customTextureUnit", 0);
@@ -167,6 +162,9 @@ public class WorldScene extends Scene {
         Shader.ENTITY.use();
         Shader.ENTITY.uploadMatrix4f("uProjection", Main.PLAYER.getCamera().getProjectionMatrix());
         Shader.ENTITY.uploadMatrix4f("uView", Main.PLAYER.getCamera().getViewMatrix());
+        Shader.ENTITY.uploadFloat("uDaylight", Main.WORLD.getDayLight());
+        Shader.ENTITY.uploadInt("uSeason", Main.WORLD.getSeason());
+        Shader.ENTITY.uploadFloat("uHappiness", Main.WORLD.getHappiness());
 
         for (Entity.EntityType entityType: Entity.EntityType.values()) {
             entityType.getTexture().bind();
@@ -180,7 +178,7 @@ public class WorldScene extends Scene {
 
         for (Particle particle: Main.WORLD.getParticlesList()) {
             particle.getTexture().bind();
-            Shader.ENTITY.upload2f("uInstancePosition", particle.getLocation().getX() * WorldScene.SPRITE_SIZE, particle.getLocation().getY() * WorldScene.SPRITE_SIZE);
+            Shader.ENTITY.upload2f("uInstancePosition", particle.getLocation().getX() *WorldScene.SPRITE_SIZE, particle.getLocation().getY() * WorldScene.SPRITE_SIZE);
             Shader.ENTITY.uploadFloat("uRotationAngle", particle.getRotation());
             Shader.ENTITY.uploadFloat("uScale", particle.getScale());
             particle.getMesh().draw();
@@ -210,6 +208,7 @@ public class WorldScene extends Scene {
             String debug = String.format("""
                             game:
                                 fps=%d
+                                tickSpeed=%d
                             
                             selection:
                                 x=%.2f, y=%.2f
@@ -221,10 +220,13 @@ public class WorldScene extends Scene {
                             
                             world:
                                 seed=%d
-                                daytime=%d
+                                dayTime=%d (%s) (dayLight=%.03f), day=%d (season=%d), years=%d
                                 features = %d, entities = %d, particles = %d
+                                
+                                happiness=%.03f
                             """,
                     (int) (1/ Time.nanosecondsToSeconds(dTime)),
+                    Main.TICK_SPEED,
                     MouseListener.inGameLocation.getX(),
                     MouseListener.inGameLocation.getY(),
                     MouseListener.inGameLocation.isOutOfTheWorld() ? "    OutOfTheWorld" : String.format("""
@@ -248,9 +250,16 @@ public class WorldScene extends Scene {
                     Main.PLAYER.getCamera().getZoom(),
                     Main.WORLD.getSeed(),
                     Main.WORLD.getDayTime(),
+                    Main.WORLD.getFormattedDayTime(),
+                    Main.WORLD.getDayLight(),
+                    Main.WORLD.getDay(),
+                    Main.WORLD.getSeason(),
+                    Main.WORLD.getYear(),
                     Main.WORLD.getFeaturesCount(),
                     Main.WORLD.getEntitiesCount(),
-                    Main.WORLD.getParticlesList().size());
+                    Main.WORLD.getParticlesList().size(),
+                    Main.WORLD.getHappiness()
+            );
             Graphics2dTexture texture = new Graphics2dTexture(Window.getWidth() / 2, Window.getHeight());
             Graphics2D graphics2D = texture.getGraphics();
             int posY = 10;
@@ -274,7 +283,7 @@ public class WorldScene extends Scene {
 
     @Override
     public void resizeWindow() {
-        Main.PLAYER.getInventory().setPixelSizeInScreen(Window.getHeight() / 205f);
+        Main.PLAYER.getInventory().setPixelSizeInScreen(Window.getHeight() / 250f);
         Main.PLAYER.getInventory().onResizeWindowEvent(Window.getWidth(), Window.getHeight());
     }
 
