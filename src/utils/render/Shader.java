@@ -34,7 +34,9 @@ public enum Shader {
     /**
      * Shader utilizado para renderizar objetos sobre la pantalla. La posición de estos objetos siempre será la misma, sin importar la posición de la cámara.
      */
-    HUD("assets/shaders/hud");
+    HUD("assets/shaders/hud"),
+
+    TEXT("assets/shaders/text");
 
     /**
      * Contenido del archivo .glsl del shader de vértices.
@@ -123,6 +125,8 @@ public enum Shader {
         GL20.glAttachShader(this.shaderProgramID, this.vertexID);
         GL20.glAttachShader(this.shaderProgramID, this.fragmentID);
         GL20.glLinkProgram(this.shaderProgramID);
+
+        Logger.sendMessage("Se ha compilado el shader \"%s\" (id=%d).", Logger.LogMessageType.INFO, this, this.shaderProgramID);
     }
 
     /**

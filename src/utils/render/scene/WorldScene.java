@@ -24,6 +24,7 @@ import java.awt.*;
  * @author Izan
  */
 public class WorldScene extends Scene {
+
     /**
      * Tamaño base (sin contar el zoom) de los sprites.
      */
@@ -45,6 +46,7 @@ public class WorldScene extends Scene {
 
     @Override
     public void init() {
+
         new WorldGenerator(Main.WORLD, this).run();
 
         for (Terrain.TerrainType terrainType: Terrain.TerrainType.values()) {
@@ -113,7 +115,6 @@ public class WorldScene extends Scene {
         //Activamos las transparencias
         GL20.glEnable(GL20.GL_BLEND);
         GL20.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-
 
         //Activamos el shader y subimos variables uniform al shader .glsl
         Shader.WORLD.use();

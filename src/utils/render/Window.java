@@ -20,11 +20,8 @@ import utils.render.texture.CacheTexture;
 import utils.render.texture.Texture;
 import utils.render.texture.Textures;
 import world.entity.Duck;
-import world.feature.Feature;
 import world.particle.BulldozerParticle;
-import world.particle.PositiveParticle;
 
-import java.lang.ref.PhantomReference;
 import java.lang.reflect.Field;
 import java.util.Objects;
 
@@ -152,12 +149,13 @@ public class Window {
             GLFW.glfwSwapBuffers(window);
 
             if (dTime >= 0) {
-
                 for (int tick = 0; tick < Main.TICK_SPEED; tick++) {
                     AnimatedTexture.animate();
                     Main.WORLD.tick(dTime);
                 }
+
                 Window.currentScene.update(dTime);
+
                 GLFW.glfwSetWindowTitle(window, "EL PATO JUEGO");
             }
 

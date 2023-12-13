@@ -8,6 +8,7 @@ import utils.render.texture.Texture;
 import utils.render.texture.Textures;
 import world.feature.Feature;
 
+import java.awt.*;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -46,7 +47,7 @@ public class Player {
         this.INVENTORY.addTab(Player.SERVICES_TAB);
         this.INVENTORY.addTab(Player.SPECIAL_TAB);
 
-        this.timeTextWidget = new TextWidget(4, 4, "");
+        this.timeTextWidget = new TextWidget(4, 4, "", 0, 0);
         this.INVENTORY.addWidget(this.timeTextWidget, Player.GENERAL_TAB);
         this.INVENTORY.addWidget(new SeparatorWidget(44, 0), Player.GENERAL_TAB);
         this.INVENTORY.addWidget(new SlotWidget(4, 23, Textures.DUCK), Player.GENERAL_TAB);
@@ -86,7 +87,7 @@ public class Player {
     }
 
     public void updateTime(String newTime) {
-        this.timeTextWidget.setText(newTime);
+        this.timeTextWidget.setText(newTime, Font.PLAIN, 20);
     }
 
     public Inventory getInventory() {

@@ -1,5 +1,6 @@
 package utils.render.texture;
 
+import org.joml.Vector2f;
 import org.lwjgl.opengl.GL20;
 
 import java.awt.*;
@@ -17,7 +18,7 @@ public class Graphics2dTexture extends Texture {
     /**
      * Buffer de imagen que almacena los gráficos 2D.
      */
-    private final BufferedImage BUFFERED_IMAGE;
+    public final BufferedImage BUFFERED_IMAGE;
 
     /**
      * La instancia de <code>Graphics2D</code>.
@@ -82,6 +83,10 @@ public class Graphics2dTexture extends Texture {
         //Cuando hagamos la textura más grande o más pequeña se pixele.
         GL20.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_MIN_FILTER, GL20.GL_NEAREST);
         GL20.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_MAG_FILTER, GL20.GL_NEAREST);
+    }
+
+    public Vector2f getSize() {
+        return new Vector2f(this.BUFFERED_IMAGE.getWidth(), this.BUFFERED_IMAGE.getHeight());
     }
 
     /**

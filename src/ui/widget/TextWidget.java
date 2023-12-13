@@ -4,6 +4,7 @@ import org.lwjgl.opengl.ARBVertexArrayObject;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import utils.BoundingBox;
+import utils.GameFont;
 import utils.render.Shader;
 import utils.render.mesh.Mesh;
 import utils.render.texture.Graphics2dTexture;
@@ -24,9 +25,9 @@ public class TextWidget extends Widget implements CustomDrawWidget {
 
     private Graphics2dTexture text;
 
-    public TextWidget(float posX, float posY, String text) {
+    public TextWidget(float posX, float posY, String text, int style, int size) {
         super(posX, posY, TextWidget.BASE_BOUNDING_BOX);
-        this.setText(text);
+        this.setText(text, style, size);
     }
 
     @Override
@@ -37,7 +38,7 @@ public class TextWidget extends Widget implements CustomDrawWidget {
     @Override
     public void draw(Mesh mesh, float pixelSizeInScreen, float posX, float posY, float width, float height) {
         Shader.HUD.upload2f("uHudPosition", posX + 2.5f * pixelSizeInScreen, posY + 2.5f * pixelSizeInScreen);
-        Shader.HUD.upload2f("uHudSize", (TextWidget.BASE_BOUNDING_BOX.getWidth() -5) * pixelSizeInScreen, (TextWidget.BASE_BOUNDING_BOX.getHeight() -5) * pixelSizeInScreen);
+        Shader.HUD.upload2f("uHudSize", this.text.getSize().x(), this.text.getSize().y());
 
         this.text.bind();
         ARBVertexArrayObject.glBindVertexArray(mesh.getVaoId());
@@ -45,41 +46,12 @@ public class TextWidget extends Widget implements CustomDrawWidget {
         GL20.glDrawElements(GL20.GL_TRIANGLES, mesh.getElementArray().length, GL11.GL_UNSIGNED_INT, 0);
         GL20.glDisableVertexAttribArray(0);
         ARBVertexArrayObject.glBindVertexArray(0);
-        this.text.bind();
     }
 
-    public void setText(String text) {
-        /*this.text = new Graphics2dTexture((int) (TextWidget.BASE_BOUNDING_BOX.getWidth() *10), (int) (TextWidget.BASE_BOUNDING_BOX.getHeight() *10));
-
-        Graphics2D graphics2D = this.text.getGraphics();
-        graphics2D.setFont(new Font(Font.DIALOG, Font.BOLD, 1000));
-        graphics2D.drawString(text, 0, TextWidget.BASE_BOUNDING_BOX.getHeight() *10);
-        this.text.convert();*/
-
-        try (InputStream fontStream = new DataInputStream(new FileInputStream("assets/font/arial.ttf"))) {
-            BufferedImage fontImage = ImageIO.read(fontStream);
-            byte[] fontData = new byte[fontImage.getWidth() * fontImage.getHeight()];
-            fontImage.getRGB(0, 0, fontImage.getWidth(), fontImage.getHeight(), fontData, 0, fontImage.getWidth());
-
-            // Generate a texture
-            int textureId = 1;
-            GL11.glGenTextures(1, textureId);
-            GL11.glBindTexture(GL_TEXTURE_2D, textureId);
-
-            // Load the font data into the texture
-            GL11.glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, fontData.length, 1, 0, GL_RED, GL_UNSIGNED_BYTE, fontData);
-
-            // Set the drawing mode
-            GL11.glDrawArrays(GL_POINTS, 0, 1);
-
-            // Set the position of the text
-            GL11.glRasterPos2f(10, 10);
-
-            // Render the text
-            GL11.glDrawArrays(GL_POINTS, 0, 1);
-        } catch (IOException exception) {
-
+    public void setText(String text, int style, int size) {
+        if (this.text != null) {
+            this.text.remove();
         }
-
+        this.text = GameFont.PIXEL.drawText(text, style, size);
     }
 }
