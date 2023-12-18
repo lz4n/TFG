@@ -8,6 +8,7 @@ import ui.widget.buttonWidget.AbstractButtonWidget;
 import ui.widget.textWidgets.SmallTextBox;
 import ui.Tab;
 import ui.widget.textWidgets.TextBox;
+import ui.widget.widgetUtils.WidgetEvent;
 import utils.render.Camera;
 import utils.render.texture.Texture;
 import utils.render.texture.Textures;
@@ -38,9 +39,10 @@ public class Player {
     private final Camera CAMERA = new Camera(new Vector2f(0, 0)); //Iniciamos la cámara en 0,0.
 
     private TextBox timeTextBox;
-    private AbstractButtonWidget gameSpeedButton;
+    private AbstractButtonWidget gameSpeedButton, bulldozerButton;
+    private ScreenIndicatorWidget bulldozerIndicator = new ScreenIndicatorWidget(20, 340, Textures.BULLDOZER_ICON);
 
-    private boolean isHidingUI = false;
+    private boolean isHidingUI = false, isUsingBulldozer = false;
     private int previousGameSpeed = Main.tickSpeed;
     private MenuItem selectedFeatureToPlace;
 
@@ -58,7 +60,7 @@ public class Player {
         this.timeTextBox = new TextBox(4, 4, "", Font.PLAIN);
         this.INVENTORY.addWidgetToAllTabs(this.timeTextBox);
 
-        this.gameSpeedButton = new AbstractButtonWidget(4, 24, Textures.GAME_SPEED_BUTTON, Textures.CLICKED_GAME_SPEED_BUTTON, new BoundingBox(36, 16)) {
+        this.gameSpeedButton = new AbstractButtonWidget(4, 24, Textures.HORIZONTAL_BUTTON, Textures.CLICKED_HORIZONTAL_BUTTON, new Vector2f(0, -1), new BoundingBox(36, 16)) {
             @Override
             public Texture getIcon() {
                 return switch (Main.tickSpeed) {
@@ -79,6 +81,7 @@ public class Player {
                 default -> Main.tickSpeed = 1;
             };
         });
+
         this.INVENTORY.addWidgetToAllTabs(this.gameSpeedButton);
 
         this.INVENTORY.addWidgetToAllTabs(new SeparatorWidget(44, 0));
@@ -94,6 +97,26 @@ public class Player {
         this.INVENTORY.addWidgetToAllTabs(new SmallTextBox(90, 34, "", Font.PLAIN));
 
         this.INVENTORY.addWidgetToAllTabs(new SeparatorWidget(130, 0));
+
+        this.bulldozerIndicator.setOnClickEvent(() -> {
+            this.isUsingBulldozer = false;
+        });
+        this.bulldozerButton = new AbstractButtonWidget(136, 4, Textures.VERTICAL_BUTTON, Textures.CLICKED_VERTICAL_BUTTON, new Vector2f(1, 0), new BoundingBox(16, 36)) {
+            @Override
+            public Texture getIcon() {
+                return Textures.BULLDOZER_BUTTON_ICON;
+            }
+        };
+        this.bulldozerButton.setOnClickEvent(() -> {
+            if (!this.isUsingBulldozer) {
+                this.INVENTORY.addWidgetToAllTabs(this.bulldozerIndicator);
+            } else {
+                this.INVENTORY.removeWidget(this.bulldozerIndicator);
+            }
+            this.isUsingBulldozer = !this.isUsingBulldozer;
+        });
+
+        this.INVENTORY.addWidget(this.bulldozerButton, Player.GENERAL_TAB);
 
         this.INVENTORY.addWidget(new SlotWidget(800, 24, Textures.DUCK), Player.SPECIAL_TAB);
 
@@ -134,7 +157,7 @@ public class Player {
         this.isHidingUI = !this.isHidingUI;
     }
 
-    public void  toggleGameSpeed() {
+    public void toggleGameSpeed() {
         this.gameSpeedButton.onClickEvent();
         if (Main.tickSpeed == 0) Main.tickSpeed = 1;
     }
@@ -148,6 +171,10 @@ public class Player {
             this.gameSpeedButton.onClickEvent();
             Main.tickSpeed = this.previousGameSpeed;
         }
+    }
+
+    public void toggleBulldozer() {
+        this.bulldozerButton.onClickEvent();
     }
 
     public void updateTime(String newTime) {
@@ -164,6 +191,10 @@ public class Player {
 
     public boolean isHidingUi() {
         return this.isHidingUI;
+    }
+
+    public boolean isUsingBulldozer() {
+        return this.isUsingBulldozer;
     }
 
     public static class MenuItem {

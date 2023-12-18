@@ -207,13 +207,14 @@ public class WorldScene extends Scene {
                                 fps=%d
                                 tickSpeed=%d
                             
-                            selection:
-                                x=%.2f, y=%.2f
-                            %s
-                                            
-                            camera:
-                                x=%.2f, y=%.2f
-                                zoom=%s
+                            player:
+                                isHidingUI=%s
+                                isUsingBulldozer=%s
+                                selection:
+                                    x=%.2f, y=%.2f
+                                    %scamera:
+                                    x=%.2f, y=%.2f
+                                    zoom=%s
                             
                             world:
                                 seed=%d
@@ -224,14 +225,16 @@ public class WorldScene extends Scene {
                             """,
                     (int) (1/ Time.nanosecondsToSeconds(dTime)),
                     Main.tickSpeed,
+                    Main.PLAYER.isHidingUi(),
+                    Main.PLAYER.isUsingBulldozer(),
                     MouseListener.inGameLocation.getX(),
                     MouseListener.inGameLocation.getY(),
                     MouseListener.inGameLocation.isOutOfTheWorld() ? "    OutOfTheWorld" : String.format("""
-                                        terrain: %s type=%s
-                                        %s
-                                        biome=%s
-                                        wordBuilder: c=%.4f,w=%.4f,r=%.4f
-                                    """,
+                                            terrain: %s type=%s
+                                                    %s
+                                                    biome=%s
+                                                    wordBuilder: c=%.4f,w=%.4f,r=%.4f
+                                            """,
                             MouseListener.inGameLocation.getTerrain(),
                             MouseListener.inGameLocation.getTerrain().getType(),
                             MouseListener.inGameLocation.getFeature() == null ? "feature: null" : String.format("feature: %s type=%s,variant=%d",

@@ -66,13 +66,17 @@ public final class Textures {
         SELECTED_SPECIAL_TAB_ICON = new StaticTexture("assets/textures/ui/inventory/tab/special_tab/selected_special_tab_icon.png"),
         TEXT_BOX = new StaticTexture("assets/textures/ui/inventory/text_box/text_box.png"),
         SMALL_TEXT_BOX = new StaticTexture("assets/textures/ui/inventory/text_box/text_box_small.png"),
-        GAME_SPEED_BUTTON = new StaticTexture("assets/textures/ui/inventory/button/game_speed_button/game_speed_button.png"),
-        CLICKED_GAME_SPEED_BUTTON = new StaticTexture("assets/textures/ui/inventory/button/game_speed_button/clicked_game_speed_button.png"),
+        HORIZONTAL_BUTTON = new StaticTexture("assets/textures/ui/inventory/button/horizontal/horizontal_button.png"),
+        CLICKED_HORIZONTAL_BUTTON = new StaticTexture("assets/textures/ui/inventory/button/horizontal/clicked_horizontal_button.png"),
+        VERTICAL_BUTTON = new StaticTexture("assets/textures/ui/inventory/button/vertical/vertical_button.png"),
+        CLICKED_VERTICAL_BUTTON = new StaticTexture("assets/textures/ui/inventory/button/vertical/clicked_vertical_button.png"),
         PAUSED_GAME_ICON = new StaticTexture("assets/textures/ui/inventory/button/game_speed_button/paused_game_icon.png"),
         X1_GAME_ICON = new StaticTexture("assets/textures/ui/inventory/button/game_speed_button/x1_game_icon.png"),
         X2_GAME_ICON = new StaticTexture("assets/textures/ui/inventory/button/game_speed_button/x2_game_icon.png"),
         X3_GAME_ICON = new StaticTexture("assets/textures/ui/inventory/button/game_speed_button/x3_game_icon.png"),
-        X5_GAME_ICON = new StaticTexture("assets/textures/ui/inventory/button/game_speed_button/x5_game_icon.png");
+        X5_GAME_ICON = new StaticTexture("assets/textures/ui/inventory/button/game_speed_button/x5_game_icon.png"),
+        BULLDOZER_BUTTON_ICON = new StaticTexture("assets/textures/ui/inventory/button/bulldozer_button/bulldozer_icon.png"),
+        BULLDOZER_ICON = new StaticTexture("assets/textures/ui/icon/bulldozer_icon.png");
 
 
 }

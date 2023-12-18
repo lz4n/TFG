@@ -37,6 +37,10 @@ public class KeyListener {
                         break;
                     case GLFW.GLFW_KEY_P:
                         Main.PLAYER.togglePauseGame();
+                        break;
+                    case GLFW.GLFW_KEY_B:
+                        Main.PLAYER.toggleBulldozer();
+                        break;
                 }
             }
         }
