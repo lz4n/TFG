@@ -8,25 +8,16 @@ import ui.widget.buttonWidget.AbstractButtonWidget;
 import ui.widget.textWidgets.SmallTextBox;
 import ui.Tab;
 import ui.widget.textWidgets.TextBox;
-import ui.widget.widgetUtils.WidgetEvent;
 import utils.render.Camera;
 import utils.render.texture.Texture;
 import utils.render.texture.Textures;
 import world.feature.Feature;
 
 import java.awt.*;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
 
 public class Player {
-    private final static List<MenuItem> ITEMS = Arrays.asList(
-            new MenuItem(Textures.TULIP_2, Feature.FeatureType.FLOWER),
-            new MenuItem(Textures.ROCK, Feature.FeatureType.ROCK),
-            new MenuItem(Textures.BUSH, Feature.FeatureType.BUSH),
-            new MenuItem(Textures.TREE2, Feature.FeatureType.TREE)
-    );
-
     private final static Tab GENERAL_TAB = new Tab(Textures.SELECTED_GENERAL_TAB_ICON, Textures.UNSELECTED_GENERAL_TAB_ICON),
         ZONING_TAB = new Tab(Textures.SELECTED_ZONING_TAB_ICON, Textures.UNSELECTED_ZONING_TAB_ICON),
         INDUSTRY_TAB = new Tab(Textures.SELECTED_INDUSTRY_TAB_ICON, Textures.UNSELECTED_INDUSTRY_TAB_ICON),
@@ -34,15 +25,38 @@ public class Player {
         NATURE_TAB = new Tab(Textures.SELECTED_NATURE_TAB_ICON, Textures.UNSELECTED_NATURE_TAB_ICON),
         SPECIAL_TAB = new Tab(Textures.SELECTED_SPECIAL_TAB_ICON, Textures.UNSELECTED_SPECIAL_TAB_ICON);
 
+    private final static HashMap<Tab, List<List<MenuItem>>> ITEMS = new HashMap<>() {{
+        this.put(Player.GENERAL_TAB, new ArrayList<>());
+        this.put(Player.ZONING_TAB, new ArrayList<>());
+        this.put(Player.INDUSTRY_TAB, new ArrayList<>());
+        this.put(Player.SERVICES_TAB, new ArrayList<>());
+        this.put(Player.NATURE_TAB, Arrays.asList(
+                Arrays.asList(
+                        new MenuItem(Textures.BUSH, Feature.FeatureType.BUSH),
+                        new MenuItem(Textures.TREE1, Feature.FeatureType.TREE),
+                        new MenuItem(Textures.TREE2, Feature.FeatureType.TREE)),
+                Arrays.asList(
+                        new MenuItem(Textures.TULIP, Feature.FeatureType.FLOWER),
+                        new MenuItem(Textures.TULIP_2, Feature.FeatureType.FLOWER),
+                        new MenuItem(Textures.BLUE_ORCHID, Feature.FeatureType.FLOWER),
+                        new MenuItem(Textures.DANDELION, Feature.FeatureType.FLOWER),
+                        new MenuItem(Textures.RED_LILY, Feature.FeatureType.FLOWER)),
+                List.of(
+                        new MenuItem(Textures.ROCK, Feature.FeatureType.ROCK))
+        ));
+        this.put(Player.SPECIAL_TAB, new ArrayList<>());
+
+    }};
+
     private final Inventory INVENTORY = new Inventory();
-    private final HashMap<MenuItem, SlotWidget> MENU_ITEMS_MAP = new HashMap<>();
+    private final HashMap<MenuItem, SlotWidget> MENU_ITEMS_BY_SLOT = new HashMap<>();
     private final Camera CAMERA = new Camera(new Vector2f(0, 0)); //Iniciamos la cámara en 0,0.
 
     private TextBox timeTextBox;
-    private AbstractButtonWidget gameSpeedButton, bulldozerButton;
+    private AbstractButtonWidget gameSpeedButton;
     private ScreenIndicatorWidget bulldozerIndicator = new ScreenIndicatorWidget(20, 340, Textures.BULLDOZER_ICON);
 
-    private boolean isHidingUI = false, isUsingBulldozer = false;
+    private boolean isHidingUI = false, isUsingBulldozer = false, isMouseOnInventory = false;
     private int previousGameSpeed = Main.tickSpeed;
     private MenuItem selectedFeatureToPlace;
 
@@ -50,15 +64,7 @@ public class Player {
     }
 
     public void init() {
-        this.INVENTORY.addTab(Player.GENERAL_TAB);
-        this.INVENTORY.addTab(Player.ZONING_TAB);
-        this.INVENTORY.addTab(Player.INDUSTRY_TAB);
-        this.INVENTORY.addTab(Player.NATURE_TAB);
-        this.INVENTORY.addTab(Player.SERVICES_TAB);
-        this.INVENTORY.addTab(Player.SPECIAL_TAB);
-
         this.timeTextBox = new TextBox(4, 4, "", Font.PLAIN);
-        this.INVENTORY.addWidgetToAllTabs(this.timeTextBox);
 
         this.gameSpeedButton = new AbstractButtonWidget(4, 24, Textures.HORIZONTAL_BUTTON, Textures.CLICKED_HORIZONTAL_BUTTON, new Vector2f(0, -1), new BoundingBox(36, 16)) {
             @Override
@@ -82,8 +88,19 @@ public class Player {
             };
         });
 
-        this.INVENTORY.addWidgetToAllTabs(this.gameSpeedButton);
+        this.bulldozerIndicator.setOnClickEvent(() -> {
+            this.isUsingBulldozer = false;
+        });
 
+        this.INVENTORY.addTab(Player.GENERAL_TAB);
+        this.INVENTORY.addTab(Player.ZONING_TAB);
+        this.INVENTORY.addTab(Player.INDUSTRY_TAB);
+        this.INVENTORY.addTab(Player.NATURE_TAB);
+        this.INVENTORY.addTab(Player.SERVICES_TAB);
+        this.INVENTORY.addTab(Player.SPECIAL_TAB);
+
+        this.INVENTORY.addWidgetToAllTabs(this.timeTextBox);
+        this.INVENTORY.addWidgetToAllTabs(this.gameSpeedButton);
         this.INVENTORY.addWidgetToAllTabs(new SeparatorWidget(44, 0));
 
         this.INVENTORY.addWidgetToAllTabs(new SmallTextBox(50, 4, "", Font.PLAIN));
@@ -96,61 +113,71 @@ public class Player {
         this.INVENTORY.addWidgetToAllTabs(new SmallTextBox(90, 24, "", Font.PLAIN));
         this.INVENTORY.addWidgetToAllTabs(new SmallTextBox(90, 34, "", Font.PLAIN));
 
-        this.INVENTORY.addWidgetToAllTabs(new SeparatorWidget(130, 0));
+        Player.ITEMS.keySet().forEach(tab -> this.addFeaturesWidgetToTab(130, tab));
 
-        this.bulldozerIndicator.setOnClickEvent(() -> {
-            this.isUsingBulldozer = false;
-        });
-        this.bulldozerButton = new AbstractButtonWidget(136, 4, Textures.VERTICAL_BUTTON, Textures.CLICKED_VERTICAL_BUTTON, new Vector2f(1, 0), new BoundingBox(16, 36)) {
+        this.INVENTORY.addWidget(new SlotWidget(800, 24, Textures.DUCK), Player.SPECIAL_TAB);
+
+        this.INVENTORY.setCurrentTab(Player.GENERAL_TAB);
+    }
+
+    private void addBulldozerToInventory(int posX, Tab tab) {
+        this.INVENTORY.addWidget(new SeparatorWidget(posX, 0), tab);
+
+        Widget bulldozerButton = new AbstractButtonWidget(posX + 6, 4, Textures.VERTICAL_BUTTON, Textures.CLICKED_VERTICAL_BUTTON, new Vector2f(1, 0), new BoundingBox(16, 36)) {
             @Override
             public Texture getIcon() {
                 return Textures.BULLDOZER_BUTTON_ICON;
             }
         };
-        this.bulldozerButton.setOnClickEvent(() -> {
-            if (!this.isUsingBulldozer) {
-                this.INVENTORY.addWidgetToAllTabs(this.bulldozerIndicator);
-            } else {
-                this.INVENTORY.removeWidget(this.bulldozerIndicator);
-            }
-            this.isUsingBulldozer = !this.isUsingBulldozer;
-        });
+        bulldozerButton.setOnClickEvent(this::toggleBulldozer);
 
-        this.INVENTORY.addWidget(this.bulldozerButton, Player.GENERAL_TAB);
+        this.INVENTORY.addWidget(bulldozerButton, tab);
+    }
 
-        this.INVENTORY.addWidget(new SlotWidget(800, 24, Textures.DUCK), Player.SPECIAL_TAB);
+    private void addFeaturesWidgetToTab(int widgetXPos, Tab tab) {
+        final int SLOT_SEPARATION = 20, WIDGET_POS_TOP = 4, WIDGET_POS_BOTTOM = 24;
 
-        int widgetSep = 20, widgetTopPos = 4, widgetBottomPos = 24, widgetCounter = 0, widgetXPos = 40;
-        for (MenuItem item: Player.ITEMS) {
-            SlotWidget slotWidget;
+        for (List<MenuItem> itemsCompound : Player.ITEMS.getOrDefault(tab, new ArrayList<>())) {
+            this.INVENTORY.addWidget(new SeparatorWidget(widgetXPos, 0), tab);
+            widgetXPos += 6;
 
-            if (widgetCounter++ == 0) {
-                slotWidget = new SlotWidget(widgetXPos, widgetTopPos, item.TEXTURE);
-            } else {
-                slotWidget = new SlotWidget(widgetXPos, widgetBottomPos, item.TEXTURE);
-                widgetCounter = 0;
-                widgetXPos += widgetSep;
-            }
+            int widgetCounter = 0;
+            for (MenuItem item : itemsCompound) {
+                SlotWidget slotWidget;
 
-            this.MENU_ITEMS_MAP.put(item, slotWidget);
-            slotWidget.setOnClickEvent(() -> {
-                this.MENU_ITEMS_MAP.values().forEach(itemWidget -> itemWidget.setSelected(false));
-                slotWidget.setSelected(true);
+                if (widgetCounter++ == 0) {
+                    slotWidget = new SlotWidget(widgetXPos, WIDGET_POS_TOP, item.TEXTURE);
+                } else {
+                    slotWidget = new SlotWidget(widgetXPos, WIDGET_POS_BOTTOM, item.TEXTURE);
+                    widgetCounter = 0;
+                    widgetXPos += SLOT_SEPARATION;
+                }
+
+                this.MENU_ITEMS_BY_SLOT.put(item, slotWidget);
+                slotWidget.setOnClickEvent(() -> {
+                    this.INVENTORY.removeWidget(this.bulldozerIndicator);
+                    this.isUsingBulldozer = false;
+
+                    this.MENU_ITEMS_BY_SLOT.values().forEach(itemWidget -> itemWidget.setSelected(false));
+                    slotWidget.setSelected(true);
 
 
-                ScreenIndicatorWidget screenIndicatorWidget = new ScreenIndicatorWidget(20, 340, item.TEXTURE);
-                screenIndicatorWidget.setOnClickEvent(() -> {
-                    this.selectedFeatureToPlace = null;
-                    slotWidget.setSelected(false);
+                    ScreenIndicatorWidget screenIndicatorWidget = new ScreenIndicatorWidget(20, 340, item.TEXTURE);
+                    screenIndicatorWidget.setOnClickEvent(() -> {
+                        this.selectedFeatureToPlace = null;
+                        slotWidget.setSelected(false);
+                    });
+                    this.INVENTORY.addWidget(screenIndicatorWidget, tab);
+
+                    this.selectedFeatureToPlace = item;
                 });
-                this.INVENTORY.addWidget(screenIndicatorWidget, Player.NATURE_TAB);
+                this.INVENTORY.addWidget(slotWidget, tab);
+            }
 
-                this.selectedFeatureToPlace = item;
-            });
-            this.INVENTORY.addWidget(slotWidget, Player.NATURE_TAB);
+            widgetXPos += SLOT_SEPARATION;
         }
 
-        this.INVENTORY.setCurrentTab(Player.GENERAL_TAB);
+        this.addBulldozerToInventory(widgetXPos, tab);
     }
 
     public void toggleIsHidingUi() {
@@ -174,7 +201,13 @@ public class Player {
     }
 
     public void toggleBulldozer() {
-        this.bulldozerButton.onClickEvent();
+        if (!this.isUsingBulldozer) {
+            this.INVENTORY.addWidgetToAllTabs(this.bulldozerIndicator);
+            this.MENU_ITEMS_BY_SLOT.values().stream().filter(SlotWidget::isSelected).forEach(slotWidget -> slotWidget.setSelected(false));
+        } else {
+            this.INVENTORY.removeWidget(this.bulldozerIndicator);
+        }
+        this.isUsingBulldozer = !this.isUsingBulldozer;
     }
 
     public void updateTime(String newTime) {
@@ -195,6 +228,14 @@ public class Player {
 
     public boolean isUsingBulldozer() {
         return this.isUsingBulldozer;
+    }
+
+    public boolean isMouseOnInventory() {
+        return this.isMouseOnInventory;
+    }
+
+    public void setMouseOnInventory(boolean isMouseOnInventory) {
+        this.isMouseOnInventory = isMouseOnInventory;
     }
 
     public static class MenuItem {

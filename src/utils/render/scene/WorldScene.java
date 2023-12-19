@@ -187,7 +187,7 @@ public class WorldScene extends Scene {
         }
 
         //Dibujamos el selector del ratón
-        if (MouseListener.inGameLocation != null && !MouseListener.inGameLocation.isOutOfTheWorld()) {
+        if (MouseListener.inGameLocation != null && !MouseListener.inGameLocation.isOutOfTheWorld() && !Main.PLAYER.isMouseOnInventory()) {
             Shader.WORLD.use();
             Shader.WORLD.uploadMatrix4f("uProjection", Main.PLAYER.getCamera().getProjectionMatrix());
             Shader.WORLD.uploadMatrix4f("uView", Main.PLAYER.getCamera().getViewMatrix());
@@ -210,6 +210,7 @@ public class WorldScene extends Scene {
                             player:
                                 isHidingUI=%s
                                 isUsingBulldozer=%s
+                                isMouseOnInventory=%s
                                 selection:
                                     x=%.2f, y=%.2f
                                     %scamera:
@@ -227,6 +228,7 @@ public class WorldScene extends Scene {
                     Main.tickSpeed,
                     Main.PLAYER.isHidingUi(),
                     Main.PLAYER.isUsingBulldozer(),
+                    Main.PLAYER.isMouseOnInventory(),
                     MouseListener.inGameLocation.getX(),
                     MouseListener.inGameLocation.getY(),
                     MouseListener.inGameLocation.isOutOfTheWorld() ? "    OutOfTheWorld" : String.format("""
@@ -289,7 +291,7 @@ public class WorldScene extends Scene {
 
     @Override
     public void click(float mouseX, float mouseY) {
-        if (!Main.PLAYER.isHidingUi()) {
+        if (!Main.PLAYER.isHidingUi() && Main.PLAYER.isMouseOnInventory()) {
             Main.PLAYER.getInventory().onClickEvent(mouseX, mouseY);
         }
     }
@@ -297,7 +299,7 @@ public class WorldScene extends Scene {
     @Override
     public void moveMouse(float mouseX, float mouseY) {
         if (!Main.PLAYER.isHidingUi()) {
-            Main.PLAYER.getInventory().onMouseMoveEvent(mouseX, mouseY);
+            Main.PLAYER.setMouseOnInventory(Main.PLAYER.getInventory().onMouseMoveEvent(mouseX, mouseY));
         }
     }
 }

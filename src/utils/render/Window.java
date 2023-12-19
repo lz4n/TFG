@@ -6,10 +6,13 @@ import listener.WindowListener;
 import main.Main;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.Callbacks;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
+import org.lwjgl.glfw.GLFWImage;
 import org.lwjgl.opengl.GL;
+import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.MemoryUtil;
 import utils.Logger;
 import utils.Time;
@@ -22,7 +25,14 @@ import utils.render.texture.Textures;
 import world.entity.Duck;
 import world.particle.BulldozerParticle;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.Objects;
 
 /**
@@ -135,6 +145,37 @@ public class Window {
         //Compilamos los shaders
         for (Shader shader: Shader.values()) {
             shader.compile();
+        }
+
+        //Establecemos el icono de la ventana
+        // Cargar la imagen del icono con STBImage
+        ByteBuffer iconBuffer = null;
+        try {
+            BufferedImage bi = ImageIO.read(new java.io.File("assets/textures/icon.png"));
+            byte[] iconData = ((DataBufferByte) bi.getRaster().getDataBuffer()).getData();
+            ByteBuffer ib = BufferUtils.createByteBuffer(iconData.length);
+            ib.order(ByteOrder.nativeOrder());
+
+            for (int i = 0; i < iconData.length; i += 4) {
+                byte a = iconData[i];
+                byte b = iconData[i + 1];
+                byte g = iconData[i + 2];
+                byte r = iconData[i + 3];
+
+                System.out.println(r  + "," + g + "," + b + "," + a );
+
+                // Invertir los canales rojo y azul y ponerlos en orden BGR
+                ib.put(r).put(g).put(b).put(a);
+            }
+            ib.flip();
+
+
+            GLFWImage.Buffer gb = GLFWImage.create(1);
+            GLFWImage iconGI = GLFWImage.create().set(bi.getWidth(), bi.getHeight(), ib);
+            gb.put(0, iconGI);
+            GLFW.glfwSetWindowIcon(window, gb);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 

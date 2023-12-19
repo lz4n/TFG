@@ -171,31 +171,26 @@ public class Inventory {
         }
     }
 
-    public void onMouseMoveEvent(float mouseX, float mouseY) {
+    public boolean onMouseMoveEvent(float mouseX, float mouseY) {
         float interfaceX = (mouseX / this.pixelSizeInScreen) - this.currentScrollPosX;
         float interfaceY = (mouseY - this.posY) / this.pixelSizeInScreen;
 
-        AtomicBoolean hoverUnderArrows = new AtomicBoolean(true);
-
         if (this.isShowingLeftArrow) {
-            this.isHoveredLeftArrow = interfaceX + this.currentScrollPosX <= 7 &&
-                    interfaceY <= this.height;
-
-            if (this.isHoveredLeftArrow) {
-                    hoverUnderArrows.set(false);
+            if (interfaceX + this.currentScrollPosX <= 7 && interfaceY >= 0) {
+                    this.isHoveredLeftArrow = true;
+                    return true;
             }
         }
 
         if (this.isShowingRightArrow) {
-            this.isHoveredRightArrow = interfaceX +this.currentScrollPosX >= Window.getWidth() /this.pixelSizeInScreen -7 &&
-                    interfaceY <= this.height;
-
-            if (this.isHoveredRightArrow) {
-                hoverUnderArrows.set(false);
+            if (interfaceX +this.currentScrollPosX >= Window.getWidth() /this.pixelSizeInScreen -7 && interfaceY >= 0) {
+                this.isHoveredRightArrow = true;
+                return true;
             }
         }
 
-        this.currentWidgets.forEach(widget -> {
+        boolean isMouseOnAnyWidget = false;
+        for (Widget widget: this.currentWidgets) {
             boolean isMouseInWidget;
             if (widget.getClass().isAnnotationPresent(IgnoreScrollMovement.class)) {
                 isMouseInWidget = widget.getBoundingBox().containsLocation((mouseX / this.pixelSizeInScreen), interfaceY);
@@ -204,11 +199,14 @@ public class Inventory {
             }
 
             if (isMouseInWidget) {
-                widget.setHovered(hoverUnderArrows.get());
+                widget.setHovered(true);
+                isMouseOnAnyWidget = true;
             } else {
                 widget.setHovered(false);
             }
-        });
+        }
+
+        return isMouseOnAnyWidget || interfaceY >= 0;
     }
 
     public void onHoverEvent() {

@@ -48,4 +48,8 @@ public class SlotWidget extends Widget implements CustomDrawWidget {
     public void setSelected(boolean isSelected) {
         this.isSelected = isSelected;
     }
+
+    public boolean isSelected() {
+        return this.isSelected;
+    }
 }
