@@ -9,6 +9,7 @@ import utils.render.texture.Textures;
 import world.location.Location;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 public abstract class Feature implements Comparable<Feature> {
     protected static final Random RANDOM = new Random();
@@ -17,7 +18,7 @@ public abstract class Feature implements Comparable<Feature> {
     private final FeatureType FEATURE_TYPE;
     private final int VARIANT;
 
-    public Feature(Location location, Vector2i sizeInBlocks, FeatureType featureType) {
+    public Feature(Location location, Vector2i sizeInBlocks, FeatureType featureType, int variant) {
         float offsetX = 0, offsetY = 0;
         if (this.getRandomOffset().x() != 0) {
             offsetX = Feature.RANDOM.nextFloat() / this.getRandomOffset().x();
@@ -28,7 +29,7 @@ public abstract class Feature implements Comparable<Feature> {
         this.LOCATION = location.add(offsetX, offsetY);
         this.SIZE_IN_BLOCKS = sizeInBlocks;
         this.FEATURE_TYPE = featureType;
-        this.VARIANT = Feature.RANDOM.nextInt(featureType.VARIANTS);
+        this.VARIANT = variant;
     }
 
     public Location getLocation() {
@@ -47,9 +48,19 @@ public abstract class Feature implements Comparable<Feature> {
         return this.VARIANT;
     }
 
-    public abstract Vector2i getRandomOffset();
+    public boolean canBePlaced() {
+        int posX = (int) this.getLocation().getX(), posY = (int) this.getLocation().getY();
+        for (int x = 0; x < this.getSize().x(); x++) {
+            for (int y = 0; y < this.getSize().y(); y++) {
+                if (Main.WORLD.getFeature(posX +x, posY +y) != null) return false;
+            }
+        }
+        return checkSpecificConditions();
+    }
 
-    abstract public boolean canFeatureOverlapsWith(Feature feature);
+    protected abstract boolean checkSpecificConditions();
+
+    public abstract Vector2i getRandomOffset();
 
     @Override
     public int hashCode() {
@@ -111,6 +122,28 @@ public abstract class Feature implements Comparable<Feature> {
 
         public int getVariants() {
             return this.VARIANTS;
+        }
+
+        public Feature createFeature(Location location, int variant) {
+            switch (this) {
+                case ROCK -> {
+                    return new Rock(location);
+                }
+                case BUSH -> {
+                    return new Bush(location);
+                }
+                case TREE -> {
+                    return new Tree(location, variant);
+                }
+                case FLOWER -> {
+                    return new Flower(location, variant);
+                }
+            }
+            return null;
+        }
+
+        public Feature createFeature(Location location) {
+            return createFeature(location, Main.RANDOM.nextInt(this.VARIANTS));
         }
     }
 }

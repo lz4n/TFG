@@ -59,26 +59,26 @@ public class World extends Thread {
         switch (biome) {
             case RIVER_MOUNTAIN_SHORE -> {
                 if (World.RANDOM.nextFloat() >= 0.4)
-                    feature = new Tree(new Location(x, y + World.RANDOM.nextFloat() / 4));
-                else if (World.RANDOM.nextFloat() >= 0.6) feature = new Bush(new Location(x, y + World.RANDOM.nextFloat() / 2));
+                    feature = Feature.FeatureType.TREE.createFeature(new Location(x, y + World.RANDOM.nextFloat() / 4));
+                else if (World.RANDOM.nextFloat() >= 0.6) feature = Feature.FeatureType.BUSH.createFeature(new Location(x, y + World.RANDOM.nextFloat() / 2));
             }
             case FOREST -> {
                 if (World.RANDOM.nextFloat() >= 0.75)
-                    feature = new Tree(new Location(x + World.RANDOM.nextFloat() / 4, y + World.RANDOM.nextFloat() / 4));
-                else if (World.RANDOM.nextFloat() >= 0.84) feature = new Bush(new Location(x, y + World.RANDOM.nextFloat() / 2));
+                    feature = Feature.FeatureType.TREE.createFeature(new Location(x + World.RANDOM.nextFloat() / 4, y + World.RANDOM.nextFloat() / 4));
+                else if (World.RANDOM.nextFloat() >= 0.84) feature = Feature.FeatureType.BUSH.createFeature(new Location(x, y + World.RANDOM.nextFloat() / 2));
             }
             case PLAINS -> {
                 if (World.RANDOM.nextFloat() >= 0.97)
-                    feature = new Tree(new Location(x + World.RANDOM.nextFloat() / 2, y + World.RANDOM.nextFloat() / 4));
-                else if (World.RANDOM.nextFloat() >= 0.87) feature = new Bush(new Location(x, y + World.RANDOM.nextFloat() / 2));
-                else if (World.RANDOM.nextFloat() >= 0.75) feature = new Flower(new Location(x, y + World.RANDOM.nextFloat() / 4));
+                    feature = Feature.FeatureType.TREE.createFeature(new Location(x + World.RANDOM.nextFloat() / 2, y + World.RANDOM.nextFloat() / 4));
+                else if (World.RANDOM.nextFloat() >= 0.87) feature = Feature.FeatureType.BUSH.createFeature(new Location(x, y + World.RANDOM.nextFloat() / 2));
+                else if (World.RANDOM.nextFloat() >= 0.75) feature = Feature.FeatureType.FLOWER.createFeature(new Location(x, y + World.RANDOM.nextFloat() / 4));
             }
             case MOUNTAIN -> {
                 if (World.RANDOM.nextFloat() >= 0.98)
-                    feature = new Rock(new Location(x + World.RANDOM.nextFloat() / 4, y + World.RANDOM.nextFloat() / 6));
+                    feature = Feature.FeatureType.ROCK.createFeature(new Location(x + World.RANDOM.nextFloat() / 4, y + World.RANDOM.nextFloat() / 6));
             }
         }
-        if (feature != null) {
+        if (feature != null && feature.canBePlaced()) {
             Main.WORLD.addFeature(feature, false);
         }
         return terrain;
@@ -107,29 +107,27 @@ public class World extends Thread {
     }
 
     public Feature addFeature(Feature feature, boolean updateMesh) {
-        int posX = (int) feature.getLocation().getX(), posY = (int) feature.getLocation().getY();
-        if (this.canFeatureOverlapsWithOtherFeature(feature)) {
-            try {
-                for (int x = 0; x < feature.getSize().x(); x++) {
-                    for (int y = 0; y < feature.getSize().y(); y++) {
-                        this.FEATURES[this.mapCoordinatesToIndex(posX + x, posY + y)] = feature;
-                    }
+        try {
+            int posX = (int) feature.getLocation().getX(), posY = (int) feature.getLocation().getY();
+            for (int x = 0; x < feature.getSize().x(); x++) {
+                for (int y = 0; y < feature.getSize().y(); y++) {
+                    this.FEATURES[this.mapCoordinatesToIndex(posX + x, posY + y)] = feature;
                 }
-                Feature.FeatureType featureType = feature.getFeatureType();
-                TreeSet<Feature> featureSet = this.FEATURES_MAP.getOrDefault(featureType, new TreeSet<>());
-                featureSet.add(feature);
-                this.FEATURES_MAP.put(featureType, featureSet);
-
-                if (updateMesh) {
-                    featureType.updateMesh();
-                } else {
-                    featureType.getMesh().addVertex(feature.getLocation().getX(), feature.getLocation().getY(), feature.getSize().x(), feature.getSize().y(), feature.getVariant());
-                }
-
-                this.featuresCount++;
-                return feature;
-            } catch (ArrayIndexOutOfBoundsException ignore) {
             }
+            Feature.FeatureType featureType = feature.getFeatureType();
+            TreeSet<Feature> featureSet = this.FEATURES_MAP.getOrDefault(featureType, new TreeSet<>());
+            featureSet.add(feature);
+            this.FEATURES_MAP.put(featureType, featureSet);
+
+            if (updateMesh) {
+                featureType.updateMesh();
+            } else {
+                featureType.getMesh().addVertex(feature.getLocation().getX(), feature.getLocation().getY(), feature.getSize().x(), feature.getSize().y(), feature.getVariant());
+            }
+
+            this.featuresCount++;
+            return feature;
+        } catch (ArrayIndexOutOfBoundsException ignore) {
         }
         return null;
     }
@@ -139,13 +137,11 @@ public class World extends Thread {
     }
 
     public void removeFeature(Feature feature) {
-        int posX = (int) feature.getLocation().getX(), posY = (int) feature.getLocation().getY();
-
         try {
-            for (int x = -1; x <= feature.getSize().x(); x++) {
-                for (int y = -1; y <= feature.getSize().y(); y++) {
-                    this.removeOverlapping(posX +x, posY +y, feature);
-
+            int posX = (int) feature.getLocation().getX(), posY = (int) feature.getLocation().getY();
+            for (int x = 0; x < feature.getSize().x(); x++) {
+                for (int y = 0; y < feature.getSize().y(); y++) {
+                    this.FEATURES[this.mapCoordinatesToIndex(posX + x, posY + y)] = null;
                 }
             }
             Feature.FeatureType featureType = feature.getFeatureType();
@@ -158,34 +154,6 @@ public class World extends Thread {
             this.featuresCount--;
         } catch (ArrayIndexOutOfBoundsException ignore) {
         }
-    }
-
-    private void removeOverlapping(int posX, int posY, Feature origninalFeature) {
-        Feature overlapsFeature = this.getFeature(posX, posY);
-        if (overlapsFeature != null) {
-            if (overlapsFeature == origninalFeature) {
-                this.FEATURES[this.mapCoordinatesToIndex(posX, posY)] = null;
-            } else {
-                for (int overlapsX = posX; overlapsX < posX +overlapsFeature.getSize().x(); overlapsX++) {
-                    for (int overlapsY = posY; overlapsY < posY +overlapsFeature.getSize().y(); overlapsY++) {
-                        if (this.FEATURES[this.mapCoordinatesToIndex(overlapsX, overlapsY)] == null) {
-                            this.FEATURES[this.mapCoordinatesToIndex(overlapsX, overlapsY)] = overlapsFeature;
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    public boolean canFeatureOverlapsWithOtherFeature(Feature feature) {
-        Feature feature1;
-        for (int x = 0; x < feature.getSize().x(); x++) for (int y = 0; y < feature.getSize().y(); y++) {
-            feature1 = feature.getLocation().add(x, y).getFeature();
-            if (feature1 != null) {
-                return false;
-            }
-        }
-        return true;
     }
 
     public void spawnEntity(Entity entity) {

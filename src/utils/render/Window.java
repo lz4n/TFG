@@ -148,32 +148,28 @@ public class Window {
         }
 
         //Establecemos el icono de la ventana
-        // Cargar la imagen del icono con STBImage
-        ByteBuffer iconBuffer = null;
         try {
-            BufferedImage bi = ImageIO.read(new java.io.File("assets/textures/icon.png"));
-            byte[] iconData = ((DataBufferByte) bi.getRaster().getDataBuffer()).getData();
-            ByteBuffer ib = BufferUtils.createByteBuffer(iconData.length);
-            ib.order(ByteOrder.nativeOrder());
+            BufferedImage bufferedImage = ImageIO.read(new java.io.File("assets/textures/icon.png"));
+            byte[] iconData = ((DataBufferByte) bufferedImage.getRaster().getDataBuffer()).getData();
+            ByteBuffer appIconBuffer = BufferUtils.createByteBuffer(iconData.length);
+            appIconBuffer.order(ByteOrder.nativeOrder());
 
+            //Cambiamos los canales de la imagen, para que esté en formato RGBA en vez de ABGR.
+            byte alpha, red, green, blue;
             for (int i = 0; i < iconData.length; i += 4) {
-                byte a = iconData[i];
-                byte b = iconData[i + 1];
-                byte g = iconData[i + 2];
-                byte r = iconData[i + 3];
-
-                System.out.println(r  + "," + g + "," + b + "," + a );
-
-                // Invertir los canales rojo y azul y ponerlos en orden BGR
-                ib.put(r).put(g).put(b).put(a);
+                alpha = iconData[i];
+                blue = iconData[i + 1];
+                green = iconData[i + 2];
+                red = iconData[i + 3];
+                appIconBuffer.put(red).put(green).put(blue).put(alpha);
             }
-            ib.flip();
+            appIconBuffer.flip();
 
 
-            GLFWImage.Buffer gb = GLFWImage.create(1);
-            GLFWImage iconGI = GLFWImage.create().set(bi.getWidth(), bi.getHeight(), ib);
-            gb.put(0, iconGI);
-            GLFW.glfwSetWindowIcon(window, gb);
+            GLFWImage.Buffer glfwImage = GLFWImage.create(1);
+            GLFWImage iconGI = GLFWImage.create().set(bufferedImage.getWidth(), bufferedImage.getHeight(), appIconBuffer);
+            glfwImage.put(0, iconGI);
+            GLFW.glfwSetWindowIcon(window, glfwImage);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -216,7 +212,7 @@ public class Window {
             }
 
             if (KeyListener.isKeyPressed(GLFW.GLFW_KEY_E)) {
-                Main.WORLD.spawnEntity(new Duck(MouseListener.inGameLocation));
+                Main.WORLD.spawnEntity(new Duck(MouseListener.getInGameLocation()));
             }
 
             if (currentScene instanceof WorldScene) {

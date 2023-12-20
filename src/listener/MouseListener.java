@@ -3,6 +3,7 @@ package listener;
 import main.Main;
 import org.joml.Vector2f;
 import org.lwjgl.glfw.GLFW;
+import utils.Player;
 import utils.render.Window;
 import utils.render.scene.WorldScene;
 import world.feature.Feature;
@@ -36,7 +37,7 @@ public class MouseListener {
     /**
      * Posición del ratón dentro del juego.
      */
-    public static Location inGameLocation;
+    private static Location inGameLocation;
 
     /**
      * Actualiza la posición del ratón dentro del juego y actualiza el selector.
@@ -66,6 +67,38 @@ public class MouseListener {
         MouseListener.isDragging = MouseListener.isMouseButtonPressed[0] || MouseListener.isMouseButtonPressed[1] || MouseListener.isMouseButtonPressed[2];
 
         Window.currentScene.moveMouse((float) posX, (float) posY);
+
+        if (!Main.PLAYER.isMouseOnInventory()) {
+            if (MouseListener.isMouseButtonPressed(GLFW.GLFW_MOUSE_BUTTON_1 )) {
+                Feature selectedFeature = MouseListener.getInGameLocation().getFeature();
+                if (Main.PLAYER.isUsingBulldozer()) {
+                    if (selectedFeature != null) {
+                        Main.WORLD.removeFeature(selectedFeature);
+                        for (int particles = 0; particles < selectedFeature.getSize().x() * selectedFeature.getSize().y() * 5; particles++) {
+                            Main.WORLD.spawnParticle(new BulldozerParticle(MouseListener.getInGameLocation().truncate().add(-0.5f, -0.5f).add(
+                                    Main.RANDOM.nextFloat(0, selectedFeature.getSize().x()),
+                                    Main.RANDOM.nextFloat(0, selectedFeature.getSize().y())
+                            )));
+                        }
+                    }
+                } else {
+                    selectedFeature = Main.PLAYER.createSelectedFeature();
+                    if (selectedFeature != null) {
+                        if (selectedFeature.canBePlaced()) {
+                            Main.WORLD.addFeature(selectedFeature);
+                            for (int particles = 0; particles < selectedFeature.getSize().x() * selectedFeature.getSize().y() * 5; particles++) {
+                                Main.WORLD.spawnParticle(new PositiveParticle(MouseListener.getInGameLocation().truncate().add(-0.5f, -0.5f).add(
+                                        Main.RANDOM.nextFloat(0, selectedFeature.getSize().x()),
+                                        Main.RANDOM.nextFloat(0, selectedFeature.getSize().y())
+                                )));
+                            }
+                        } else {
+                            Main.WORLD.spawnParticle(new NegativeParticle(MouseListener.getInGameLocation().add(-0.5f, -0.5f)));
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -79,34 +112,6 @@ public class MouseListener {
       if (action == GLFW.GLFW_PRESS) {
           MouseListener.setIsMouseButtonPressed(button, true);
           Window.currentScene.click((float) MouseListener.posX, (float) MouseListener.posY);
-          if (!Main.PLAYER.isMouseOnInventory()) {
-              if (button == GLFW.GLFW_MOUSE_BUTTON_1) {
-                  if (MouseListener.inGameLocation.getFeature() == null) {
-                      Feature selectedFeature = Main.WORLD.addFeature(new Tree(MouseListener.inGameLocation.clone().truncate()));
-                      if (selectedFeature != null) {
-                          for (int particles = 0; particles < selectedFeature.getSize().x() * selectedFeature.getSize().y() * 5; particles++) {
-                              Main.WORLD.spawnParticle(new PositiveParticle(MouseListener.inGameLocation.clone().truncate().add(-0.5f, -0.5f).add(
-                                      Main.RANDOM.nextFloat(0, selectedFeature.getSize().x()),
-                                      Main.RANDOM.nextFloat(0, selectedFeature.getSize().y())
-                              )));
-                          }
-                      } else {
-                          Main.WORLD.spawnParticle(new NegativeParticle(MouseListener.inGameLocation.clone().add(-0.5f, -0.5f)));
-                      }
-                  }
-              } else if (button == GLFW.GLFW_MOUSE_BUTTON_2) {
-                  Feature selectedFeature = MouseListener.inGameLocation.getFeature();
-                  if (selectedFeature != null) {
-                      Main.WORLD.removeFeature(selectedFeature);
-                      for (int particles = 0; particles < selectedFeature.getSize().x() * selectedFeature.getSize().y() * 5; particles++) {
-                          Main.WORLD.spawnParticle(new BulldozerParticle(MouseListener.inGameLocation.clone().truncate().add(-0.5f, -0.5f).add(
-                                  Main.RANDOM.nextFloat(0, selectedFeature.getSize().x()),
-                                  Main.RANDOM.nextFloat(0, selectedFeature.getSize().y())
-                          )));
-                      }
-                  }
-              }
-          }
       } else if (action == GLFW.GLFW_RELEASE) {
           MouseListener.setIsMouseButtonPressed(button, false);
           MouseListener.isDragging = false;
@@ -155,5 +160,9 @@ public class MouseListener {
      */
     public static double getDy() {
         return MouseListener.lastY - MouseListener.posY;
+    }
+
+    public static Location getInGameLocation() {
+        return MouseListener.inGameLocation.clone();
     }
 }

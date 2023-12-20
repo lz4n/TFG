@@ -237,9 +237,9 @@ public class Inventory {
     }
 
     public void onResizeWindowEvent(float newWidth, float newHeight) {
-        this.pixelSizeInScreen = Window.getHeight() / 250f;
+        this.pixelSizeInScreen = newHeight / 250f;
         this.height = 41 *this.pixelSizeInScreen;
-        this.posY = Window.getHeight() -(41 *this.pixelSizeInScreen);
+        this.posY = newHeight -(41 *this.pixelSizeInScreen);
         this.updateShowArrows();
 
         float tabOrigin = ((newWidth /this.pixelSizeInScreen) /(float) 2) - ((this.tabCount * Tab.TOTAL_TAB_SIZE) /(float) 2);

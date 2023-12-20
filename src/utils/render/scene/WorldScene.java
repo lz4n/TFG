@@ -187,7 +187,7 @@ public class WorldScene extends Scene {
         }
 
         //Dibujamos el selector del ratón
-        if (MouseListener.inGameLocation != null && !MouseListener.inGameLocation.isOutOfTheWorld() && !Main.PLAYER.isMouseOnInventory()) {
+        if (MouseListener.getInGameLocation() != null && !MouseListener.getInGameLocation().isOutOfTheWorld() && !Main.PLAYER.isMouseOnInventory()) {
             Shader.WORLD.use();
             Shader.WORLD.uploadMatrix4f("uProjection", Main.PLAYER.getCamera().getProjectionMatrix());
             Shader.WORLD.uploadMatrix4f("uView", Main.PLAYER.getCamera().getViewMatrix());
@@ -229,24 +229,24 @@ public class WorldScene extends Scene {
                     Main.PLAYER.isHidingUi(),
                     Main.PLAYER.isUsingBulldozer(),
                     Main.PLAYER.isMouseOnInventory(),
-                    MouseListener.inGameLocation.getX(),
-                    MouseListener.inGameLocation.getY(),
-                    MouseListener.inGameLocation.isOutOfTheWorld() ? "    OutOfTheWorld" : String.format("""
+                    MouseListener.getInGameLocation().getX(),
+                    MouseListener.getInGameLocation().getY(),
+                    MouseListener.getInGameLocation().isOutOfTheWorld() ? "    OutOfTheWorld" : String.format("""
                                             terrain: %s type=%s
                                                     %s
                                                     biome=%s
                                                     wordBuilder: c=%.4f,w=%.4f,r=%.4f
                                             """,
-                            MouseListener.inGameLocation.getTerrain(),
-                            MouseListener.inGameLocation.getTerrain().getType(),
-                            MouseListener.inGameLocation.getFeature() == null ? "feature: null" : String.format("feature: %s type=%s,variant=%d",
-                                    MouseListener.inGameLocation.getFeature(),
-                                    MouseListener.inGameLocation.getFeature().getFeatureType(),
-                                    MouseListener.inGameLocation.getFeature().getVariant()),
-                            MouseListener.inGameLocation.getTerrain().getBiome(),
-                            MouseListener.inGameLocation.getTerrain().getContinentalityNoise(),
-                            MouseListener.inGameLocation.getTerrain().getWeirdnessNoise(),
-                            MouseListener.inGameLocation.getTerrain().getRiversNoise()),
+                            MouseListener.getInGameLocation().getTerrain(),
+                            MouseListener.getInGameLocation().getTerrain().getType(),
+                            MouseListener.getInGameLocation().getFeature() == null ? "feature: null" : String.format("feature: %s type=%s,variant=%d",
+                                    MouseListener.getInGameLocation().getFeature(),
+                                    MouseListener.getInGameLocation().getFeature().getFeatureType(),
+                                    MouseListener.getInGameLocation().getFeature().getVariant()),
+                            MouseListener.getInGameLocation().getTerrain().getBiome(),
+                            MouseListener.getInGameLocation().getTerrain().getContinentalityNoise(),
+                            MouseListener.getInGameLocation().getTerrain().getWeirdnessNoise(),
+                            MouseListener.getInGameLocation().getTerrain().getRiversNoise()),
                     Main.PLAYER.getCamera().getCameraPosition().x(),
                     Main.PLAYER.getCamera().getCameraPosition().y(),
                     Main.PLAYER.getCamera().getZoom(),
