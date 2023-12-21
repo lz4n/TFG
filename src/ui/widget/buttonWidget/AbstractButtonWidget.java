@@ -35,17 +35,14 @@ public abstract class AbstractButtonWidget extends Widget implements CustomDrawW
     public abstract Texture getIcon();
 
     @Override
-    public void draw(Mesh mesh, float pixelSizeInScreen, float posX, float posY, float width, float height) {
-        Shader.HUD.upload2f("uHudPosition", posX +(this.clickTime>-1?this.CLICK_OFFSET.x():0) *pixelSizeInScreen, posY +(this.clickTime>-1?this.CLICK_OFFSET.y():0) *pixelSizeInScreen);
-        Shader.HUD.upload2f("uHudSize", this.BASE_BOUNDING_BOX.getWidth() * pixelSizeInScreen, this.BASE_BOUNDING_BOX.getHeight() * pixelSizeInScreen);
-
+    public void draw(float pixelSizeInScreen, float posX, float posY) {
         if (this.getIcon() != null) {
-            this.getIcon().bind();
-            ARBVertexArrayObject.glBindVertexArray(mesh.getVaoId());
-            GL20.glEnableVertexAttribArray(0);
-            GL20.glDrawElements(GL20.GL_TRIANGLES, mesh.getElementArray().length, GL11.GL_UNSIGNED_INT, 0);
-            GL20.glDisableVertexAttribArray(0);
-            ARBVertexArrayObject.glBindVertexArray(0);
+            this.getIcon().draw(Shader.HUD,
+                    posX +(this.clickTime>-1?this.CLICK_OFFSET.x():0) *pixelSizeInScreen,
+                    posY +(this.clickTime>-1?this.CLICK_OFFSET.y():0) *pixelSizeInScreen,
+                    this.BASE_BOUNDING_BOX.getWidth() * pixelSizeInScreen,
+                    this.BASE_BOUNDING_BOX.getHeight() * pixelSizeInScreen
+                    );
         }
 
         if (this.clickTime > -1) {

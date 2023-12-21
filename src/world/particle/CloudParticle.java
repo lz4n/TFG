@@ -8,18 +8,11 @@ import utils.render.texture.Textures;
 import world.location.Location;
 
 public class CloudParticle extends AbstractPhysicsParticle {
-    private static final EntityMesh MESH = new EntityMesh(new Vector2i(4, 1));
-
     private final boolean IS_SHADOW;
 
     public CloudParticle(Location location, float velocity, boolean isShadow) {
         super(location, new Vector2f(velocity, 0), 0, Float.MIN_VALUE, 0);
         this.IS_SHADOW = isShadow;
-    }
-
-    @Override
-    public EntityMesh getMesh() {
-        return CloudParticle.MESH;
     }
 
     @Override

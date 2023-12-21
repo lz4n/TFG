@@ -24,17 +24,19 @@ public enum Shader {
     /**
      * Shader utilizado para renderizar objetos dentro del mundo, cuya posición en pantalla depende de la posición de la cámara.
      */
-    WORLD("assets/shaders/world/vertex.glsl", "assets/shaders/fog.glsl"),
+    WORLD("assets/shaders/world/vertex.glsl", "assets/shaders/fog.glsl", false),
 
     /**
      * Shader utilizado para renderizar entidades instanciables dentro del mundo, cuya posición en pantalla depende de la posición de la cámara.
      */
-    ENTITY("assets/shaders/entity/vertex.glsl", "assets/shaders/fog.glsl"),
+    ENTITY("assets/shaders/entity/vertex.glsl", "assets/shaders/fog.glsl", true),
 
     /**
      * Shader utilizado para renderizar objetos sobre la pantalla. La posición de estos objetos siempre será la misma, sin importar la posición de la cámara.
      */
-    HUD("assets/shaders/hud");
+    HUD("assets/shaders/hud", true);
+
+    private final boolean SUPPORTS_INSTANTATION;
 
     /**
      * Contenido del archivo .glsl del shader de vértices.
@@ -68,7 +70,7 @@ public enum Shader {
      * @param sourceFragment dirección al archivo <code>.glsl</code> que contiene el código del shader de fragmentos.
      * @see Window
      */
-    Shader(String sourceVertex, String sourceFragment) {
+    Shader(String sourceVertex, String sourceFragment, boolean supportsInstantiation) {
         try {
             this.vertexShader = Files.readString(Paths.get(sourceVertex));
         } catch (IOException exception) {
@@ -79,6 +81,8 @@ public enum Shader {
         } catch (IOException exception) {
             Logger.sendMessage("Error cargando el shader: '%s'. El archivo '%s' no existe o no ha sido posible su lectura.", Logger.LogMessageType.WARNING, this, sourceFragment);
         }
+
+        this.SUPPORTS_INSTANTATION = supportsInstantiation;
     }
 
     /**
@@ -89,8 +93,8 @@ public enum Shader {
      *
      * @see Window
      */
-    Shader(String source) {
-        this(source  + "/vertex.glsl", source + "/fragment.glsl");
+    Shader(String source, boolean supportsInstantiation) {
+        this(source  + "/vertex.glsl", source + "/fragment.glsl", supportsInstantiation);
     }
 
     /**
@@ -123,6 +127,10 @@ public enum Shader {
         GL20.glAttachShader(this.shaderProgramID, this.vertexID);
         GL20.glAttachShader(this.shaderProgramID, this.fragmentID);
         GL20.glLinkProgram(this.shaderProgramID);
+    }
+
+    public boolean supportsInstantiation() {
+        return this.SUPPORTS_INSTANTATION;
     }
 
     /**

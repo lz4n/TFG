@@ -1,6 +1,7 @@
 package utils.render.texture;
 
 import org.joml.Vector2f;
+import org.joml.Vector2i;
 import org.lwjgl.opengl.GL20;
 
 import java.awt.*;
@@ -37,6 +38,7 @@ public class Graphics2dTexture extends Texture {
     public Graphics2dTexture(int width, int height) {
         this.BUFFERED_IMAGE = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         this.GRAPHICS = this.BUFFERED_IMAGE.createGraphics();
+        this.setTextureSize(new Vector2i(width, height));
     }
 
     /**

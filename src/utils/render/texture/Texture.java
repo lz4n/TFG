@@ -1,10 +1,18 @@
 package utils.render.texture;
 
+import org.joml.Vector2f;
+import org.joml.Vector2i;
 import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.ARBVertexArrayObject;
+import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.stb.STBImage;
 import utils.Logger;
+import utils.render.Shader;
+import utils.render.mesh.SingleObjectMesh;
+import utils.render.scene.WorldScene;
+import world.location.Location;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
@@ -17,16 +25,10 @@ import java.util.List;
  * @author Izan
  */
 public abstract class Texture {
-    /**
-     * Lista que almacena todas las texturas que se van a guardar en la caché durante la totalidad del proceaso de ejecución del juego,
-     * para poder cargarlas cuando se carga <code>LWJGL</code> y eliminarlas cuando se cierre el juego y libere la memoria.
-     */
-    private static final List<CacheTexture> CACHE_TEXTURES = new LinkedList<>();
+    private Vector2i textureSize = new Vector2i(0, 0);
 
-    public Texture() {
-        if (this instanceof CacheTexture cacheTexture) {
-            Texture.CACHE_TEXTURES.add(cacheTexture);
-        }
+    protected void setTextureSize(Vector2i textureSize) {
+        this.textureSize = textureSize;
     }
 
     /**
@@ -53,6 +55,43 @@ public abstract class Texture {
      * correspondiente el frame actual.
      */
     public abstract int getTextureId();
+
+    public void draw(Shader shader, float posX, float posY, float sizeX, float sizeY) {
+        if (shader.supportsInstantiation()) {
+            shader.upload2f("uPosition", posX, posY);
+            shader.upload2f("uSize", sizeX, sizeY);
+
+            this.bind();
+            ARBVertexArrayObject.glBindVertexArray(SingleObjectMesh.SINGLE_OBJECT_MESH.getVaoId());
+            GL20.glEnableVertexAttribArray(0);
+            GL20.glDrawElements(GL20.GL_TRIANGLES, SingleObjectMesh.SINGLE_OBJECT_MESH.getElementArray().length, GL11.GL_UNSIGNED_INT, 0);
+            GL20.glDisableVertexAttribArray(0);
+            ARBVertexArrayObject.glBindVertexArray(0);
+        } else {
+            Logger.sendMessage("El shader %s no puede dibujar (la textura %d) mediante instanciación.", Logger.LogMessageType.FATAL, shader, this.getTextureId());
+        }
+    }
+
+    public void draw(Shader shader, Location location, Vector2f size) {
+        location = location.clone().getInScreenCoords();
+        size.mul(WorldScene.SPRITE_SIZE);
+        this.draw(shader,
+                location.getX(),
+                location.getY(),
+                size.x(),
+                size.y()
+                );
+    }
+
+    public void draw(Shader shader, Location location) {
+        location = location.clone().getInScreenCoords();
+        this.draw(shader,
+                location.getX(),
+                location.getY(),
+                this.textureSize.x(),
+                this.textureSize.y()
+        );
+    }
 
     /**
      * Genera una textura a partir de una imagen .png con 32bits de color.
@@ -91,25 +130,4 @@ public abstract class Texture {
 
         return textureId;
     }
-
-    /**
-     * Sube las texturas a la cache.
-     */
-    public static void initCacheTextures() {
-        Texture.CACHE_TEXTURES.forEach(cacheTexture -> {
-            cacheTexture.init();
-            Logger.sendMessage("Se ha generado la textura %s: %s.", Logger.LogMessageType.INFO, ((Texture) cacheTexture).getTextureId(), cacheTexture);
-        });
-    }
-
-    /**
-     * Elimina las texturas de la caché y libera la memoria.
-     */
-    public static void removeCacheTextures() {
-        Texture.CACHE_TEXTURES.forEach(cacheTexture -> {
-            Logger.sendMessage("Se ha eliminado la textura %s: %s.", Logger.LogMessageType.INFO, ((Texture) cacheTexture).getTextureId(), cacheTexture);
-            cacheTexture.remove();
-        });
-    }
-
 }

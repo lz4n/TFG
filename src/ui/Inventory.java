@@ -102,8 +102,8 @@ public class Inventory {
      * @param mesh <code>Mesh</code> que se va a utilizar para dibujar el inventario.
      */
     public void draw(Mesh mesh) {
-        Shader.HUD.upload2f("uHudPosition", 0, this.posY);
-        Shader.HUD.upload2f("uHudSize", Window.getWidth(), this.height);
+        Shader.HUD.upload2f("uPosition", 0, this.posY);
+        Shader.HUD.upload2f("uSize", Window.getWidth(), this.height);
 
         Textures.CONTAINER.bind();
         ARBVertexArrayObject.glBindVertexArray(mesh.getVaoId());
@@ -114,40 +114,33 @@ public class Inventory {
 
 
         this.currentWidgets.forEach(widget -> {
+            float widgetPosX, widgetPosY,
+            widgetSizeX = this.pixelSizeInScreen *widget.getBoundingBox().getWidth(),
+            widgetSizeY = this.pixelSizeInScreen *widget.getBoundingBox().getHeight();
             if (widget.getClass().isAnnotationPresent(IgnoreScrollMovement.class)) {
-                Shader.HUD.upload2f("uHudPosition", this.pixelSizeInScreen * widget.getPosX(), this.pixelSizeInScreen * widget.getPosY() + this.posY);
-                Shader.HUD.upload2f("uHudSize", this.pixelSizeInScreen * widget.getBoundingBox().getWidth(), this.pixelSizeInScreen * widget.getBoundingBox().getHeight());
+                widgetPosX = this.pixelSizeInScreen *widget.getPosX();
+                widgetPosY = this.pixelSizeInScreen *widget.getPosY() +this.posY;
             } else {
-                Shader.HUD.upload2f("uHudPosition", this.pixelSizeInScreen * (widget.getPosX() + this.currentScrollPosX), this.pixelSizeInScreen * widget.getPosY() + this.posY);
-                Shader.HUD.upload2f("uHudSize", this.pixelSizeInScreen * widget.getBoundingBox().getWidth(), this.pixelSizeInScreen * widget.getBoundingBox().getHeight());
+                widgetPosX = this.pixelSizeInScreen *(widget.getPosX() +this.currentScrollPosX);
+                widgetPosY = this.pixelSizeInScreen *widget.getPosY() +this.posY;
             }
 
-            widget.getTexture().bind();
-            ARBVertexArrayObject.glBindVertexArray(mesh.getVaoId());
-            GL20.glEnableVertexAttribArray(0);
-            GL20.glDrawElements(GL20.GL_TRIANGLES, mesh.getElementArray().length, GL11.GL_UNSIGNED_INT, 0);
-            GL20.glDisableVertexAttribArray(0);
-            ARBVertexArrayObject.glBindVertexArray(0);
+            widget.getTexture().draw(Shader.HUD, widgetPosX, widgetPosY, widgetSizeX, widgetSizeY);
 
             if (widget instanceof CustomDrawWidget customDrawWidget) {
                 if (widget.getClass().isAnnotationPresent(IgnoreScrollMovement.class)) {
-                    customDrawWidget.draw(mesh, this.pixelSizeInScreen, this.pixelSizeInScreen * widget.getPosX(), this.pixelSizeInScreen * widget.getPosY() + this.posY, this.pixelSizeInScreen * widget.getBoundingBox().getWidth(), this.pixelSizeInScreen * widget.getBoundingBox().getHeight());
+                    customDrawWidget.draw(this.pixelSizeInScreen, this.pixelSizeInScreen * widget.getPosX(), this.pixelSizeInScreen * widget.getPosY() + this.posY);
                 } else {
-                    customDrawWidget.draw(mesh, this.pixelSizeInScreen, this.pixelSizeInScreen * (widget.getPosX() + this.currentScrollPosX), this.pixelSizeInScreen * widget.getPosY() + this.posY, this.pixelSizeInScreen * widget.getBoundingBox().getWidth(), this.pixelSizeInScreen * widget.getBoundingBox().getHeight());
+                    customDrawWidget.draw(this.pixelSizeInScreen, this.pixelSizeInScreen * (widget.getPosX() + this.currentScrollPosX), this.pixelSizeInScreen * widget.getPosY() + this.posY);
                 }
             }
         });
 
         if (this.isShowingLeftArrow) {
-            Shader.HUD.upload2f("uHudPosition", 0, this.posY);
-            Shader.HUD.upload2f("uHudSize", this.pixelSizeInScreen * 7, this.height);
-
-            (this.clickTimeLeftArrow>-1? Textures.SELECTED_LEFT_ARROW: (this.isHoveredLeftArrow? Textures.HOVERED_LEFT_ARROW: Textures.UNSELECTED_LEFT_ARROW)).bind();
-            ARBVertexArrayObject.glBindVertexArray(mesh.getVaoId());
-            GL20.glEnableVertexAttribArray(0);
-            GL20.glDrawElements(GL20.GL_TRIANGLES, mesh.getElementArray().length, GL11.GL_UNSIGNED_INT, 0);
-            GL20.glDisableVertexAttribArray(0);
-            ARBVertexArrayObject.glBindVertexArray(0);
+            (this.clickTimeLeftArrow>-1? Textures.SELECTED_LEFT_ARROW: (this.isHoveredLeftArrow? Textures.HOVERED_LEFT_ARROW: Textures.UNSELECTED_LEFT_ARROW)).draw(Shader.HUD,
+                    0, this.posY,
+                    this.pixelSizeInScreen * 7, this.height
+                    );
 
             if (this.clickTimeLeftArrow > -1) {
                 this.clickTimeLeftArrow--;
@@ -155,15 +148,12 @@ public class Inventory {
         }
 
         if (this.isShowingRightArrow) {
-            Shader.HUD.upload2f("uHudPosition", Window.getWidth() - this.pixelSizeInScreen *7, this.posY);
-            Shader.HUD.upload2f("uHudSize", this.pixelSizeInScreen * 7, this.height);
-
-            (this.clickTimeRightArrow>-1?Textures.SELECTED_RIGHT_ARROW:  (this.isHoveredRightArrow? Textures.HOVERED_RIGHT_ARROW: Textures.UNSELECTED_RIGHT_ARROW)).bind();
-            ARBVertexArrayObject.glBindVertexArray(mesh.getVaoId());
-            GL20.glEnableVertexAttribArray(0);
-            GL20.glDrawElements(GL20.GL_TRIANGLES, mesh.getElementArray().length, GL11.GL_UNSIGNED_INT, 0);
-            GL20.glDisableVertexAttribArray(0);
-            ARBVertexArrayObject.glBindVertexArray(0);
+            (this.clickTimeRightArrow>-1?Textures.SELECTED_RIGHT_ARROW:  (this.isHoveredRightArrow? Textures.HOVERED_RIGHT_ARROW: Textures.UNSELECTED_RIGHT_ARROW)).draw(Shader.HUD,
+                    Window.getWidth() - this.pixelSizeInScreen *7,
+                    this.posY,
+                    this.pixelSizeInScreen * 7,
+                    this.height
+                    );
             
             if (this.clickTimeRightArrow > -1) {
                 this.clickTimeRightArrow--;

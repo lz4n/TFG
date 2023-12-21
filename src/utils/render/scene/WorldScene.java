@@ -39,7 +39,7 @@ public class WorldScene extends Scene {
     /**
      * Mesh utilizado para dibujar el HUD.
      */
-    private final HUDMesh HUD_MESH = new HUDMesh();
+    private final SingleObjectMesh HUD_MESH = new SingleObjectMesh();
 
     private final WorldMesh WORLD_BORDER_MESH = new WorldMesh(1, 2, 2);
 
@@ -58,6 +58,7 @@ public class WorldScene extends Scene {
         drawTerrain();
 
         HUD_MESH.load();
+        SingleObjectMesh.SINGLE_OBJECT_MESH.load();
 
         this.WORLD_BORDER_MESH.addVertex(-1, -1, Main.WORLD.getSize() +2,  Main.WORLD.getSize() +2);
         this.WORLD_BORDER_MESH.load();
@@ -95,11 +96,6 @@ public class WorldScene extends Scene {
         for (Entity.EntityType entityType: Entity.EntityType.values()) {
             entityType.getMesh().load();
         }
-
-        new BulldozerParticle(new Location(0, 0)).getMesh().load();
-        new NegativeParticle(new Location(0, 0)).getMesh().load();
-        new PositiveParticle(new Location(0, 0)).getMesh().load();
-        new CloudParticle(new Location(0, 0), 0, true).getMesh().load();
     }
 
     /**
@@ -159,30 +155,30 @@ public class WorldScene extends Scene {
             Texture.unbind();
         }
 
-        //Dibujamos las entidades y features.
+        //Dibujamos las entidades y partículas.
         Shader.ENTITY.use();
         Shader.ENTITY.uploadMatrix4f("uProjection", Main.PLAYER.getCamera().getProjectionMatrix());
         Shader.ENTITY.uploadMatrix4f("uView", Main.PLAYER.getCamera().getViewMatrix());
         Shader.ENTITY.uploadFloat("uDaylight", Main.WORLD.getDayLight());
         Shader.ENTITY.uploadInt("uSeason", Main.WORLD.getSeason());
         Shader.ENTITY.uploadFloat("uHappiness", Main.WORLD.getHappiness());
+        Shader.ENTITY.uploadFloat("uRotationAngle", 0);
+        Shader.ENTITY.uploadFloat("uScale", 1);
 
         for (Entity.EntityType entityType: Entity.EntityType.values()) {
-            entityType.getTexture().bind();
-
             if (Main.WORLD.getEntitiesMap().containsKey(entityType)) for (Entity entity: Main.WORLD.getEntitiesMap().get(entityType)) {
-                Shader.ENTITY.upload2f("uInstancePosition", entity.getLocation().getX() * WorldScene.SPRITE_SIZE, entity.getLocation().getY() * WorldScene.SPRITE_SIZE);
-                entityType.getMesh().draw();
+                entityType.getTexture().draw(Shader.ENTITY, entity.getLocation());
             }
             Texture.unbind();
         }
 
         for (Particle particle: Main.WORLD.getParticlesList()) {
-            particle.getTexture().bind();
-            Shader.ENTITY.upload2f("uInstancePosition", particle.getLocation().getX() *WorldScene.SPRITE_SIZE, particle.getLocation().getY() * WorldScene.SPRITE_SIZE);
             Shader.ENTITY.uploadFloat("uRotationAngle", particle.getRotation());
             Shader.ENTITY.uploadFloat("uScale", particle.getScale());
-            particle.getMesh().draw();
+            particle.getTexture().draw(
+                    Shader.ENTITY,
+                    particle.getLocation()
+            );
             Texture.unbind();
         }
 
@@ -265,13 +261,14 @@ public class WorldScene extends Scene {
 
             Graphics2dTexture debugScreen = GameFont.DEBUG.drawText(debug, Font.PLAIN, 12);
 
-            Shader.HUD.upload2f("uHudPosition", 5, 5);
-            Shader.HUD.upload2f("uHudSize", debugScreen.getSize().x(), debugScreen.getSize().y());
+            Shader.HUD.upload2f("uPosition", 5, 5);
+            Shader.HUD.upload2f("uSize", debugScreen.getSize().x(), debugScreen.getSize().y());
             Shader.HUD.uploadInt("texture_sampler", 0);
 
             debugScreen.bind();
             this.HUD_MESH.draw();
             debugScreen.remove();
+
             Texture.unbind();
         }
 

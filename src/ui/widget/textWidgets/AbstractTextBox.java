@@ -21,16 +21,12 @@ public abstract class AbstractTextBox extends Widget implements CustomDrawWidget
     }
 
     @Override
-    public void draw(Mesh mesh, float pixelSizeInScreen, float posX, float posY, float width, float height) {
-        Shader.HUD.upload2f("uHudPosition", posX + 2.5f * pixelSizeInScreen, posY + 2.5f * pixelSizeInScreen);
-        Shader.HUD.upload2f("uHudSize", this.text.getSize().x(), this.text.getSize().y());
-
-        this.text.bind();
-        ARBVertexArrayObject.glBindVertexArray(mesh.getVaoId());
-        GL20.glEnableVertexAttribArray(0);
-        GL20.glDrawElements(GL20.GL_TRIANGLES, mesh.getElementArray().length, GL11.GL_UNSIGNED_INT, 0);
-        GL20.glDisableVertexAttribArray(0);
-        ARBVertexArrayObject.glBindVertexArray(0);
+    public void draw(float pixelSizeInScreen, float posX, float posY) {
+        this.text.draw(Shader.HUD,
+                posX + 2.5f * pixelSizeInScreen,
+                posY + 2.5f * pixelSizeInScreen,
+                this.text.getSize().x(),
+                this.text.getSize().y());
     }
 
     public abstract int getTextSize();

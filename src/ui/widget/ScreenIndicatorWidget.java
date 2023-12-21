@@ -27,16 +27,13 @@ public class ScreenIndicatorWidget extends Widget implements RelocatableWhenResi
     }
 
     @Override
-    public void draw(Mesh mesh, float pixelSizeInScreen, float posX, float posY, float width, float height) {
-        Shader.HUD.upload2f("uHudPosition", posX + 2.5f * pixelSizeInScreen, posY + 15.5f *pixelSizeInScreen);
-        Shader.HUD.upload2f("uHudSize", (SlotWidget.BASE_BOUNDING_BOX.getWidth() -5) *pixelSizeInScreen, (SlotWidget.BASE_BOUNDING_BOX.getHeight() -5) *pixelSizeInScreen);
-
-        this.CONTENT.bind();
-        ARBVertexArrayObject.glBindVertexArray(mesh.getVaoId());
-        GL20.glEnableVertexAttribArray(0);
-        GL20.glDrawElements(GL20.GL_TRIANGLES, mesh.getElementArray().length, GL11.GL_UNSIGNED_INT, 0);
-        GL20.glDisableVertexAttribArray(0);
-        ARBVertexArrayObject.glBindVertexArray(0);
+    public void draw(float pixelSizeInScreen, float posX, float posY) {
+        this.CONTENT.draw(Shader.HUD,
+                posX + 2.5f * pixelSizeInScreen,
+                posY + 15.5f *pixelSizeInScreen,
+                (SlotWidget.BASE_BOUNDING_BOX.getWidth() -5) *pixelSizeInScreen,
+                (SlotWidget.BASE_BOUNDING_BOX.getHeight() -5) *pixelSizeInScreen
+                );
     }
 
     @Override

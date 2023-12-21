@@ -10,8 +10,6 @@ import utils.render.texture.Textures;
 import world.location.Location;
 
 public class BulldozerParticle extends AbstractPhysicsParticle {
-    private static final EntityMesh MESH = new EntityMesh(new Vector2i(1, 1));
-
     public BulldozerParticle(Location location) {
         super(location,
                 new Vector2f(Main.RANDOM.nextFloat(-0.11f, 0.11f), Main.RANDOM.nextFloat(0.07f, 0.25f)),
@@ -22,11 +20,6 @@ public class BulldozerParticle extends AbstractPhysicsParticle {
         super.lifeTime = Main.RANDOM.nextInt(20);
         super.scale = Main.RANDOM.nextFloat(0.7f, 1);
         super.rotation = Main.RANDOM.nextInt(360 +1);
-    }
-
-    @Override
-    public EntityMesh getMesh() {
-        return BulldozerParticle.MESH;
     }
 
     @Override

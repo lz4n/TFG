@@ -1,6 +1,13 @@
 package utils.render.texture;
 
+import org.joml.Vector2i;
 import org.lwjgl.opengl.GL20;
+import utils.Logger;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * Representa una textura fija.
@@ -30,6 +37,15 @@ public class StaticTexture extends Texture implements CacheTexture {
     StaticTexture(String path, int param) {
         this.PATH = path;
         this.PARAM = param;
+
+        try {
+            BufferedImage bufferedTexture = ImageIO.read(new File(this.PATH));
+            if (bufferedTexture != null) {
+                this.setTextureSize(new Vector2i(bufferedTexture.getWidth(), bufferedTexture.getHeight()));
+            }
+        } catch (IOException exception) {
+            Logger.sendMessage("No se ha podido leer la textura \"%s\".", Logger.LogMessageType.WARNING, this.PATH);
+        }
     }
 
     /**

@@ -38,8 +38,6 @@ public abstract class Particle extends Ticking {
         return this.scale;
     }
 
-    public abstract EntityMesh getMesh();
-
     public abstract Texture getTexture();
 
     protected abstract int getMaxLifeTime();

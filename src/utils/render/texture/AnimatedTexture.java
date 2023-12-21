@@ -1,7 +1,13 @@
 package utils.render.texture;
 
+import org.joml.Vector2i;
 import org.lwjgl.opengl.GL20;
+import utils.Logger;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -54,6 +60,15 @@ public class AnimatedTexture extends Texture implements CacheTexture {
 
         for (int sprite = 0; sprite < spriteCount; sprite++) {
             this.PATHS[sprite] = String.format("%s/%s.png", path, sprite);
+        }
+
+        try {
+            BufferedImage bufferedTexture = ImageIO.read(new File(this.PATHS[0]));
+            if (bufferedTexture != null) {
+                this.setTextureSize(new Vector2i(bufferedTexture.getWidth(), bufferedTexture.getHeight()));
+            }
+        } catch (IOException exception) {
+            Logger.sendMessage("No se ha podido leer la textura \"%s\".", Logger.LogMessageType.WARNING, this.PATHS[0]);
         }
 
         AnimatedTexture.ANIMATED_TEXTURES_LIST.add(this);

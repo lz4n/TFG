@@ -81,6 +81,7 @@ public class World extends Thread {
         if (feature != null && feature.canBePlaced()) {
             Main.WORLD.addFeature(feature, false);
         }
+
         return terrain;
     }
 

@@ -17,5 +17,5 @@ public interface CustomDrawWidget {
      * @param width Ancho del widget en coordenadas de pantalla.
      * @param height Alto del widget en coordenadas de pantalla.
      */
-    void draw(Mesh mesh, float pixelSizeInScreen, float posX, float posY, float width, float height);
+    void draw(float pixelSizeInScreen, float posX, float posY);
 }

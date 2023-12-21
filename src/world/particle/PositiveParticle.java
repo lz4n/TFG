@@ -9,8 +9,6 @@ import utils.render.texture.Textures;
 import world.location.Location;
 
 public class PositiveParticle extends AbstractPhysicsParticle {
-    private static final EntityMesh MESH = new EntityMesh(new Vector2i(1, 1));
-
     public PositiveParticle(Location location) {
         super(location,
                 new Vector2f(Main.RANDOM.nextFloat(-.03f, .03f), Main.RANDOM.nextFloat(-0.03f, 0.03f)),
@@ -19,11 +17,6 @@ public class PositiveParticle extends AbstractPhysicsParticle {
                 0);
 
         super.scale = Main.RANDOM.nextFloat(0.5f, 1f);
-    }
-
-    @Override
-    public EntityMesh getMesh() {
-        return PositiveParticle.MESH;
     }
 
     @Override

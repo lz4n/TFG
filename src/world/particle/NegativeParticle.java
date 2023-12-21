@@ -9,7 +9,6 @@ import world.location.Location;
 
 public class NegativeParticle extends Particle {
     private static final Texture TEXTURE = Textures.NEGATIVE_PARTICLE;
-    private static final EntityMesh MESH = new EntityMesh(new Vector2i(1, 1));
 
     public NegativeParticle(Location location) {
         super(location);
@@ -26,11 +25,6 @@ public class NegativeParticle extends Particle {
         } else {
             super.scale = 1;
         }
-    }
-
-    @Override
-    public EntityMesh getMesh() {
-        return NegativeParticle.MESH;
     }
 
     @Override

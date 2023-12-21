@@ -57,15 +57,15 @@ public class Tab extends Widget implements CustomDrawWidget {
     }
 
     @Override
-    public void draw(Mesh mesh, float pixelSizeInScreen, float posX, float posY, float width, float height) {
-        Shader.HUD.upload2f("uHudPosition", posX + 2f * pixelSizeInScreen, posY + 1f * pixelSizeInScreen);
-        Shader.HUD.upload2f("uHudSize", (Tab.BASE_BOUNDING_BOX.getWidth() -4) * pixelSizeInScreen, (Tab.BASE_BOUNDING_BOX.getHeight() -3) * pixelSizeInScreen);
+    public void draw(float pixelSizeInScreen, float posX, float posY) {
+        Shader.HUD.upload2f("uPosition", posX + 2f * pixelSizeInScreen, posY + 1f * pixelSizeInScreen);
+        Shader.HUD.upload2f("uSize", (Tab.BASE_BOUNDING_BOX.getWidth() -4) * pixelSizeInScreen, (Tab.BASE_BOUNDING_BOX.getHeight() -3) * pixelSizeInScreen);
 
-        ((this.isHovered() || this.isSelected)? this.SELECTED_CONTENT: this.UNSELECTED_CONTENT).bind();
-        ARBVertexArrayObject.glBindVertexArray(mesh.getVaoId());
-        GL20.glEnableVertexAttribArray(0);
-        GL20.glDrawElements(GL20.GL_TRIANGLES, mesh.getElementArray().length, GL11.GL_UNSIGNED_INT, 0);
-        GL20.glDisableVertexAttribArray(0);
-        ARBVertexArrayObject.glBindVertexArray(0);
+        ((this.isHovered() || this.isSelected)? this.SELECTED_CONTENT: this.UNSELECTED_CONTENT).draw(Shader.HUD,
+                posX +2f *pixelSizeInScreen,
+                posY +1f *pixelSizeInScreen,
+                (Tab.BASE_BOUNDING_BOX.getWidth() -4) *pixelSizeInScreen,
+                (Tab.BASE_BOUNDING_BOX.getHeight() -3) *pixelSizeInScreen
+                );
     }
 }
