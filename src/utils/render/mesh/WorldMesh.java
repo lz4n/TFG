@@ -8,10 +8,7 @@ import java.util.Arrays;
  * Mesh utilizado para renderizar una cantidad de objetos igual al área total del mundo. A contrario de <code>EntityMesh</code>,
  * este mesh no se instancia para cada uno de los objetos. Este mesh contiene todos los vértices directamente, que habrá
  * que añadir según se vayan generando los objetos.
- * @see EntityMesh
  * @see Mesh
- *
- * @author Izan
  */
 public class WorldMesh extends Mesh {
     /**

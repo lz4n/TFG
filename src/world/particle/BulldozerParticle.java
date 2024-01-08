@@ -2,9 +2,6 @@ package world.particle;
 
 import main.Main;
 import org.joml.Vector2f;
-import org.joml.Vector2i;
-import utils.render.mesh.EntityMesh;
-import utils.render.texture.StaticTexture;
 import utils.render.texture.Texture;
 import utils.render.texture.Textures;
 import world.location.Location;

@@ -5,7 +5,7 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.ARBVertexArrayObject;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
-import ui.Tab;
+import ui.widget.Tab;
 import ui.widget.*;
 import ui.widget.widgetUtils.CustomDrawWidget;
 import ui.widget.widgetUtils.IgnoreScrollMovement;
@@ -90,22 +90,13 @@ public class Inventory extends Container {
         this.TABS.forEach(tab -> this.removeWidget(widget, tab));
     }
 
-    /**
-     * Dibuja el inventario según el <code>mesh</code> que se le pase. Siempre utiliza el shader <code>HUD</code>.
-     * @param mesh <code>Mesh</code> que se va a utilizar para dibujar el inventario.
-     */
     @Override
-    public void draw(Mesh mesh) {
-        Shader.HUD.upload2f("uPosition", 0, this.posY);
-        Shader.HUD.upload2f("uSize", Window.getWidth(), this.height);
-
-        Textures.CONTAINER.bind();
-        ARBVertexArrayObject.glBindVertexArray(mesh.getVaoId());
-        GL20.glEnableVertexAttribArray(0);
-        GL20.glDrawElements(GL20.GL_TRIANGLES, mesh.getElementArray().length, GL11.GL_UNSIGNED_INT, 0);
-        GL20.glDisableVertexAttribArray(0);
-        ARBVertexArrayObject.glBindVertexArray(0);
-
+    public void draw() {
+        Textures.CONTAINER.draw(Shader.HUD,
+                0f,
+                this.posY,
+                Window.getWidth(),
+                this.height);
 
         super.widgets.forEach(widget -> {
             float widgetPosX, widgetPosY,

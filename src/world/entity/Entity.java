@@ -1,9 +1,6 @@
 package world.entity;
 
 import org.joml.Vector2f;
-import org.joml.Vector2i;
-import utils.render.mesh.EntityMesh;
-import utils.render.texture.StaticTexture;
 import utils.render.texture.Texture;
 import utils.render.texture.Textures;
 import world.location.Location;
@@ -36,18 +33,11 @@ public abstract class Entity extends Ticking implements Serializable {
     }
 
     public enum EntityType implements Serializable {
-        DUCK(new EntityMesh(new Vector2i(1, 1)), Textures.DUCK);
-
-        private final EntityMesh MESH;
+        DUCK(Textures.DUCK);
         private final Texture TEXTURE;
 
-        EntityType(EntityMesh mesh, Texture texture) {
-            this.MESH = mesh;
+        EntityType(Texture texture) {
             this.TEXTURE = texture;
-        }
-
-        public EntityMesh getMesh() {
-            return this.MESH;
         }
 
         public Texture getTexture() {

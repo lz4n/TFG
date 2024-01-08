@@ -30,11 +30,6 @@ public class WorldScene implements Scene {
      */
     public static final int SPRITE_SIZE = 16;
 
-    /**
-     * Mesh utilizado para dibujar el HUD.
-     */
-    private final SingleObjectMesh HUD_MESH = new SingleObjectMesh();
-
     private final WorldMesh WORLD_BORDER_MESH = new WorldMesh(1, 2, 2);
 
 
@@ -52,7 +47,6 @@ public class WorldScene implements Scene {
 
         drawTerrain();
 
-        HUD_MESH.load();
         SingleObjectMesh.SINGLE_OBJECT_MESH.load();
 
         this.WORLD_BORDER_MESH.addVertex(-1, -1, Main.world.getSize() +2,  Main.world.getSize() +2);
@@ -68,9 +62,6 @@ public class WorldScene implements Scene {
         }
         for (Feature.FeatureType featureType: Feature.FeatureType.values()) {
             featureType.getMesh().load();
-        }
-        for (Entity.EntityType entityType: Entity.EntityType.values()) {
-            entityType.getMesh().load();
         }
     }
 
@@ -234,7 +225,6 @@ public class WorldScene implements Scene {
             Shader.HUD.uploadInt("texture_sampler", 0);
 
             debugScreen.bind();
-            this.HUD_MESH.draw();
             debugScreen.remove();
 
             Texture.unbind();
@@ -243,7 +233,7 @@ public class WorldScene implements Scene {
         Main.PLAYER.updateTime(Main.world.getFormattedDayTime());
         if (!Main.PLAYER.isHidingUi() || !(Main.PLAYER.getContainer() instanceof Inventory)) {
             Main.PLAYER.getContainer().onHoverEvent();
-            Main.PLAYER.getContainer().draw(this.HUD_MESH);
+            Main.PLAYER.getContainer().draw();
         }
 
         //Dibujamos el selector del ratón

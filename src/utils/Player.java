@@ -11,7 +11,7 @@ import ui.widget.*;
 import ui.widget.buttonWidget.AbstractButtonWidget;
 import ui.widget.buttonWidget.FrameButtonWidget;
 import ui.widget.textWidgets.SmallTextBox;
-import ui.Tab;
+import ui.widget.Tab;
 import ui.widget.textWidgets.TextBox;
 import utils.render.Camera;
 import utils.render.Window;

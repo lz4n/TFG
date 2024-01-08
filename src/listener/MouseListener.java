@@ -67,6 +67,7 @@ public class MouseListener {
         Window.currentScene.moveMouse((float) posX, (float) posY);
 
         if (!Main.PLAYER.isMouseOnInventory() && !Main.PLAYER.isPaused()) {
+            //Colocar/Destruir features cuando se hace click sobre ellas.
             if (KeyBind.INTERACT.isPressed()) {
                 Feature selectedFeature = MouseListener.getInGameLocation().getFeature();
                 if (Main.PLAYER.isUsingBulldozer()) {

@@ -28,6 +28,7 @@ public class KeyListener {
         if (key != GLFW.GLFW_KEY_UNKNOWN) {
             KeyListener.isKeyPressed[key] = action == GLFW.GLFW_PRESS || action ==  GLFW.GLFW_REPEAT;
 
+            //Acciones que se realizan cuando se presiona una tecla.
             if (action == GLFW.GLFW_PRESS) {
                 if (Main.PLAYER.isPaused()) {
                     if (KeyBind.TOGGLE_GAME_MENU.checkKey(key)) {
