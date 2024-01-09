@@ -220,11 +220,11 @@ public class Window {
 
                 if (currentScene instanceof WorldScene && Main.PLAYER.getContainer() instanceof Inventory inventory) {
                     if (KeyListener.isKeyPressed(GLFW.GLFW_KEY_RIGHT)) {
-                        inventory.moveSlider((KeyListener.isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT) ? 2 : 1) * -.7f);
+                        inventory.moveScroll((KeyListener.isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT) ? 2 : 1) * -.7f);
                     }
 
                     if (KeyListener.isKeyPressed(GLFW.GLFW_KEY_LEFT)) {
-                        inventory.moveSlider((KeyListener.isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT) ? 2 : 1) * .7f);
+                        inventory.moveScroll((KeyListener.isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT) ? 2 : 1) * .7f);
                     }
                 }
             }

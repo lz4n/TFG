@@ -2,14 +2,10 @@ package ui.container;
 
 import ui.widget.Widget;
 import ui.widget.widgetUtils.CustomDrawWidget;
-import ui.widget.widgetUtils.IgnoreScrollMovement;
 import utils.BoundingBox;
 import utils.render.GameFont;
 import utils.render.Shader;
-import utils.render.Window;
-import utils.render.mesh.Mesh;
 import utils.render.texture.Graphics2dTexture;
-import utils.render.texture.Texture;
 import utils.render.texture.Textures;
 
 import java.awt.*;
@@ -106,10 +102,12 @@ public class Frame extends Container {
 
     @Override
     public boolean onMouseMoveEvent(float mouseX, float mouseY) {
+        //Calculamos las coordenadas del ratón en pixeles in-game, y cuyo origen de coordenadas es la esquina superior izquierda del Frame.
         float interfaceX = mouseX /Container.pixelSizeInScreen -this.posX;
         float interfaceY = mouseY /Container.pixelSizeInScreen -this.posY;
 
 
+        //Miramos a ver si el ratón está sobre algún widget.
         boolean isMouseOnAnyWidget = false;
         for (Widget widget: this.widgets) {
             if (widget.getBoundingBox().containsLocation(interfaceX, interfaceY)) {
@@ -120,6 +118,7 @@ public class Frame extends Container {
             }
         }
 
+        //Si no está sobre algún widget miramos que el ratón esté dentro del Frame.
         return isMouseOnAnyWidget || (
                 interfaceX >= 0 &&
                 interfaceY >= 0 &&
@@ -132,6 +131,7 @@ public class Frame extends Container {
     public void onResizeWindowEvent(float newWidth, float newHeight) {
         super.onResizeWindowEvent(newWidth, newHeight);
 
+        //Recalculamos la textura del título.
         this.posX = ((newWidth /Container.pixelSizeInScreen) - Frame.BASE_BOUNDING_BOX.getWidth()) /2f;
         this.posY = 20;
 
