@@ -10,27 +10,54 @@ import world.location.Location;
 import java.io.Serializable;
 import java.util.*;
 
+/**
+ * Decoradores generados automaticamente o estructuras colocadas por el jugador. Las features se asignan a una celda o varias
+ * celdas del juego, y el jugador podrá interactuar con ellas cuando haga clic sobre esas casillas.
+ *
+ * Un mismo tipo de feature
+ */
 public abstract class Feature implements Comparable<Feature>, Serializable {
-    protected static final Random RANDOM = new Random();
+
+    /**
+     * Posición donde está hubicada la feature.
+     */
     private final Location LOCATION;
+
+    /**
+     * Tamaño de la feature en celdas.
+     */
     private final Vector2i SIZE_IN_BLOCKS;
+
+    /**
+     * Tipo de feature.
+     */
     private final FeatureType FEATURE_TYPE;
+
+    /**
+     * Variante de la feature.
+     */
     private final int VARIANT;
 
     public Feature(Location location, Vector2i sizeInBlocks, FeatureType featureType, int variant) {
+
+        //Calculamos el desplazamiento, para que las features no estén todas en la misma posición dentro de la casilla.
         float offsetX = 0, offsetY = 0;
         if (this.getRandomOffset().x() != 0) {
-            offsetX = Feature.RANDOM.nextFloat() / this.getRandomOffset().x();
+            offsetX = Main.RANDOM.nextFloat() / this.getRandomOffset().x();
         }
         if (this.getRandomOffset().y() != 0) {
-            offsetY = Feature.RANDOM.nextFloat() / this.getRandomOffset().y();
+            offsetY = Main.RANDOM.nextFloat() / this.getRandomOffset().y();
         }
+
         this.LOCATION = location.add(offsetX, offsetY);
         this.SIZE_IN_BLOCKS = sizeInBlocks;
         this.FEATURE_TYPE = featureType;
         this.VARIANT = variant;
     }
 
+    /**
+     * @return Posición donde está hubicada 
+     */
     public Location getLocation() {
         return this.LOCATION.clone();
     }

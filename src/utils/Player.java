@@ -121,9 +121,9 @@ public class Player {
      */
     private MenuItem selectedFeatureToPlace;
 
-    public Player() {
-    }
-
+    /**
+     * Inicializa los datos del jugador. Crea el inventario y el menú.
+     */
     public void init() {
         //** INVENTARIO **//
         this.timeTextBox = new DateTimeTextBox(4, 4);
@@ -202,6 +202,11 @@ public class Player {
         this.GAME_MENU.addWidget(leaveGameButton);
     }
 
+    /**
+     * Añade el widget del bulldozer al inventario.
+     * @param posX Posición en el eje X del inventario donde se va a colocar el botón del bulldozer.
+     * @param tab Pestaña donde se colocará el botón.
+     */
     private void addBulldozerToInventory(int posX, Tab tab) {
         this.INVENTORY.addWidget(new SeparatorWidget(posX, 0), tab);
 
@@ -216,6 +221,11 @@ public class Player {
         this.INVENTORY.addWidget(bulldozerButton, tab);
     }
 
+    /**
+     * Añade los items de las features a la pestaña correspondiente.
+     * @param widgetXPos Posición en el eje X del inventario donde se quieren colocar los items.
+     * @param tab Pestaña donde se van a colocar los items.
+     */
     private void addFeaturesWidgetToTab(int widgetXPos, Tab tab) {
         final int SLOT_SEPARATION = 20, WIDGET_POS_TOP = 4, WIDGET_POS_BOTTOM = 24;
 
@@ -244,6 +254,7 @@ public class Player {
                     slotWidget.setSelected(true);
 
 
+                    //Cuando haces clic se abre un indicador en la pantalla, que cuando lo cierras se desselecciona el slot.
                     ScreenIndicatorWidget screenIndicatorWidget = new ScreenIndicatorWidget(20, 340, item.TEXTURE);
                     screenIndicatorWidget.setOnClickEvent(() -> {
                         this.selectedFeatureToPlace = null;
@@ -261,18 +272,27 @@ public class Player {
 
         this.addBulldozerToInventory(widgetXPos, tab);
 
-        this.INVENTORY.onResizeWindowEvent(utils.render.Window.getWidth(), Window.getHeight());
+        this.INVENTORY.onResizeWindowEvent(Window.getWidth(), Window.getHeight());
     }
 
+    /**
+     * Activa/desactiva la ocultación del inventario.
+     */
     public void toggleIsHidingUi() {
         this.isHidingUI = !this.isHidingUI;
     }
 
+    /**
+     * Pasa a la siguiente velocidad, si llega al máximo pausa el juego.
+     */
     public void toggleGameSpeed() {
         this.gameSpeedButton.onClickEvent();
         if (Main.tickSpeed == 0) Main.tickSpeed = 1;
     }
 
+    /**
+     * Pausa/despausa el juego.
+     */
     public void togglePauseGame() {
         if (Main.tickSpeed != 0) {
             this.previousGameSpeed = Main.tickSpeed;
@@ -284,6 +304,9 @@ public class Player {
         }
     }
 
+    /**
+     * Activa/desactiva el bulldozer.
+     */
     public void toggleBulldozer() {
         if (!this.isUsingBulldozer) {
             this.selectedFeatureToPlace = null;
@@ -295,59 +318,118 @@ public class Player {
         this.isUsingBulldozer = !this.isUsingBulldozer;
     }
 
+    /**
+     * Crea una feature del tipo que tenga seleccionado el jugador, pero no la coloca en el mundo.
+     * @return Nueva feature del tipo que tenga seleccionado el jugaador.
+     */
     public Feature createSelectedFeature() {
         if (this.selectedFeatureToPlace == null) return null;
         return this.selectedFeatureToPlace.FEATURE_TO_PLACE.createFeature(MouseListener.getInGameLocation().truncate(), this.selectedFeatureToPlace.VARIANT);
     }
 
+    /**
+     * Actualiza la fecha y hora en el <code>timeTextBox</code>.
+     * @param date nueva fecha.
+     * @param time nueva hora.
+     * @see Player#timeTextBox
+     */
     public void updateDateTime(String date, String time) {
         this.timeTextBox.updateDateTime(date, time);
     }
 
+    /**
+     * @return Contenedor que está utilizando el jugador, el menú o el inventario.
+     */
     public Container getContainer() {
         return this.container;
     }
 
+    /**
+     * @return Cámara del jugador.
+     */
     public Camera getCamera() {
         return this.CAMERA;
     }
 
+    /**
+     * @return Si está ocultando el inventario o no.
+     */
     public boolean isHidingUi() {
         return this.isHidingUI;
     }
 
+    /**
+     * @return Si está utilizando el bulldozer o no.
+     */
     public boolean isUsingBulldozer() {
         return this.isUsingBulldozer;
     }
 
+    /**
+     * @return Si está el ratón sobre el inventario o no.
+     */
     public boolean isMouseOnInventory() {
         return this.isMouseOnInventory;
     }
+
+    /**
+     * @return Si el juego está en pausa o no.
+     */
     public boolean isPaused() {
         return this.isPaused;
     }
 
+    /**
+     * Establece si el ratón está sobre el inventario.
+     * @param isMouseOnInventory Valor boleano que indica si el ratón está sobre el inventario.
+     */
     public void setMouseOnInventory(boolean isMouseOnInventory) {
         this.isMouseOnInventory = isMouseOnInventory;
     }
 
+    /**
+     * Cierra el contenedor anterior y abre el menú de juego.
+     */
     public void openMenu() {
         this.container = this.GAME_MENU;
         this.isPaused = true;
         this.container.onResizeWindowEvent(Window.getWidth(), Window.getHeight());
     }
 
+    /**
+     * Cierra el contenedor anterior y abre el inventario.
+     */
     public void openInventory() {
         this.container = this.INVENTORY;
         this.isPaused = false;
         this.container.onResizeWindowEvent(Window.getWidth(), Window.getHeight());
     }
 
+    /**
+     * Representa un item en el inventario, que se asignará a un slot durante la creación del inventario.
+     */
     public static class MenuItem {
+
+        /**
+         * Textura del item.
+         */
         private final Texture TEXTURE;
+
+        /**
+         * Tipo de feature que colocará el jugador cuando seleccione ese slot.
+         */
         private final Feature.FeatureType FEATURE_TO_PLACE;
+
+        /**
+         * Variante de la feature que colocará el jugador cuando seleccione ese slot.
+         */
         private final int VARIANT;
 
+        /**
+         * @param texture Textura del item.
+         * @param featureToPlace Tipo de feature del item.
+         * @param variant Variante de la feature del item.
+         */
         public MenuItem(Texture texture, Feature.FeatureType featureToPlace, int variant) {
             this.TEXTURE = texture;
             this.FEATURE_TO_PLACE = featureToPlace;
