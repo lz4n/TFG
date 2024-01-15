@@ -115,6 +115,9 @@ public class AnimatedTexture extends Texture implements CacheTexture {
         return String.format("AnimatedTexture(paths=%s)", Arrays.toString(this.PATHS));
     }
 
+    /**
+     * Se llama en cada tick y se encarga de pasar al siguiente sprite de la animación. Cuando llega al final se pasa al primer sprite.
+     */
     public static void animate() {
         AnimatedTexture.ANIMATED_TEXTURES_LIST.forEach(animatedTexture -> {
             animatedTexture.currentSprite++;

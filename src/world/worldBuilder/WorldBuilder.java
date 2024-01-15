@@ -1,10 +1,24 @@
 package world.worldBuilder;
 
+/**
+ * Se encarga de generar los mapas de ruido del mundo.
+ */
 public class WorldBuilder {
+
+    /**
+     * Parametros de generación.
+     */
     private final int OCTAVES = 8;
     private final float ROUGHNESS = 0.53f, SCALE = 0.3f;
+
+    /**
+     * Generadores de ruido.
+     */
     private final NoiseGenerator CONTINENTALITY_NOISE, WEIRDNESS_NOISE, RIVERS_NOSISE;
 
+    /**
+     * @param seed Semilla con la que se genera el mundo, dos mundos con la misma semilla tienen el mismo terreno.
+     */
     public WorldBuilder(int seed) {
         this.CONTINENTALITY_NOISE = new NoiseGenerator(seed) {{SetNoiseType(NoiseType.OpenSimplex2);}};
         this.WEIRDNESS_NOISE = new NoiseGenerator(seed+1) {{SetNoiseType(NoiseType.OpenSimplex2);}};

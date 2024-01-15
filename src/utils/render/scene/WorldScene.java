@@ -132,14 +132,12 @@ public class WorldScene implements Scene {
         Shader.ENTITY.uploadFloat("uScale", 1);
         Shader.ENTITY.uploadInt("uIsPaused", Main.PLAYER.isPaused() ? 1: 0);
 
-        for (Entity.EntityType entityType: Entity.EntityType.values()) {
-            if (Main.world.getEntitiesMap().containsKey(entityType)) for (Entity entity: Main.world.getEntitiesMap().get(entityType)) {
-                entityType.getTexture().draw(Shader.ENTITY, entity.getLocation());
-            }
+        Main.world.getEntities().forEach(entity -> {
+            entity.getTexture().draw(Shader.ENTITY, entity.getLocation());
             Texture.unbind();
-        }
+        });
 
-        for (Particle particle: Main.world.getParticlesList()) {
+        Main.world.getParticlesList().forEach(particle -> {
             Shader.ENTITY.uploadFloat("uRotationAngle", particle.getRotation());
             Shader.ENTITY.uploadFloat("uScale", particle.getScale());
             particle.getTexture().draw(
@@ -147,7 +145,7 @@ public class WorldScene implements Scene {
                     particle.getLocation()
             );
             Texture.unbind();
-        }
+        });
 
         Shader.HUD.use();
         Shader.HUD.uploadMatrix4f("uProjection", new Matrix4f().ortho(0, Window.getWidth(), Window.getHeight(), 0, -1, 1));

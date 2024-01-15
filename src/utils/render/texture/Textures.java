@@ -2,6 +2,10 @@ package utils.render.texture;
 
 import org.lwjgl.opengl.GL20;
 
+/**
+ * Lista de todas las texturas que se usan en el juego. Cuando se inicia se cargan en memoria, y cuando se cierra el juego
+ * se eliminan para liberar memoria.
+ */
 public final class Textures {
     public final static Texture
         SELECTOR = new StaticTexture("assets/textures/ui/selector.png"),

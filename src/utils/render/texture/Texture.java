@@ -25,8 +25,15 @@ import java.util.List;
  * @author Izan
  */
 public abstract class Texture {
+    /**
+     * Almacena el tamaño de la textura en píxeles.
+     */
     private Vector2i textureSize = new Vector2i(0, 0);
 
+    /**
+     * Cambia el tamaño de la textura.
+     * @param textureSize Nuevo tamaño de textura, en pixeles.
+     */
     protected void setTextureSize(Vector2i textureSize) {
         this.textureSize = textureSize;
     }
@@ -56,10 +63,21 @@ public abstract class Texture {
      */
     public abstract int getTextureId();
 
+    /**
+     * @return Tamaño de la textura en píxeles.
+     */
     public Vector2i getSize() {
         return new Vector2i(this.textureSize);
     }
 
+    /**
+     * Instancia una textura en cierta posición y con un tamaño determinado.
+     * @param shader Shader encargado de la instanciación.
+     * @param posX Posición en el eje X en la que se va a instanciar.
+     * @param posY Posición en el eje Y en la que se va a instanciar.
+     * @param sizeX Tamaño en el eje X de la instancia.
+     * @param sizeY Tamaño en el eje Y de la instancia.
+     */
     public void draw(Shader shader, float posX, float posY, float sizeX, float sizeY) {
         if (shader.supportsInstantiation()) {
             shader.upload2f("uPosition", posX, posY);
@@ -76,6 +94,12 @@ public abstract class Texture {
         }
     }
 
+    /**
+     * Instancia una textura en cierta posición y con un tamaño determinado (ambos en unidades in-game).
+     * @param shader Shader encargado de la instanciacion.
+     * @param location Posición in-game donde se va a realizar la instanciacion.
+     * @param size Tamaño de la isntancia, en unidades in-game.
+     */
     public void draw(Shader shader, Location location, Vector2f size) {
         location = location.clone().getInScreenCoords();
         size.mul(WorldScene.SPRITE_SIZE);
@@ -87,6 +111,11 @@ public abstract class Texture {
                 );
     }
 
+    /**
+     * Instancia una textura en una posición específica, pero con el tamaño de la textura.
+     * @param shader Shader encargado de la isntanciación.
+     * @param location Posición en la que se va a realizar la instancia.
+     */
     public void draw(Shader shader, Location location) {
         location = location.clone().getInScreenCoords();
         this.draw(shader,

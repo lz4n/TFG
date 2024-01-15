@@ -36,6 +36,9 @@ public enum Shader {
      */
     HUD("assets/shaders/hud", true);
 
+    /**
+     * Indica si el shader puede instanciar texturas.
+     */
     private final boolean SUPPORTS_INSTANTATION;
 
     /**
@@ -68,6 +71,7 @@ public enum Shader {
      * a la memoria antes de que se haya inicializado GLSL, por lo que hay que compilar los shaders después de la inicialización.
      * @param sourceVertex dirección al archivo <code>.glsl</code> que contiene el código del shader de vértices.
      * @param sourceFragment dirección al archivo <code>.glsl</code> que contiene el código del shader de fragmentos.
+     * @param supportsInstantiation Indica si el shader puede instanciar texturas.
      * @see Window
      */
     Shader(String sourceVertex, String sourceFragment, boolean supportsInstantiation) {
@@ -129,6 +133,9 @@ public enum Shader {
         GL20.glLinkProgram(this.shaderProgramID);
     }
 
+    /**
+     * @return Si el shader puede instanciar texturas o no.
+     */
     public boolean supportsInstantiation() {
         return this.SUPPORTS_INSTANTATION;
     }

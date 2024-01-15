@@ -17,7 +17,6 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 public class World extends Ticking implements Serializable {
-    private static final Random RANDOM = new Random();
     private static final int SUNRISE_DURATION = 6000,
             DAY_DURATION = 48000,
             NIGHT_DURATION = 30000,
@@ -32,7 +31,7 @@ public class World extends Ticking implements Serializable {
     private final Terrain[] TERRAIN;
     private final Feature[] FEATURES;
     private final Map<Feature.FeatureType, TreeSet<Feature>> FEATURES_MAP = new TreeMap<>();
-    private final Map<Entity.EntityType, LinkedList<Entity>> ENTITITES_MAP = new HashMap<>();
+    private final LinkedList<Entity> ENTITITES_LIST = new LinkedList<>();
     private transient List<Particle> particlesList = new LinkedList<>();
     private int dayTime = (int) (World.SUNRISE_DURATION *.45), day = LocalDateTime.now().getDayOfMonth(), month = LocalDateTime.now().getMonthValue(), year = LocalDateTime.now().getYear(), featuresCount, entitiesCount;
     private float happiness = 1;
@@ -62,24 +61,24 @@ public class World extends Ticking implements Serializable {
         this.setTerrain(x, y, terrain);
         switch (biome) {
             case RIVER_MOUNTAIN_SHORE -> {
-                if (World.RANDOM.nextFloat() >= 0.4)
-                    feature = Feature.FeatureType.TREE.createFeature(new Location(x, y + World.RANDOM.nextFloat() / 4));
-                else if (World.RANDOM.nextFloat() >= 0.6) feature = Feature.FeatureType.BUSH.createFeature(new Location(x, y + World.RANDOM.nextFloat() / 2));
+                if (Main.RANDOM.nextFloat() >= 0.4)
+                    feature = Feature.FeatureType.TREE.createFeature(new Location(x, y + Main.RANDOM.nextFloat() / 4));
+                else if (Main.RANDOM.nextFloat() >= 0.6) feature = Feature.FeatureType.BUSH.createFeature(new Location(x, y + Main.RANDOM.nextFloat() / 2));
             }
             case FOREST -> {
-                if (World.RANDOM.nextFloat() >= 0.75)
-                    feature = Feature.FeatureType.TREE.createFeature(new Location(x + World.RANDOM.nextFloat() / 4, y + World.RANDOM.nextFloat() / 4));
-                else if (World.RANDOM.nextFloat() >= 0.84) feature = Feature.FeatureType.BUSH.createFeature(new Location(x, y + World.RANDOM.nextFloat() / 2));
+                if (Main.RANDOM.nextFloat() >= 0.75)
+                    feature = Feature.FeatureType.TREE.createFeature(new Location(x + Main.RANDOM.nextFloat() / 4, y + Main.RANDOM.nextFloat() / 4));
+                else if (Main.RANDOM.nextFloat() >= 0.84) feature = Feature.FeatureType.BUSH.createFeature(new Location(x, y + Main.RANDOM.nextFloat() / 2));
             }
             case PLAINS -> {
-                if (World.RANDOM.nextFloat() >= 0.97)
-                    feature = Feature.FeatureType.TREE.createFeature(new Location(x + World.RANDOM.nextFloat() / 2, y + World.RANDOM.nextFloat() / 4));
-                else if (World.RANDOM.nextFloat() >= 0.87) feature = Feature.FeatureType.BUSH.createFeature(new Location(x, y + World.RANDOM.nextFloat() / 2));
-                else if (World.RANDOM.nextFloat() >= 0.99) feature = Feature.FeatureType.FLOWER.createFeature(new Location(x, y + World.RANDOM.nextFloat() / 4));
+                if (Main.RANDOM.nextFloat() >= 0.97)
+                    feature = Feature.FeatureType.TREE.createFeature(new Location(x + Main.RANDOM.nextFloat() / 2, y + Main.RANDOM.nextFloat() / 4));
+                else if (Main.RANDOM.nextFloat() >= 0.87) feature = Feature.FeatureType.BUSH.createFeature(new Location(x, y + Main.RANDOM.nextFloat() / 2));
+                else if (Main.RANDOM.nextFloat() >= 0.99) feature = Feature.FeatureType.FLOWER.createFeature(new Location(x, y + Main.RANDOM.nextFloat() / 4));
             }
             case MOUNTAIN -> {
-                if (World.RANDOM.nextFloat() >= 0.98)
-                    feature = Feature.FeatureType.ROCK.createFeature(new Location(x + World.RANDOM.nextFloat() / 4, y + World.RANDOM.nextFloat() / 6));
+                if (Main.RANDOM.nextFloat() >= 0.98)
+                    feature = Feature.FeatureType.ROCK.createFeature(new Location(x + Main.RANDOM.nextFloat() / 4, y + Main.RANDOM.nextFloat() / 6));
             }
         }
         if (feature != null && feature.canBePlaced()) {
@@ -162,11 +161,7 @@ public class World extends Ticking implements Serializable {
     }
 
     public void spawnEntity(Entity entity) {
-        Entity.EntityType entityType = entity.getEntityType();
-        LinkedList<Entity> entitiesList = this.ENTITITES_MAP.getOrDefault(entityType, new LinkedList<>());
-        entitiesList.add(entity);
-        this.ENTITITES_MAP.put(entityType, entitiesList);
-
+        this.ENTITITES_LIST.add(entity);
         this.entitiesCount++;
     }
 
@@ -271,8 +266,8 @@ public class World extends Ticking implements Serializable {
         return new HashMap<>(this.FEATURES_MAP);
     }
 
-    public Map<Entity.EntityType, LinkedList<Entity>> getEntitiesMap() {
-        return new HashMap<>(this.ENTITITES_MAP);
+    public LinkedList<Entity> getEntities() {
+        return new LinkedList<>(this.ENTITITES_LIST);
     }
 
     public List<Particle> getParticlesList() {

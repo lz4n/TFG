@@ -1,12 +1,28 @@
 package world.feature;
 
+import org.joml.Vector2f;
 import org.joml.Vector2i;
 import world.location.Location;
 import world.terrain.Terrain;
 
+/**
+ * Feature que representa un árbol.
+ */
 public class Tree extends Feature {
-    private static final Vector2i FEATURE_SIZE = new Vector2i(1, 2), RANDOM_OFFSET = new Vector2i(4, 4);
+    /**
+     * Tamaño de la feature en unidades in-game.
+     */
+    private static final Vector2i FEATURE_SIZE = new Vector2i(1, 2);
 
+    /**
+     * Desplazamiento aleatorio de la feature en unidades in-game.
+     */
+    private static final Vector2f RANDOM_OFFSET = new Vector2f(4, 4);
+
+    /**
+     * @param location Posición donde se va a generar la feature.
+     * @param variant Variante de la feature.
+     */
     protected Tree(Location location, int variant) {
         super(location, Tree.FEATURE_SIZE, FeatureType.TREE, variant);
     }
@@ -17,7 +33,7 @@ public class Tree extends Feature {
     }
 
     @Override
-    public Vector2i getRandomOffset() {
+    public Vector2f getRandomOffset() {
         return Tree.RANDOM_OFFSET;
     }
 }

@@ -28,7 +28,7 @@ public class WorldMesh extends Mesh {
 
     /**
      * @param capacity Capacidad que va a tener el mesh.
-     * @param attributesSize Array que almacena los tamaños de los atributos, en unidades.
+     * @param attributesSize Array que almacena los tamaños de los atributos, en bytes.
      * @param uvCoordsGenerator Generador de coordenadas UV.
      */
     public WorldMesh(int capacity, int[] attributesSize, UVCoordsGenerator uvCoordsGenerator) {
@@ -41,7 +41,7 @@ public class WorldMesh extends Mesh {
     /**
      * Constructor que utiliza las coordenadas UV normales para todos los objetos.
      * @param capacity Capacidad que va a tener el mesh.
-     * @param attributesSize Tamaños de los atributos, en unidades.
+     * @param attributesSize Tamaños de los atributos, en bytes.
      */
     public WorldMesh(int capacity, int... attributesSize) {
         this(capacity, attributesSize, () -> new int[]{1, 1, 0, 0, 1, 0, 0, 1});
