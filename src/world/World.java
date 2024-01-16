@@ -16,7 +16,14 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.*;
 
+/**
+ * Representa el mundo de juego.
+ */
 public class World extends Ticking implements Serializable {
+
+    /**
+     * Duración de las fases del día, meses y años.
+     */
     private static final int SUNRISE_DURATION = 6000,
             DAY_DURATION = 48000,
             NIGHT_DURATION = 30000,
@@ -25,17 +32,67 @@ public class World extends Ticking implements Serializable {
             MAX_MONTH = 12;
     private static final float MIN_DAYLIGHT = .2f;
 
+    /**
+     * Nombre del mundo.
+     */
     private final String NAME;
-    private final int SEED, WORLD_SIZE;
+
+    /**
+     * Semilla que se ha usado para la generación del mundo.
+     */
+    private final int SEED;
+
+    /**
+     * Tamaño del mundo en unidades in-game;
+     */
+    private final int WORLD_SIZE;
+
+    /**
+     * WorldBuilder que ha generado el mundo,
+     */
     public transient final WorldBuilder BUILDER;
+
+    /**
+     * Array que almacena todos los objetos que conforman el terreno.
+     */
     private final Terrain[] TERRAIN;
+
+    /**
+     * Array que almacena todas las features.
+     */
     private final Feature[] FEATURES;
-    private final Map<Feature.FeatureType, TreeSet<Feature>> FEATURES_MAP = new TreeMap<>();
-    private final LinkedList<Entity> ENTITITES_LIST = new LinkedList<>();
+
+    /**
+     * Lista con todas las entidades.
+     */
+    private final List<Entity> ENTITITES_LIST = new LinkedList<>();
+
+    /**
+     * Lista con todas las partículas.
+     */
     private transient List<Particle> particlesList = new LinkedList<>();
-    private int dayTime = (int) (World.SUNRISE_DURATION *.45), day = LocalDateTime.now().getDayOfMonth(), month = LocalDateTime.now().getMonthValue(), year = LocalDateTime.now().getYear(), featuresCount, entitiesCount;
+
+    /**
+     * Hora, dia, mes y año del mundo.
+     */
+    private int dayTime = (int) (World.SUNRISE_DURATION *.45), day = LocalDateTime.now().getDayOfMonth(), month = LocalDateTime.now().getMonthValue(), year = LocalDateTime.now().getYear();
+
+    /**
+     * Número de features y entidades totales del mundo.
+     */
+    private int featuresCount, entitiesCount;
+
+    /**
+     * Índice de felicidad del mundo.
+     */
     private float happiness = 1;
 
+    /**
+     * Ínstancia un mundo, pero no lo genera.
+     * @param name Nombre del mundo.
+     * @param seed Semilla del mundo.
+     * @param worldSize Tamaño del mundo.
+     */
     public World(String name, int seed, int worldSize) {
         this.NAME = name;
         this.SEED = seed;
@@ -45,40 +102,50 @@ public class World extends Ticking implements Serializable {
         this.BUILDER = new WorldBuilder(this.SEED);
     }
 
+    /**
+     * Genera el terreno y features en las coordenadas especificadas.
+     * @param x Posición en el eje X que se quiere generar.
+     * @param y Posición en el eje Y que se quiere generar.
+     * @return Terreno que se ha generado.
+     */
     private Terrain generateTerrain(int x, int y) {
         double continentality, weirdness, rivers;
         Biome biome;
         Terrain terrain;
         Feature feature = null;
 
+        //Obtenemos los parámetros de generación y el bioma.
         continentality = this.BUILDER.getContinentalityAt(x, y);
         weirdness = this.BUILDER.getWeirdnessAt(x, y);
         rivers = this.BUILDER.getRiversAt(x, y);
-
         biome = Biome.generateBiome(continentality, weirdness, rivers);
 
+        //Generamos el terreno.
         terrain = new Terrain(biome.getTerrainType(), biome, continentality, weirdness, rivers);
         this.setTerrain(x, y, terrain);
+
+        //Generamos las features según el bioma.
+        Location location = new Location(x, y);
         switch (biome) {
             case RIVER_MOUNTAIN_SHORE -> {
                 if (Main.RANDOM.nextFloat() >= 0.4)
-                    feature = Feature.FeatureType.TREE.createFeature(new Location(x, y + Main.RANDOM.nextFloat() / 4));
-                else if (Main.RANDOM.nextFloat() >= 0.6) feature = Feature.FeatureType.BUSH.createFeature(new Location(x, y + Main.RANDOM.nextFloat() / 2));
+                    feature = Feature.FeatureType.TREE.createFeature(location);
+                else if (Main.RANDOM.nextFloat() >= 0.6) feature = Feature.FeatureType.BUSH.createFeature(location);
             }
             case FOREST -> {
                 if (Main.RANDOM.nextFloat() >= 0.75)
-                    feature = Feature.FeatureType.TREE.createFeature(new Location(x + Main.RANDOM.nextFloat() / 4, y + Main.RANDOM.nextFloat() / 4));
-                else if (Main.RANDOM.nextFloat() >= 0.84) feature = Feature.FeatureType.BUSH.createFeature(new Location(x, y + Main.RANDOM.nextFloat() / 2));
+                    feature = Feature.FeatureType.TREE.createFeature(location);
+                else if (Main.RANDOM.nextFloat() >= 0.84) feature = Feature.FeatureType.BUSH.createFeature(location);
             }
             case PLAINS -> {
                 if (Main.RANDOM.nextFloat() >= 0.97)
-                    feature = Feature.FeatureType.TREE.createFeature(new Location(x + Main.RANDOM.nextFloat() / 2, y + Main.RANDOM.nextFloat() / 4));
-                else if (Main.RANDOM.nextFloat() >= 0.87) feature = Feature.FeatureType.BUSH.createFeature(new Location(x, y + Main.RANDOM.nextFloat() / 2));
-                else if (Main.RANDOM.nextFloat() >= 0.99) feature = Feature.FeatureType.FLOWER.createFeature(new Location(x, y + Main.RANDOM.nextFloat() / 4));
+                    feature = Feature.FeatureType.TREE.createFeature(location);
+                else if (Main.RANDOM.nextFloat() >= 0.87) feature = Feature.FeatureType.BUSH.createFeature(location);
+                else if (Main.RANDOM.nextFloat() >= 0.99) feature = Feature.FeatureType.FLOWER.createFeature(location);
             }
             case MOUNTAIN -> {
                 if (Main.RANDOM.nextFloat() >= 0.98)
-                    feature = Feature.FeatureType.ROCK.createFeature(new Location(x + Main.RANDOM.nextFloat() / 4, y + Main.RANDOM.nextFloat() / 6));
+                    feature = Feature.FeatureType.ROCK.createFeature(location);
             }
         }
         if (feature != null && feature.canBePlaced()) {
@@ -88,7 +155,16 @@ public class World extends Ticking implements Serializable {
         return terrain;
     }
 
+    /**
+     * Obtenemos el terreno en una determina posición. Si el terreno no se ha generado se genera, y si está fuera del mundo
+     * devuelve <code>null</code>.
+     * @param x Posición en el eje X de la cual se quiere obtener el terreno.
+     * @param y Posición en el eje Y de la cual se quiere obtener el terreno.
+     * @return Terreno en dichas coordenadas, o <code>null</code> si está fuera del mundo.
+     */
     public Terrain getTerrain(int x, int y) {
+        if (new Location(x, y).isOutOfTheWorld()) return null;
+
         Terrain terrain = this.TERRAIN[this.mapCoordinatesToIndex(x, y)];
 
         if (terrain == null) {
@@ -97,11 +173,22 @@ public class World extends Ticking implements Serializable {
         return terrain;
     }
 
+    /**
+     * Establece el terreno en una determinada posición.
+     * @param x Posición en el eje X dodne se quiere colocar el terreno.
+     * @param y Posición en el eje Y donde se quiere colcoar el terreno.
+     * @param terrain Terreno que se quiere colocar.
+     */
     public void setTerrain(int x, int y, Terrain terrain) {
         this.TERRAIN[this.mapCoordinatesToIndex(x, y)] = terrain;
     }
 
-
+    /**
+     * Obtiene la feature en una determinada posición.
+     * @param x Posición en el eje X donde se quiere mirar la feature.
+     * @param y Posición en el eje Y donde se quiere mirar la feature.
+     * @return Feature en dicha posición; <code>null</code> si no hay ninguna feature o si está fuera del mundo.
+     */
     public Feature getFeature(int x, int y) {
         try {
             return this.FEATURES[this.mapCoordinatesToIndex(x, y)];
@@ -110,8 +197,16 @@ public class World extends Ticking implements Serializable {
         }
     }
 
+    /**
+     * Genera una feature en el mundo.
+     * @param feature Feature que se quiere generar.
+     * @param updateMesh Si se va a actualizar el mesh del tipo de feature o no. Cuando se está generando el mundo no se
+     * actualiza el mesh.
+     * @return Feature generada.
+     */
     public Feature addFeature(Feature feature, boolean updateMesh) {
         try {
+            //Ocupamos todas las casillas que ocupe la feature.
             int posX = (int) feature.getLocation().getX(), posY = (int) feature.getLocation().getY();
             for (int x = 0; x < feature.getSize().x(); x++) {
                 for (int y = 0; y < feature.getSize().y(); y++) {
@@ -119,10 +214,8 @@ public class World extends Ticking implements Serializable {
                 }
             }
             Feature.FeatureType featureType = feature.getFeatureType();
-            TreeSet<Feature> featureSet = this.FEATURES_MAP.getOrDefault(featureType, new TreeSet<>());
-            featureSet.add(feature);
-            this.FEATURES_MAP.put(featureType, featureSet);
 
+            //Actualizamos el mesh.
             if (updateMesh) {
                 featureType.updateMesh();
             } else {
@@ -136,41 +229,62 @@ public class World extends Ticking implements Serializable {
         return null;
     }
 
+    /**
+     * Añade una feature y actualiza el mesh automaticamente.
+     * @param feature Feature que se quiere generar.
+     * @return Feature generada.
+     * @see World#addFeature(Feature, boolean)
+     */
     public Feature addFeature(Feature feature) {
         return this.addFeature(feature, true);
     }
 
+    /**
+     * Elimina una feature del mundo. Eliminar una feature siemrpe actualiza el mesh.
+     * @param feature Feature que se quiere eliminar.
+     */
     public void removeFeature(Feature feature) {
         try {
+            //Limpiamos todas las celdas que ocupe la feature.
             int posX = (int) feature.getLocation().getX(), posY = (int) feature.getLocation().getY();
             for (int x = 0; x < feature.getSize().x(); x++) {
                 for (int y = 0; y < feature.getSize().y(); y++) {
                     this.FEATURES[this.mapCoordinatesToIndex(posX + x, posY + y)] = null;
                 }
             }
-            Feature.FeatureType featureType = feature.getFeatureType();
-            TreeSet<Feature> featureSet = this.FEATURES_MAP.getOrDefault(featureType, new TreeSet<>());
-            featureSet.remove(feature);
-            this.FEATURES_MAP.put(featureType, featureSet);
 
-            featureType.updateMesh();
+            //Actualizamos el mesh.
+            feature.getFeatureType().updateMesh();
 
             this.featuresCount--;
         } catch (ArrayIndexOutOfBoundsException ignore) {
         }
     }
 
+    /**
+     * Genera una entidad.
+     * @param entity Entidad que se quiere generar.
+     */
     public void spawnEntity(Entity entity) {
         this.ENTITITES_LIST.add(entity);
         this.entitiesCount++;
     }
 
+    /**
+     * Genera una partícula.
+     * @param particle Partícula que se quiere generar.
+     */
     public void spawnParticle(Particle particle) {
         if (this.particlesList != null) {
             this.particlesList.add(particle);
         }
     }
 
+    /**
+     * Elimina una partícula y la elimina de ticking.
+     * @param particle Partícula que se quiere eliminar.
+     * @see Ticking
+     */
     public void removeParticle(Particle particle) {
         this.particlesList.remove(particle);
         particle.removeTicking();
@@ -231,7 +345,7 @@ public class World extends Ticking implements Serializable {
             case 1: // Día
                 return 1.0f; //Máxima intensidad durante el día
             case 2: //Anochecer
-                return World.MIN_DAYLIGHT +World.MIN_DAYLIGHT *(1f - ((float) (this.getDayTime() - totalTime) / phaseDuration)); //La intensidad disminuye durante el anochecer
+                return 1f -(1 - World.MIN_DAYLIGHT) *((float) (this.getDayTime() -totalTime) /phaseDuration); //La intensidad disminuye durante el anochecer
             case 3: //Noche
                 return World.MIN_DAYLIGHT; //Sin luz durante la noche
             default:
@@ -262,8 +376,8 @@ public class World extends Ticking implements Serializable {
         return this.happiness;
     }
 
-    public Map<Feature.FeatureType, TreeSet<Feature>> getFeaturesMap() {
-        return new HashMap<>(this.FEATURES_MAP);
+    public List<Feature> getFeatures() {
+        return new LinkedList<>(Arrays.asList(this.FEATURES));
     }
 
     public LinkedList<Entity> getEntities() {

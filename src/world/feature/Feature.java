@@ -42,8 +42,8 @@ public abstract class Feature implements Comparable<Feature>, Serializable {
     public Feature(Location location, Vector2i sizeInBlocks, FeatureType featureType, int variant) {
 
         //Calculamos el desplazamiento, para que las features no estén todas en la misma posición dentro de la casilla.
-        float offsetX = Main.RANDOM.nextFloat(this.getRandomOffset().x());
-        float offsetY = Main.RANDOM.nextFloat(this.getRandomOffset().y());
+        float offsetX = 0;
+        float offsetY = 0;
 
         this.LOCATION = location.add(offsetX, offsetY);
         this.SIZE_IN_BLOCKS = sizeInBlocks;
@@ -57,7 +57,6 @@ public abstract class Feature implements Comparable<Feature>, Serializable {
     public Location getLocation() {
         return this.LOCATION.clone();
     }
-
     /**
      * @return Tipo de feature.
      */
@@ -90,9 +89,16 @@ public abstract class Feature implements Comparable<Feature>, Serializable {
         for (int x = 0; x < this.getSize().x(); x++) {
             for (int y = 0; y < this.getSize().y(); y++) {
                 if (Main.world.getFeature(posX +x, posY +y) != null) return false;
+                if (new Location(posX +x, posY +y).isOutOfTheWorld()) {
+                    return false;
+                }
             }
         }
-        return checkSpecificConditions();
+        try {
+            return this.checkSpecificConditions();
+        } catch (ArrayIndexOutOfBoundsException exception) {
+            return false;
+        }
     }
 
     /**
@@ -173,7 +179,8 @@ public abstract class Feature implements Comparable<Feature>, Serializable {
          * Actualiza el mesh, recalcula el mesh para todas las features de ese tipo.
          */
         public void updateMesh() {
-            Set<Feature> features = Main.world.getFeaturesMap().get(this);
+            List<Feature> features = Main.world.getFeatures();
+            features.removeIf(feature -> feature == null || !feature.getFeatureType().equals(this));
             this.mesh = new WorldMesh(features.size(), 2, 2, 1);
             features.forEach(feature -> mesh.addVertex(feature.getLocation().getX(), feature.getLocation().getY(), feature.getSize().x(), feature.getSize().y(), feature.VARIANT));
             this.mesh.load();
