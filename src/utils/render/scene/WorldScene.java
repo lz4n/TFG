@@ -218,11 +218,7 @@ public class WorldScene implements Scene {
 
             Graphics2dTexture debugScreen = GameFont.DEBUG.drawText(debug, Font.PLAIN, 12);
 
-            Shader.HUD.upload2f("uPosition", 5, 5);
-            Shader.HUD.upload2f("uSize", debugScreen.getSize().x(), debugScreen.getSize().y());
-            Shader.HUD.uploadInt("texture_sampler", 0);
-
-            debugScreen.bind();
+            debugScreen.draw(Shader.HUD, 5f, 5f, debugScreen.getSize().x(), debugScreen.getSize().y());
             debugScreen.remove();
 
             Texture.unbind();

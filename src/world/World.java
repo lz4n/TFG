@@ -290,69 +290,78 @@ public class World extends Ticking implements Serializable {
         particle.removeTicking();
     }
 
+    /**
+     * @return Nombre del mundo.
+     */
     public String getName() {
         return this.NAME;
     }
 
+    /**
+     * @return Semilla utilizada para generar el mundo.
+     */
     public int getSeed() {
         return this.SEED;
     }
 
+    /**
+     * @return Tamaño del mundo.
+     */
     public int getSize() {
         return this.WORLD_SIZE;
     }
 
+    /**
+     * Convierte coordenadas bidimensionales en unidimensionales para los arrays de terreno y features.
+     * @param x Coordenada en el eje X.
+     * @param y Coordenada en el eje Y.
+     * @return Índice equivalente a la posición que se pasa como parámetros.
+     */
     private int mapCoordinatesToIndex(int x, int y) {
         return x * this.WORLD_SIZE + y;
     }
 
+    /**
+     * @return Hora del día en ticks.
+     * @see World#getFormattedDayTime()
+     */
     public int getDayTime() {
         return this.dayTime;
     }
 
+    /**
+     * @return Número total de features.
+     */
     public int getFeaturesCount() {
         return this.featuresCount;
     }
 
+    /**
+     * @return Número total de entidades.
+     */
     public int getEntitiesCount() {
         return this.entitiesCount;
     }
 
+    /**
+     * Calcula la intensidad de la luz del día. La luz depende de la hora del día.
+     * @return Intensidad de la luz del día.
+     */
     public float getDayLight() {
-        int totalTime = 0;
-        int phaseDuration, currentPhase;
-
         if (this.getDayTime() < World.SUNRISE_DURATION) {
-            phaseDuration = World.SUNRISE_DURATION;
-            currentPhase = 0; // Amanecer
+            return World.MIN_DAYLIGHT + (1 - World.MIN_DAYLIGHT) * ((float) (this.getDayTime()) / World.SUNRISE_DURATION); //La intensidad aumenta durante el amanecer
         } else if (this.getDayTime() < World.SUNRISE_DURATION  +World.DAY_DURATION) {
-            currentPhase = 1; // Día
-            phaseDuration = World.DAY_DURATION;
-            totalTime = World.SUNRISE_DURATION;
+            return 1f; //Máxima intensidad durante el día
         } else if (this.getDayTime() < World.SUNRISE_DURATION +World.DAY_DURATION +World.SUNRISE_DURATION) {
-            currentPhase = 2; // Anochecer
-            phaseDuration = World.SUNRISE_DURATION;
-            totalTime = World.SUNRISE_DURATION +World.DAY_DURATION;
+            return 1f - (1 - World.MIN_DAYLIGHT) * ((float) (this.getDayTime() - World.SUNRISE_DURATION -World.DAY_DURATION) / World.SUNRISE_DURATION); //La intensidad disminuye durante el anochecer
         } else {
-            phaseDuration = World.NIGHT_DURATION;
-            currentPhase = 3; // Noche
-            totalTime = World.SUNRISE_DURATION +World.DAY_DURATION +World.SUNRISE_DURATION;
-        }
-
-        switch (currentPhase) {
-            case 0: //Amanecer
-                return World.MIN_DAYLIGHT +(1 -World.MIN_DAYLIGHT) *((float) (this.getDayTime() - totalTime) / phaseDuration); //La intensidad aumenta durante el amanecer
-            case 1: // Día
-                return 1.0f; //Máxima intensidad durante el día
-            case 2: //Anochecer
-                return 1f -(1 - World.MIN_DAYLIGHT) *((float) (this.getDayTime() -totalTime) /phaseDuration); //La intensidad disminuye durante el anochecer
-            case 3: //Noche
-                return World.MIN_DAYLIGHT; //Sin luz durante la noche
-            default:
-                return 0f;
+            return World.MIN_DAYLIGHT; //Sin luz durante la noche
         }
     }
 
+    /**
+     * @return Hora del día en formato HH:mm
+     */
     public String getFormattedDayTime() {
         return String.format("%02d:%02d",
                 this.getDayTime() *24 /World.TOTAL_DAY_DURATION,
@@ -360,30 +369,51 @@ public class World extends Ticking implements Serializable {
                 );
     }
 
+    /**
+     * @return Día del mes del mundo.
+     */
     public int getDay() {
         return this.day;
     }
 
+    /**
+     * @return Mes del año del mundo
+     */
     public int getMonth() {
         return this.month;
     }
 
+    /**
+     * @return Año del mundo.
+     */
     public int getYear() {
         return this.year;
     }
 
+    /**
+     * @return Índice de felicidad.
+     */
     public float getHappiness() {
         return this.happiness;
     }
 
+    /**
+     * @return Lista con todas las features.
+     */
     public List<Feature> getFeatures() {
         return new LinkedList<>(Arrays.asList(this.FEATURES));
     }
 
+    /**
+     * @return Lista con todas las entidades.
+     */
     public LinkedList<Entity> getEntities() {
         return new LinkedList<>(this.ENTITITES_LIST);
     }
 
+    /**
+     * @return Lista con todas las partículas.
+     */
     public List<Particle> getParticlesList() {
         if (this.particlesList == null) {
             this.particlesList = new LinkedList<>();
@@ -395,12 +425,19 @@ public class World extends Ticking implements Serializable {
     public void onTick(long deltaTime) {
 
         this.dayTime++;
-        if (this.dayTime >= World.TOTAL_DAY_DURATION) {
+        if (this.dayTime >= World.TOTAL_DAY_DURATION) { //Si ha pasado un día
             //TODO Mecánica de felicidad, que sea random cada dia es temporal.
-            happiness = Main.RANDOM.nextFloat();
-            Logger.sendMessage("DÍA", Logger.LogMessageType.DEBUG);
+            this.happiness += (Main.RANDOM.nextFloat() /10) * (Main.RANDOM.nextBoolean()?1:-1);
+            if (this.happiness > 1) {
+                this.happiness = 1;
+            }
+            if (this.happiness < 0) {
+                this.happiness = 0;
+            }
+
             this.dayTime = 0;
 
+            //Aumentamos el mes y año si hace falta..
             this.day++;
             if (this.day >= World.MONTH_DURATION_IN_DAYS) {
                 this.month++;
@@ -413,10 +450,13 @@ public class World extends Ticking implements Serializable {
             }
         }
 
-        if (Main.RANDOM.nextFloat() > ((this.month >= 1 && this.month <= 2)?0.965: 0.98)) {
+        //Generamos nubes.
+        if (Main.RANDOM.nextFloat() > 0.98) {
             float cloudVelocity = Main.RANDOM.nextFloat(.04f, .06f);
             Location cloudLocation = new Location(0, Main.RANDOM.nextFloat(this.WORLD_SIZE));
             this.spawnParticle(new CloudParticle(cloudLocation.clone(), cloudVelocity, false));
+
+            //Generamos la sombra.
             cloudLocation.add(0, Main.RANDOM.nextFloat(2f, 5f) *-1);
             this.spawnParticle(new CloudParticle(cloudLocation, cloudVelocity, true));
         }
