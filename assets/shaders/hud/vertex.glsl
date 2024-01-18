@@ -1,19 +1,36 @@
 #version 330 core
 
-layout(location = 0) in vec2 inPosition; // Atributo de posición de los vértices
-out vec2 TexCoord; // Coordenadas de textura de salida para el fragment shader
+/**
+Shader de vértices del shader HUD. Los vértices se colocan encima de la cámara, en vez de en el mundo.
+*/
 
-uniform mat4 uProjection; // Matriz de proyección
-uniform mat4 uView; // Matriz de modelo-vista
-uniform vec2 hudPosition; // Posición del HUD en pantalla
-uniform vec2 hudSize; // Tamaño del HUD en pantalla
+/**
+Especifica el layout de las coordenadas UV de la entidad.
+*/
+layout(location = 0) in vec2 position;
 
-void main()
-{
-    // Transforma la posición del vértice usando las matrices de proyección y modelo-vista
-    vec4 transformedPosition = uProjection * uView * vec4(inPosition.x * hudSize.x + hudPosition.x, inPosition.y * hudSize.y + hudPosition.y, 0.0, 1.0);
+/**
+Matrices de proyección y vista de la cámara.
+*/
+uniform mat4 uProjection;
+uniform mat4 uView;
+
+/**
+Posición y tamaño del componente del HUD que se va a instanciar.
+*/
+uniform vec2 uPosition;
+uniform vec2 uSize;
+
+/**
+Coordenadas UV del pixel.
+*/
+out vec2 uvCoords;
+
+void main() {
+    //Transforma la posición del vértice usando las matrices de proyección y modelo-vista
+    vec4 transformedPosition = uProjection * uView * vec4(position.x * uSize.x + uPosition.x, position.y * uSize.y + uPosition.y, 0.0, 1.0);
     gl_Position = transformedPosition;
 
-    // Pasa las coordenadas de textura a través del shader
-    TexCoord = inPosition;
+    //Pasa las coordenadas de textura a través del shader
+    uvCoords = position;
 }
