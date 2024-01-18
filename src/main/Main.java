@@ -29,7 +29,7 @@ public class Main {
     /**
      * Velocidad de tick del juego, por defecto.
      */
-    public static int tickSpeed = 100;
+    public static int tickSpeed = 1;
 
     /**
      * Representa al jugador, independiente del mundo.
