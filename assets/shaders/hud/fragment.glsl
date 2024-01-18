@@ -5,7 +5,8 @@ out vec4 FragColor; // Color de salida
 
 uniform sampler2D hudTexture; // Textura del HUD
 
-void main()
-{
-    FragColor = texture(hudTexture, TexCoord);
+uniform sampler2D uHudTexture; // Textura del HUD.
+
+void main() {
+    color = texture(uHudTexture, uvCoords);
 }

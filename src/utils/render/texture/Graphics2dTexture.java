@@ -1,5 +1,7 @@
 package utils.render.texture;
 
+import org.joml.Vector2f;
+import org.joml.Vector2i;
 import org.lwjgl.opengl.GL20;
 
 import java.awt.*;
@@ -17,7 +19,7 @@ public class Graphics2dTexture extends Texture {
     /**
      * Buffer de imagen que almacena los gráficos 2D.
      */
-    private final BufferedImage BUFFERED_IMAGE;
+    public final BufferedImage BUFFERED_IMAGE;
 
     /**
      * La instancia de <code>Graphics2D</code>.
@@ -36,6 +38,7 @@ public class Graphics2dTexture extends Texture {
     public Graphics2dTexture(int width, int height) {
         this.BUFFERED_IMAGE = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         this.GRAPHICS = this.BUFFERED_IMAGE.createGraphics();
+        this.setTextureSize(new Vector2i(width, height));
     }
 
     /**
@@ -84,6 +87,11 @@ public class Graphics2dTexture extends Texture {
         GL20.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_MAG_FILTER, GL20.GL_NEAREST);
     }
 
+    @Override
+    public Vector2i getSize() {
+        return new Vector2i(this.BUFFERED_IMAGE.getWidth(), this.BUFFERED_IMAGE.getHeight());
+    }
+
     /**
      * Elimina la textura de la cache y libera la memoria.
      */
@@ -97,7 +105,8 @@ public class Graphics2dTexture extends Texture {
     }
 
     @Override
-    public void bind() {
+    public void bind(int unit) {
+        super.bind(unit);
         GL20.glBindTexture(GL20.GL_TEXTURE_2D, this.textureId);
     }
 }

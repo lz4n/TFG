@@ -1,63 +1,75 @@
 package ui.widget;
 
-import org.joml.Vector4f;
-import org.lwjgl.opengl.ARBVertexArrayObject;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL20;
+import ui.widget.widgetUtils.CustomDrawWidget;
+import utils.BoundingBox;
 import utils.render.Shader;
-import utils.render.mesh.Mesh;
-import utils.render.texture.StaticTexture;
 import utils.render.texture.Texture;
+import utils.render.texture.Textures;
 
-public class SlotWidget extends Widget implements CustomDrawWidget, ClickableWidget {
+/**
+ * Slot que contiene un icono. Cuando se hace clic se selecciona, y cuando se vuelve a clicar se desselecciona
+ */
+public class SlotWidget extends Widget implements CustomDrawWidget {
+    /**
+     * BoundingBox base del widget, cuando se instancia se duplica y se mueve a la posición del widget.
+     */
+    public final static BoundingBox BASE_BOUNDING_BOX = new BoundingBox(16, 16);
 
-    private static final Texture SELECTED_SLOT = new StaticTexture("assets/textures/ui/inventory/selected_slot.png"),
-        UNSELECTED_SLOT = new StaticTexture("assets/textures/ui/inventory/unselected_slot.png");
-
+    /**
+     * Textura del icono del slot.
+     */
     private final Texture CONTENT;
+
+    /**
+     * Indica si el slot está seleccionado o no.
+     */
     private boolean isSelected = false;
 
+    /**
+     * @param posX Posición en el eje X, en coordenadas in-game.
+     * @param posY Posición en el eje Y, en coordenadas in-game.
+     * @param content Textura del icono del slot.
+     */
     public SlotWidget(float posX, float posY, Texture content) {
-        super(posX, posY);
+        super(posX, posY, SlotWidget.BASE_BOUNDING_BOX);
         this.CONTENT = content;
     }
 
     @Override
-    public float getHeight() {
-        return 16;
-    }
-
-    @Override
-    public float getWidth() {
-        return 16;
-    }
-
-    @Override
     public Texture getTexture() {
-        return this.isSelected?SlotWidget.SELECTED_SLOT:SlotWidget.UNSELECTED_SLOT;
+        //Si está seleccionado utilizamos una textura, y si no, utilizamos otra.
+        return this.isSelected? Textures.SELECTED_SLOT_WIDGET :(this.isHovered()? Textures.HOVERED_SLOT_WIDGET :Textures.UNSELECTED_SLOT_WIDGET);
     }
 
     @Override
-    public void draw(Mesh mesh, float pixelSizeInScreen, float posX, float posY, float width, float height) {
-        Shader.HUD.upload2f("uHudPosition", posX + 2.5f * pixelSizeInScreen, posY + 2.5f * pixelSizeInScreen);
-        Shader.HUD.upload2f("uHudSize", (this.getWidth() -5) * pixelSizeInScreen, (this.getHeight() -5) * pixelSizeInScreen);
-
-        this.CONTENT.bind();
-        ARBVertexArrayObject.glBindVertexArray(mesh.getVaoId());
-        GL20.glEnableVertexAttribArray(0);
-        GL20.glDrawElements(GL20.GL_TRIANGLES, mesh.getElementArray().length, GL11.GL_UNSIGNED_INT, 0);
-        GL20.glDisableVertexAttribArray(0);
-        ARBVertexArrayObject.glBindVertexArray(0);
-        this.CONTENT.bind();
+    public void draw(float pixelSizeInScreen, float posX, float posY) {
+        //Dibujamos el icono.
+        this.CONTENT.draw(Shader.HUD,
+                posX + 2.5f * pixelSizeInScreen,
+                posY + 2.5f * pixelSizeInScreen,
+                (SlotWidget.BASE_BOUNDING_BOX.getWidth() -5) * pixelSizeInScreen,
+                (SlotWidget.BASE_BOUNDING_BOX.getHeight() -5) * pixelSizeInScreen
+                );
     }
 
     @Override
-    public void click() {
-        this.isSelected = !this.isSelected;
+    public void onClickEvent() {
+        this.setSelected(!this.isSelected());
+        super.onClickEvent();
     }
 
-    @Override
-    public Vector4f getClickArea() {
-        return new Vector4f(this.getPosX(), this.getPosY(), this.getPosX() + this.getWidth(), this.getPosY() + this.getHeight());
+    /**
+     * Cambia si el slot está seleccionado o no.
+     * @param isSelected Si el slot está seleccionado o no.
+     */
+    public void setSelected(boolean isSelected) {
+        this.isSelected = isSelected;
+    }
+
+    /**
+     * @return Si el slot está seleccionado o no.
+     */
+    public boolean isSelected() {
+        return this.isSelected;
     }
 }

@@ -3,10 +3,14 @@ package listener;
 import main.Main;
 import org.joml.Vector2f;
 import org.lwjgl.glfw.GLFW;
+import utils.KeyBind;
 import utils.render.Window;
 import utils.render.scene.WorldScene;
-import world.feature.Tree;
+import world.feature.Feature;
 import world.location.Location;
+import world.particle.BulldozerParticle;
+import world.particle.NegativeParticle;
+import world.particle.PositiveParticle;
 
 /**
  * Listener para eventos de ratón. Registra la posición y si se está presionando algún botón del ratón.
@@ -32,15 +36,14 @@ public class MouseListener {
     /**
      * Posición del ratón dentro del juego.
      */
-    public static Location inGameLocation;
+    private static Location inGameLocation = new Location(0, 0);
 
     /**
      * Actualiza la posición del ratón dentro del juego y actualiza el selector.
      */
     public static void updateInGameLocation() {
-        if (Window.currentScene instanceof WorldScene worldScene) {
-            MouseListener.inGameLocation = WorldScene.CAMERA.getInGameLocationMousePosition(new Vector2f((float) MouseListener.posX, (float) MouseListener.posY));
-            worldScene.updateSelection((int) MouseListener.inGameLocation.getX(), (int) MouseListener.inGameLocation.getY());
+        if (Window.currentScene instanceof WorldScene && Main.PLAYER != null) {
+            MouseListener.inGameLocation = Main.PLAYER.getCamera().getInGameLocationMousePosition(new Vector2f((float) MouseListener.posX, (float) MouseListener.posY));
         }
     }
 
@@ -60,6 +63,41 @@ public class MouseListener {
         MouseListener.updateInGameLocation();
 
         MouseListener.isDragging = MouseListener.isMouseButtonPressed[0] || MouseListener.isMouseButtonPressed[1] || MouseListener.isMouseButtonPressed[2];
+
+        Window.currentScene.moveMouse((float) posX, (float) posY);
+
+        if (!Main.PLAYER.isMouseOnInventory() && !Main.PLAYER.isPaused()) {
+            //Colocar/Destruir features cuando se hace click sobre ellas.
+            if (KeyBind.INTERACT.isPressed()) {
+                Feature selectedFeature = MouseListener.getInGameLocation().getFeature();
+                if (Main.PLAYER.isUsingBulldozer()) {
+                    if (selectedFeature != null) {
+                        Main.world.removeFeature(selectedFeature);
+                        for (int particles = 0; particles < selectedFeature.getSize().x() * selectedFeature.getSize().y() * 5; particles++) {
+                            Main.world.spawnParticle(new BulldozerParticle(MouseListener.getInGameLocation().truncate().add(-0.5f, -0.5f).add(
+                                    Main.RANDOM.nextFloat(0, selectedFeature.getSize().x()),
+                                    Main.RANDOM.nextFloat(0, selectedFeature.getSize().y())
+                            )));
+                        }
+                    }
+                } else {
+                    selectedFeature = Main.PLAYER.createSelectedFeature();
+                    if (selectedFeature != null) {
+                        if (selectedFeature.canBePlaced()) {
+                            Main.world.addFeature(selectedFeature);
+                            for (int particles = 0; particles < selectedFeature.getSize().x() * selectedFeature.getSize().y() * 5; particles++) {
+                                Main.world.spawnParticle(new PositiveParticle(MouseListener.getInGameLocation().truncate().add(-0.5f, -0.5f).add(
+                                        Main.RANDOM.nextFloat(0, selectedFeature.getSize().x()),
+                                        Main.RANDOM.nextFloat(0, selectedFeature.getSize().y())
+                                )));
+                            }
+                        } else {
+                            Main.world.spawnParticle(new NegativeParticle(MouseListener.getInGameLocation().add(-0.5f, -0.5f)));
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -72,12 +110,7 @@ public class MouseListener {
     public static void mouseButtonCallback(long window, int button, int action, int mods) {
       if (action == GLFW.GLFW_PRESS) {
           MouseListener.setIsMouseButtonPressed(button, true);
-          if (button == GLFW.GLFW_MOUSE_BUTTON_1) {
-              Window.currentScene.click((float) MouseListener.posX, (float) MouseListener.posY);
-              if (MouseListener.inGameLocation.getFeature() == null) {
-                  Main.WORLD.addFeature(new Tree(MouseListener.inGameLocation.clone().truncate()));
-              }
-          }
+          Window.currentScene.click((float) MouseListener.posX, (float) MouseListener.posY);
       } else if (action == GLFW.GLFW_RELEASE) {
           MouseListener.setIsMouseButtonPressed(button, false);
           MouseListener.isDragging = false;
@@ -91,10 +124,12 @@ public class MouseListener {
      * @param offsetY Movimiento de la rueda del ratón en el eje Y.
      */
     public static void mouseScrollCallback(long window, double offsetX, double offsetY) {
-        if (offsetY >= 1) {
-            WorldScene.CAMERA.zoomIn();
-        } else if (offsetY <= -1) {
-            WorldScene.CAMERA.zoomOut();
+        if (!Main.PLAYER.isPaused()) {
+            if (offsetY >= 1) {
+                Main.PLAYER.getCamera().zoomIn();
+            } else if (offsetY <= -1) {
+                Main.PLAYER.getCamera().zoomOut();
+            }
         }
     }
 
@@ -107,6 +142,10 @@ public class MouseListener {
         if (button < MouseListener.isMouseButtonPressed.length) {
             MouseListener.isMouseButtonPressed[button] = isPressed;
         }
+    }
+
+    public static boolean isMouseButtonPressed(int button) {
+        return MouseListener.isMouseButtonPressed[button];
     }
 
     /**
@@ -122,5 +161,9 @@ public class MouseListener {
      */
     public static double getDy() {
         return MouseListener.lastY - MouseListener.posY;
+    }
+
+    public static Location getInGameLocation() {
+        return MouseListener.inGameLocation.clone();
     }
 }

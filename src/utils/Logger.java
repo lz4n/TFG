@@ -55,7 +55,7 @@ public class Logger {
 
         /**
          * Mensaje de error no crítico (el juego se puede seguir ejecutando sin problemas aparentes, aunque este problema
-         * pueda derivar en otros críticos.
+         * pueda derivar en otros críticos).
          */
         WARNING(Logger.YELLOW),
 

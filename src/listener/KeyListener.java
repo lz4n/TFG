@@ -2,7 +2,8 @@ package listener;
 
 import main.Main;
 import org.lwjgl.glfw.GLFW;
-import world.entity.Duck;
+import ui.container.Inventory;
+import utils.KeyBind;
 
 /**
  * Listener para los eventos de teclado. Rastrea el estado de cada tecla y lanza un evento cuando se presiona una.
@@ -27,6 +28,78 @@ public class KeyListener {
     public static void keyCallback(long window, int key, int scancode, int action, int mods) {
         if (key != GLFW.GLFW_KEY_UNKNOWN) {
             KeyListener.isKeyPressed[key] = action == GLFW.GLFW_PRESS || action ==  GLFW.GLFW_REPEAT;
+
+            //Acciones que se realizan cuando se presiona una tecla.
+            if (action == GLFW.GLFW_PRESS) {
+                if (Main.PLAYER.isPaused()) {
+                    if (KeyBind.TOGGLE_GAME_MENU.checkKey(key)) {
+                        Main.PLAYER.openInventory();
+                    }
+                } else {
+                    switch (KeyBind.getKeyBind(key)) {
+                        case KeyBind.TOGGLE_HIDING_UI:
+                            Main.PLAYER.toggleIsHidingUi();
+                            break;
+                        case KeyBind.TOGGLE_GAME_SPEED:
+                            Main.PLAYER.toggleGameSpeed();
+                            break;
+                        case KeyBind.TOGGLE_PAUSE:
+                            Main.PLAYER.togglePauseGame();
+                            break;
+                        case KeyBind.TOGGLE_BULLDOZER:
+                            Main.PLAYER.toggleBulldozer();
+                            break;
+                        case KeyBind.TOGGLE_GAME_MENU:
+                            Main.PLAYER.openMenu();
+                            break;
+                        case OPEN_TAB_1:
+                            if (Main.PLAYER.getContainer() instanceof Inventory inventory) {
+                                inventory.goToTab(1);
+                            }
+                            break;
+                        case OPEN_TAB_2:
+                            if (Main.PLAYER.getContainer() instanceof Inventory inventory) {
+                                inventory.goToTab(2);
+                            }
+                            break;
+                        case OPEN_TAB_3:
+                            if (Main.PLAYER.getContainer() instanceof Inventory inventory) {
+                                inventory.goToTab(3);
+                            }
+                            break;
+                        case OPEN_TAB_4:
+                            if (Main.PLAYER.getContainer() instanceof Inventory inventory) {
+                                inventory.goToTab(4);
+                            }
+                            break;
+                        case OPEN_TAB_5:
+                            if (Main.PLAYER.getContainer() instanceof Inventory inventory) {
+                                inventory.goToTab(5);
+                            }
+                            break;
+                        case OPEN_TAB_6:
+                            if (Main.PLAYER.getContainer() instanceof Inventory inventory) {
+                                inventory.goToTab(6);
+                            }
+                            break;
+                        case OPEN_TAB_7:
+                            if (Main.PLAYER.getContainer() instanceof Inventory inventory) {
+                                inventory.goToTab(7);
+                            }
+                            break;
+                        case OPEN_TAB_8:
+                            if (Main.PLAYER.getContainer() instanceof Inventory inventory) {
+                                inventory.goToTab(8);
+                            }
+                            break;
+                        case OPEN_TAB_9:
+                            if (Main.PLAYER.getContainer() instanceof Inventory inventory) {
+                                inventory.goToTab(9);
+                            }
+                            break;
+                    }
+                }
+            }
         }
     }
 

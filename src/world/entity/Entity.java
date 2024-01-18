@@ -1,56 +1,55 @@
 package world.entity;
 
 import org.joml.Vector2f;
-import org.joml.Vector2i;
-import utils.render.mesh.EntityMesh;
-import utils.render.texture.StaticTexture;
 import utils.render.texture.Texture;
+import utils.render.texture.Textures;
 import world.location.Location;
+import world.tick.Ticking;
 
+import java.io.Serializable;
 import java.util.Random;
 
-public abstract class Entity {
-    protected static final Random RANDOM = new Random();
+/**
+ * Las entidades son elementos móviles del juego con los que el jugador puede interactuar (en jugador no puede interactuar
+ * con las partículas).
+ * @see world.particle.Particle
+ */
 
+//TODO: Sistema para detectar clic a las entidades.
+public abstract class Entity extends Ticking implements Serializable {
+
+    /**
+     * Posición donde se encuentra la entidad.
+     */
     protected Location location;
-    private final EntityType ENTITY_TYPE;
 
-    public Entity(EntityType entityType, Location location) {
-        this.ENTITY_TYPE = entityType;
+    /**
+     * Instancia la entidad, pero no la genera. Hay que utilizar <code>World#spawnEntity(Entity)</code> para generar la
+     * entidad en el mundo.
+     * @param location Posición donde se va a generar la entidad.
+     * @see world.World#spawnEntity(Entity)
+     */
+    public Entity(Location location) {
         this.location = location;
     }
 
+    /**
+     * Mueve la entidad.
+     * @param movement Vector bidimensional de flotantes que indica cúantas unidades in-game se va a mover en cada eje.
+     */
     public void move(Vector2f movement) {
         this.location.add(movement.x(), movement.y());
     }
 
+    /**
+     * @return Posición actual de la entidad.
+     */
     public Location getLocation() {
         return this.location.clone();
     }
 
-    public EntityType getEntityType() {
-        return this.ENTITY_TYPE;
-    }
-
-    public abstract void tick();
-
-    public enum EntityType {
-        DUCK(new EntityMesh(new Vector2i(1, 1)), new StaticTexture("assets/textures/entity/duck.png"));
-
-        private final EntityMesh MESH;
-        private final Texture TEXTURE;
-
-        EntityType(EntityMesh mesh, Texture texture) {
-            this.MESH = mesh;
-            this.TEXTURE = texture;
-        }
-
-        public EntityMesh getMesh() {
-            return this.MESH;
-        }
-
-        public Texture getTexture() {
-            return this.TEXTURE;
-        }
-    }
+    /**
+     * @return Textura que está mostrando la entidad en ese momento.
+     */
+    public abstract Texture getTexture();
 }

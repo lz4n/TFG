@@ -5,6 +5,9 @@ import world.terrain.Terrain;
 
 import javax.swing.*;
 
+/**
+ * Diferentes biomas que tiene el juego. Los biomas determinan algunos comportamientos y el terreno de esa celda.
+ */
 public enum Biome {
     OCEAN(new double[]{-0.3, -2,                    2, -2,              2, -2}, Terrain.TerrainType.WATER),
     RIVER(new double[]{0.9, -0.3,                   2, -2,              0.07, -0.07}, Terrain.TerrainType.WATER),
@@ -18,18 +21,41 @@ public enum Biome {
     MOUNTAIN(new double[]{1.1, 0.7,                 2, -2,              2, -2}, Terrain.TerrainType.STONE),
     SNOWY_MOUNTAIN(new double[]{2, 1.1,             2, -2,              2, -2}, Terrain.TerrainType.SNOW);
 
+    /**
+     * Parámetros de ruido máximos y mínimos para cada mapa de ruido.
+     */
     public final double[] NOISE;
+
+    /**
+     * Tipo de terreno que va a generar el bioma.
+     */
     private final Terrain.TerrainType TERRAIN_BASE_TYPE;
 
+    /**
+     * @param noise Parámetros de ruido máximos y mínimos para cada mapa de ruido.
+     * @param terrainBaseType Tipo de terreno que va a generar el bioma.
+     */
     Biome(double[] noise, Terrain.TerrainType terrainBaseType) {
         this.NOISE = noise;
         this.TERRAIN_BASE_TYPE = terrainBaseType;
     }
 
+    /**
+     * @return Tipo de terreno que va a generar el bioma.
+     */
     public Terrain.TerrainType getTerrainType() {
         return this.TERRAIN_BASE_TYPE;
     }
 
+    /**
+     * Devuelve el bioma correspondiente a los valores de ruido que se pasan como parámetros.
+     * @param continentality Parametro de continentalidad.
+     * @param weirdness Parametro de rareza.
+     * @param river Parametro de rios.
+     * @return Bioma correspondiente a esos parámetros, <code>Biome.OCEAN</code> por defecto.
+     * @see WorldBuilder
+     * @see Biome#OCEAN
+     */
     public static Biome generateBiome(double continentality, double weirdness, double river) {
         for (Biome biome: Biome.values()) {
             if (continentality <= biome.NOISE[0] && continentality > biome.NOISE[1] &&

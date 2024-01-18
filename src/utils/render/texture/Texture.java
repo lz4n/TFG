@@ -1,9 +1,18 @@
 package utils.render.texture;
 
+import org.joml.Vector2f;
+import org.joml.Vector2i;
 import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.ARBVertexArrayObject;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.stb.STBImage;
 import utils.Logger;
+import utils.render.Shader;
+import utils.render.mesh.SingleObjectMesh;
+import utils.render.scene.WorldScene;
+import world.location.Location;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
@@ -17,21 +26,28 @@ import java.util.List;
  */
 public abstract class Texture {
     /**
-     * Lista que almacena todas las texturas que se van a guardar en la caché durante la totalidad del proceaso de ejecución del juego,
-     * para poder cargarlas cuando se carga <code>LWJGL</code> y eliminarlas cuando se cierre el juego y libere la memoria.
+     * Almacena el tamaño de la textura en píxeles.
      */
-    private static final List<CacheTexture> CACHE_TEXTURES = new LinkedList<>();
+    private Vector2i textureSize = new Vector2i(0, 0);
 
-    public Texture() {
-        if (this instanceof CacheTexture cacheTexture) {
-            Texture.CACHE_TEXTURES.add(cacheTexture);
-        }
+    /**
+     * Cambia el tamaño de la textura.
+     * @param textureSize Nuevo tamaño de textura, en pixeles.
+     */
+    protected void setTextureSize(Vector2i textureSize) {
+        this.textureSize = textureSize;
     }
 
     /**
      * Sube la textura a la <code>GPU</code>.
      */
-    public abstract void bind();
+    public void bind() {
+        this.bind(0);
+    }
+
+    public void bind(int unit) {
+        GL20.glActiveTexture(GL13.GL_TEXTURE0 +unit);
+    }
 
     /**
      * Limpia la textura de la <code>GPU</code>, y limpia la memoria.<br>
@@ -48,11 +64,74 @@ public abstract class Texture {
     public abstract int getTextureId();
 
     /**
+     * @return Tamaño de la textura en píxeles.
+     */
+    public Vector2i getSize() {
+        return new Vector2i(this.textureSize);
+    }
+
+    /**
+     * Instancia una textura en cierta posición y con un tamaño determinado.
+     * @param shader Shader encargado de la instanciación.
+     * @param posX Posición en el eje X en la que se va a instanciar.
+     * @param posY Posición en el eje Y en la que se va a instanciar.
+     * @param sizeX Tamaño en el eje X de la instancia.
+     * @param sizeY Tamaño en el eje Y de la instancia.
+     */
+    public void draw(Shader shader, float posX, float posY, float sizeX, float sizeY) {
+        if (shader.supportsInstantiation()) {
+            shader.upload2f("uPosition", posX, posY);
+            shader.upload2f("uSize", sizeX, sizeY);
+
+            this.bind();
+            ARBVertexArrayObject.glBindVertexArray(SingleObjectMesh.SINGLE_OBJECT_MESH.getVaoId());
+            GL20.glEnableVertexAttribArray(0);
+            GL20.glDrawElements(GL20.GL_TRIANGLES, SingleObjectMesh.SINGLE_OBJECT_MESH.getElementArray().length, GL11.GL_UNSIGNED_INT, 0);
+            GL20.glDisableVertexAttribArray(0);
+            ARBVertexArrayObject.glBindVertexArray(0);
+        } else {
+            Logger.sendMessage("El shader %s no puede dibujar (la textura %d) mediante instanciación.", Logger.LogMessageType.FATAL, shader, this.getTextureId());
+        }
+    }
+
+    /**
+     * Instancia una textura en cierta posición y con un tamaño determinado (ambos en unidades in-game).
+     * @param shader Shader encargado de la instanciacion.
+     * @param location Posición in-game donde se va a realizar la instanciacion.
+     * @param size Tamaño de la isntancia, en unidades in-game.
+     */
+    public void draw(Shader shader, Location location, Vector2f size) {
+        location = location.clone().getInScreenCoords();
+        size.mul(WorldScene.SPRITE_SIZE);
+        this.draw(shader,
+                location.getX(),
+                location.getY(),
+                size.x(),
+                size.y()
+                );
+    }
+
+    /**
+     * Instancia una textura en una posición específica, pero con el tamaño de la textura.
+     * @param shader Shader encargado de la isntanciación.
+     * @param location Posición en la que se va a realizar la instancia.
+     */
+    public void draw(Shader shader, Location location) {
+        location = location.clone().getInScreenCoords();
+        this.draw(shader,
+                location.getX(),
+                location.getY(),
+                this.textureSize.x(),
+                this.textureSize.y()
+        );
+    }
+
+    /**
      * Genera una textura a partir de una imagen .png con 32bits de color.
      * @param path ruta a la textura.
      * @return identificador numérico de la textura.
      */
-    protected final int generateSprite(String path) {
+    protected final int generateSprite(String path, int param) {
         IntBuffer width = BufferUtils.createIntBuffer(1), height = BufferUtils.createIntBuffer(1), channels = BufferUtils.createIntBuffer(1);
         ByteBuffer image;
         int textureId = GL20.glGenTextures();
@@ -61,11 +140,15 @@ public abstract class Texture {
         GL20.glBindTexture(GL20.GL_TEXTURE_2D, textureId);
 
         //Repetimos la textura en todas direcciones
-        List.of(GL20.GL_TEXTURE_WRAP_S, GL20.GL_TEXTURE_WRAP_T).forEach(textureRepeatDirection -> GL20.glTexParameteri(GL20.GL_TEXTURE_2D, textureRepeatDirection, GL20.GL_CLAMP_TO_EDGE));
+        //List.of(GL20.GL_TEXTURE_WRAP_S, GL20.GL_TEXTURE_WRAP_T).forEach(textureRepeatDirection -> GL20.glTexParameteri(GL20.GL_TEXTURE_2D, textureRepeatDirection, GL20.GL_CLAMP_TO_EDGE));
 
         //Cuando hagamos la textura más grande o más pequeña se pixele.
         GL20.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_MIN_FILTER, GL20.GL_NEAREST);
         GL20.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_MAG_FILTER, GL20.GL_NEAREST);
+
+        //Envoltura vertical y horizontal
+        GL20.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_WRAP_S, param);
+        GL20.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_WRAP_T, param);
 
         image = STBImage.stbi_load(path, width, height, channels, 0);
         if (image != null) {
@@ -79,25 +162,5 @@ public abstract class Texture {
         }
 
         return textureId;
-    }
-
-    /**
-     * Sube las texturas a la cache.
-     */
-    public static void initCacheTextures() {
-        Texture.CACHE_TEXTURES.forEach(cacheTexture -> {
-            cacheTexture.init();
-            Logger.sendMessage("Se ha generado la textura %s: %s.", Logger.LogMessageType.INFO, ((Texture) cacheTexture).getTextureId(), cacheTexture);
-        });
-    }
-
-    /**
-     * Elimina las texturas de la caché y libera la memoria.
-     */
-    public static void removeCacheTextures() {
-        Texture.CACHE_TEXTURES.forEach(cacheTexture -> {
-            Logger.sendMessage("Se ha eliminado la textura %s: %s.", Logger.LogMessageType.INFO, ((Texture) cacheTexture).getTextureId(), cacheTexture);
-            cacheTexture.remove();
-        });
     }
 }

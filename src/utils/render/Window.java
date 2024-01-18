@@ -6,17 +6,33 @@ import listener.WindowListener;
 import main.Main;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.Callbacks;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
+import org.lwjgl.glfw.GLFWImage;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryUtil;
+import ui.container.Inventory;
+import utils.KeyBind;
+import utils.Logger;
 import utils.Time;
 import utils.render.scene.Scene;
 import utils.render.scene.WorldScene;
+import utils.render.texture.AnimatedTexture;
+import utils.render.texture.CacheTexture;
 import utils.render.texture.Texture;
+import utils.render.texture.Textures;
 import world.entity.Duck;
+import world.tick.Ticking;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.Objects;
 
 /**
@@ -47,18 +63,37 @@ public class Window {
     public static void run() {
         init();
         currentScene.init();
+        Main.PLAYER.init();
 
         //Cargamos las texturas a la caché de texuras
-        Texture.initCacheTextures();
+        Texture texture;
+        for (Field field: Textures.class.getDeclaredFields()) {
+            try {
+                texture = (Texture) field.get(new Object());
+                if (texture instanceof CacheTexture) {
+                    ((CacheTexture) texture).init();
+                    Logger.sendMessage("Se ha generado la textura %s: %s.", Logger.LogMessageType.INFO, texture.getTextureId(), texture);
+                }
+            } catch (IllegalAccessException | ClassCastException ignore) {}
+        }
 
-        loop();
+        Window.loop();
 
         //Liberamos memoria
         Callbacks.glfwFreeCallbacks(window);
         GLFW.glfwDestroyWindow(window);
         GLFW.glfwTerminate();
         Objects.requireNonNull(GLFW.glfwSetErrorCallback(null)).free();
-        Texture.removeCacheTextures();
+
+        for (Field field: Textures.class.getDeclaredFields()) {
+            try {
+                texture = (Texture) field.get(new Object());
+                if (texture instanceof CacheTexture) {
+                    ((CacheTexture) texture).remove();
+                    Logger.sendMessage("Se ha eliminado la textura %s: %s.", Logger.LogMessageType.INFO, texture.getTextureId(), texture);
+                }
+            } catch (IllegalAccessException | ClassCastException exception) {}
+        }
     }
 
     /**
@@ -83,7 +118,7 @@ public class Window {
         GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 3);
 
         //Creamos la ventana
-        window = GLFW.glfwCreateWindow(WIDTH, HEIGHT, "Test OpenGL", MemoryUtil.NULL, MemoryUtil.NULL);
+        window = GLFW.glfwCreateWindow(Window.WIDTH, Window.HEIGHT, "Test OpenGL", MemoryUtil.NULL, MemoryUtil.NULL);
         if (window == MemoryUtil.NULL) {
             throw new RuntimeException("No se ha podido crear la ventana.");
         }
@@ -111,6 +146,33 @@ public class Window {
         for (Shader shader: Shader.values()) {
             shader.compile();
         }
+
+        //Establecemos el icono de la ventana
+        try {
+            BufferedImage bufferedImage = ImageIO.read(new java.io.File("assets/textures/icon.png"));
+            byte[] iconData = ((DataBufferByte) bufferedImage.getRaster().getDataBuffer()).getData();
+            ByteBuffer appIconBuffer = BufferUtils.createByteBuffer(iconData.length);
+            appIconBuffer.order(ByteOrder.nativeOrder());
+
+            //Cambiamos los canales de la imagen, para que esté en formato RGBA en vez de ABGR.
+            byte alpha, red, green, blue;
+            for (int i = 0; i < iconData.length; i += 4) {
+                alpha = iconData[i];
+                blue = iconData[i + 1];
+                green = iconData[i + 2];
+                red = iconData[i + 3];
+                appIconBuffer.put(red).put(green).put(blue).put(alpha);
+            }
+            appIconBuffer.flip();
+
+
+            GLFWImage.Buffer glfwImage = GLFWImage.create(1);
+            GLFWImage iconGI = GLFWImage.create().set(bufferedImage.getWidth(), bufferedImage.getHeight(), appIconBuffer);
+            glfwImage.put(0, iconGI);
+            GLFW.glfwSetWindowIcon(window, glfwImage);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -124,29 +186,47 @@ public class Window {
             GLFW.glfwSwapBuffers(window);
 
             if (dTime >= 0) {
-                Main.WORLD.onTick();
+                for (int tick = 0; tick < Main.tickSpeed; tick++) {
+                    AnimatedTexture.animate();
+                    if (!Main.PLAYER.isPaused()) {
+                        Ticking.tick(dTime);
+                    }
+                }
+                Ticking.tickForced(dTime);
                 Window.currentScene.update(dTime);
                 GLFW.glfwSetWindowTitle(window, "EL PATO JUEGO");
             }
 
-            if (KeyListener.isKeyPressed(GLFW.GLFW_KEY_W)) {
-                WorldScene.CAMERA.moveCamera(new Vector2f(0, 10 * (float) WorldScene.CAMERA.getZoom()));
-            }
+            if (!Main.PLAYER.isPaused()) {
+                if (KeyBind.MOVE_UP.isPressed()) {
+                    Main.PLAYER.getCamera().moveCamera(new Vector2f(0, (KeyListener.isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT) ? 2 : 1) * 10 * (float) Main.PLAYER.getCamera().getZoom()));
+                }
 
-            if (KeyListener.isKeyPressed(GLFW.GLFW_KEY_A)) {
-                WorldScene.CAMERA.moveCamera(new Vector2f(-10 * (float) WorldScene.CAMERA.getZoom(), 0));
-            }
+                if (KeyBind.MOVE_LEFT.isPressed()) {
+                    Main.PLAYER.getCamera().moveCamera(new Vector2f((KeyListener.isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT) ? 2 : 1) * -10 * (float) Main.PLAYER.getCamera().getZoom(), 0));
+                }
 
-            if (KeyListener.isKeyPressed(GLFW.GLFW_KEY_S)) {
-                WorldScene.CAMERA.moveCamera(new Vector2f(0, -10 * (float) WorldScene.CAMERA.getZoom()));
-            }
+                if (KeyBind.MOVE_DOWN.isPressed()) {
+                    Main.PLAYER.getCamera().moveCamera(new Vector2f(0, (KeyListener.isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT) ? 2 : 1) * -10 * (float) Main.PLAYER.getCamera().getZoom()));
+                }
 
-            if (KeyListener.isKeyPressed(GLFW.GLFW_KEY_D)) {
-                WorldScene.CAMERA.moveCamera(new Vector2f(10 * (float) WorldScene.CAMERA.getZoom(), 0));
-            }
+                if (KeyBind.MOVE_RIGHT.isPressed()) {
+                    Main.PLAYER.getCamera().moveCamera(new Vector2f((KeyListener.isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT) ? 2 : 1) * 10 * (float) Main.PLAYER.getCamera().getZoom(), 0));
+                }
 
-            if (KeyListener.isKeyPressed(GLFW.GLFW_KEY_E)) {
-                Main.WORLD.spawnEntity(new Duck(MouseListener.inGameLocation));
+                if (KeyBind.DEBUG_SPAWN_ENTITY.isPressed()) {
+                    Main.world.spawnEntity(new Duck(MouseListener.getInGameLocation()));
+                }
+
+                if (currentScene instanceof WorldScene && Main.PLAYER.getContainer() instanceof Inventory inventory) {
+                    if (KeyListener.isKeyPressed(GLFW.GLFW_KEY_RIGHT)) {
+                        inventory.moveScroll((KeyListener.isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT) ? 2 : 1) * -.7f);
+                    }
+
+                    if (KeyListener.isKeyPressed(GLFW.GLFW_KEY_LEFT)) {
+                        inventory.moveScroll((KeyListener.isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT) ? 2 : 1) * .7f);
+                    }
+                }
             }
 
             endTime = Time.getTimeInNanoseconds();
@@ -165,6 +245,12 @@ public class Window {
         try {
             int[] width = new int[1], height = new int[1];
             GLFW.glfwGetFramebufferSize(Window.window, width, height);
+            if (width[0] <= 0) {
+                width[0] = Window.WIDTH;
+            }
+            if (height[0] <= 0) {
+                height[0] = Window.HEIGHT;
+            }
             return new Vector2i(width[0], height[0]);
         } catch (NullPointerException exception) {
             return new Vector2i(Window.WIDTH, Window.HEIGHT);

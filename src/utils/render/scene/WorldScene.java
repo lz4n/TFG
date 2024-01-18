@@ -3,24 +3,18 @@ package utils.render.scene;
 import listener.MouseListener;
 import main.Main;
 import org.joml.Matrix4f;
-import ui.Inventory;
-import ui.widget.SeparatorWidget;
-import ui.widget.SlotWidget;
-import ui.widget.TextWidget;
+import ui.container.Inventory;
 import utils.Time;
+import utils.render.GameFont;
 import utils.render.Window;
 import utils.render.mesh.*;
-import org.joml.Vector2f;
 import org.lwjgl.opengl.*;
-import utils.render.Camera;
 import utils.render.Shader;
-import utils.render.texture.Graphics2dTexture;
-import utils.render.texture.StaticTexture;
-import utils.render.texture.Texture;
+import utils.render.texture.*;
 import world.WorldGenerator;
 import world.entity.Entity;
 import world.feature.Feature;
-import world.location.Location;
+import world.particle.*;
 import world.terrain.Terrain;
 
 import java.awt.*;
@@ -30,70 +24,33 @@ import java.awt.*;
  *
  * @author Izan
  */
-public class WorldScene extends Scene {
+public class WorldScene implements Scene {
     /**
      * Tamaño base (sin contar el zoom) de los sprites.
      */
-    public static final int SPRITE_SIZE = 20;
+    public static final int SPRITE_SIZE = 16;
 
-    /**
-     * Camara de la escena.
-     */
-    public static Camera CAMERA = new Camera(new Vector2f(0, 0)); //Iniciamos la cámara en 0,0.
+    private final WorldMesh WORLD_BORDER_MESH = new WorldMesh(1, 2, 2);
 
-    /**
-     * Textura del selector del ratón
-     */
-    private static final Texture MOUSE_TEXTURE = new StaticTexture("assets/textures/ui/selector.png");
-
-    /**
-     * <code>Mesh</code> anónimo utilizado para el selector del ratón.
-     * @see Mesh
-     */
-    private final MouseSelectionMesh MOUSE_SELECTION_MESH = new MouseSelectionMesh(3, 2);
-
-    /**
-     * Mesh utilizado para dibujar el HUD.
-     */
-    private final HUDMesh HUD_MESH = new HUDMesh();
-
-    /**
-     * Inventario del jugador en la escena.
-     */
-    private final Inventory INVENTORY = new Inventory();
 
     @Override
     public void init() {
-        new WorldGenerator(Main.WORLD, this).run();
-        drawTerrain();
+        new WorldGenerator(Main.world, this).run();
 
-        HUD_MESH.load();
-
-        WorldScene.CAMERA.moveCamera(new Vector2f((float) Main.WORLD.getSize() / 2));
-
-        //Generamos la estructura de widgets del inventario.
-        this.INVENTORY.addWidget(new SeparatorWidget(20, 0));
-        this.INVENTORY.addWidget(new SlotWidget(40, 4, Feature.FeatureType.TREE.getTexture()));
-        this.INVENTORY.addWidget(new TextWidget(40, 23, "kkkkkkkkk"));
-    }
-
-    /**
-     * Actualiza y sube a la <code>GPU</code> el <code>mesh</code> del selector.
-     * @param x Posición en el eje X in-game del selector.
-     * @param y Posición en el eje Y in-game del selector.
-     */
-    public void updateSelection(int x, int y) {
-        int sizeX = 1, sizeY = 1;
-        Feature selectedFeature = new Location(x, y).getFeature();
-        if (selectedFeature != null) {
-            x = (int) selectedFeature.getLocation().getX();
-            y = (int) selectedFeature.getLocation().getY();
-            sizeX = selectedFeature.getSize().x();
-            sizeY = selectedFeature.getSize().y();
+        for (Terrain.TerrainType terrainType: Terrain.TerrainType.values()) {
+            terrainType.getMesh().adjust();
+        }
+        for (Feature.FeatureType featureType: Feature.FeatureType.values()) {
+            featureType.updateMesh();
+            featureType.getMesh().adjust();
         }
 
-        this.MOUSE_SELECTION_MESH.setVertex(x, y, sizeX, sizeY);
-        this.MOUSE_SELECTION_MESH.load();
+        drawTerrain();
+
+        SingleObjectMesh.SINGLE_OBJECT_MESH.load();
+
+        this.WORLD_BORDER_MESH.addVertex(-1, -1, Main.world.getSize() +2,  Main.world.getSize() +2);
+        this.WORLD_BORDER_MESH.load();
     }
 
     /**
@@ -106,9 +63,6 @@ public class WorldScene extends Scene {
         for (Feature.FeatureType featureType: Feature.FeatureType.values()) {
             featureType.getMesh().load();
         }
-        for (Entity.EntityType entityType: Entity.EntityType.values()) {
-            entityType.getMesh().load();
-        }
     }
 
     /**
@@ -117,66 +71,81 @@ public class WorldScene extends Scene {
     @Override
     public void update(long dTime) {
         //Borramos los contenidos de la ventana y establecemos el color del fondo.
-        GL20.glClearColor(0.1f, 0.1f, 0.1f, 0.1f);
+        GL20.glClearColor(38f / 255, 85f / 255, 144f /255, 0f);
         GL20.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         //Activamos las transparencias
         GL20.glEnable(GL20.GL_BLEND);
         GL20.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
+
         //Activamos el shader y subimos variables uniform al shader .glsl
         Shader.WORLD.use();
-        Shader.WORLD.uploadMatrix4f("uProjection", CAMERA.getProjectionMatrix());
-        Shader.WORLD.uploadMatrix4f("uView", CAMERA.getViewMatrix());
-        Shader.WORLD.uploadFloat("uDaylight", (float) Main.WORLD.getDayLight());
+        Shader.WORLD.uploadMatrix4f("uProjection", Main.PLAYER.getCamera().getProjectionMatrix());
+        Shader.WORLD.uploadMatrix4f("uView", Main.PLAYER.getCamera().getViewMatrix());
+        Shader.WORLD.uploadFloat("uDaylight", Main.world.getDayLight());
+        Shader.WORLD.uploadFloat("uHappiness", Main.world.getHappiness());
+        Shader.WORLD.uploadInt("uIsPaused", Main.PLAYER.isPaused() ? 1 : 0);
+
+        //Dibujamos el borde del mundo
+        Shader.WORLD.uploadInt("customTextureUnit", 0);
+        Shader.WORLD.uploadInt("textureSampler0", 0);
+        Shader.WORLD.uploadInt("repeatingTimes", Main.world.getSize() +2);
+        Textures.WORLD_BORDER.bind();
+        this.WORLD_BORDER_MESH.draw();
+        Texture.unbind();
+        Shader.WORLD.uploadInt("repeatingTimes", 1);
 
         //Dibujamos el terreno.
+        Shader.WORLD.uploadInt("customTextureUnit", 0);
         for (Terrain.TerrainType terrainType: Terrain.TerrainType.values()) {
-            Shader.WORLD.uploadInt("texture_sampler", 0);
-            GL20.glActiveTexture(GL20.GL_TEXTURE0);
-
+            Shader.WORLD.uploadInt("textureSampler0", 0);
             terrainType.getTexture().bind();
             terrainType.getMesh().draw();
             Texture.unbind();
         }
 
         //Dibujamos las features.
+        Shader.WORLD.uploadInt("customTextureUnit", -1);
         for (Feature.FeatureType featureType: Feature.FeatureType.values()) {
-            Shader.WORLD.uploadInt("texture_sampler", 0);
-            GL20.glActiveTexture(GL20.GL_TEXTURE0);
-            featureType.getTexture().bind();
+            Shader.WORLD.uploadInt("textureSampler0", 0);
+            Shader.WORLD.uploadInt("textureSampler1", 1);
+            Shader.WORLD.uploadInt("textureSampler2", 2);
+            Shader.WORLD.uploadInt("textureSampler3", 3);
+            Shader.WORLD.uploadInt("textureSampler4", 4);
+            for (int variant = 0; variant < featureType.getVariants(); variant++) {
+                featureType.getTextures().get(variant).bind(variant);
+            }
 
             featureType.getMesh().draw();
+
             Texture.unbind();
         }
 
-        //Dibujamos las entidades.
+        //Dibujamos las entidades y partículas.
         Shader.ENTITY.use();
-        Shader.ENTITY.uploadMatrix4f("uProjection", CAMERA.getProjectionMatrix());
-        Shader.ENTITY.uploadMatrix4f("uView", CAMERA.getViewMatrix());
-        for (Entity.EntityType entityType: Entity.EntityType.values()) {
-            Shader.ENTITY.uploadInt("texture_sampler", 0);
-            GL20.glActiveTexture(GL20.GL_TEXTURE0);
-            entityType.getTexture().bind();
+        Shader.ENTITY.uploadMatrix4f("uProjection", Main.PLAYER.getCamera().getProjectionMatrix());
+        Shader.ENTITY.uploadMatrix4f("uView", Main.PLAYER.getCamera().getViewMatrix());
+        Shader.ENTITY.uploadFloat("uDaylight", Main.world.getDayLight());
+        Shader.ENTITY.uploadFloat("uHappiness", Main.world.getHappiness());
+        Shader.ENTITY.uploadFloat("uRotationAngle", 0);
+        Shader.ENTITY.uploadFloat("uScale", 1);
+        Shader.ENTITY.uploadInt("uIsPaused", Main.PLAYER.isPaused() ? 1: 0);
 
-            if (Main.WORLD.getEntitiesMap().containsKey(entityType)) for (Entity entity: Main.WORLD.getEntitiesMap().get(entityType)) {
-                Shader.ENTITY.upload2f("uInstancePosition", entity.getLocation().getX() * WorldScene.SPRITE_SIZE, entity.getLocation().getY() * WorldScene.SPRITE_SIZE);
-                entityType.getMesh().draw();
-            }
+        Main.world.getEntities().forEach(entity -> {
+            entity.getTexture().draw(Shader.ENTITY, entity.getLocation());
             Texture.unbind();
-        }
+        });
 
-        //Dibujamos el selector del ratón
-        if (!MouseListener.inGameLocation.isOutOfTheWorld()) {
-            Shader.WORLD.use();
-            Shader.WORLD.uploadMatrix4f("uProjection", CAMERA.getProjectionMatrix());
-            Shader.WORLD.uploadMatrix4f("uView", CAMERA.getViewMatrix());
-            Shader.WORLD.uploadInt("texture_sampler", 0);
-            GL20.glActiveTexture(GL20.GL_TEXTURE0);
-            WorldScene.MOUSE_TEXTURE.bind();
-            this.MOUSE_SELECTION_MESH.draw();
+        Main.world.getParticlesList().forEach(particle -> {
+            Shader.ENTITY.uploadFloat("uRotationAngle", particle.getRotation());
+            Shader.ENTITY.uploadFloat("uScale", particle.getScale());
+            particle.getTexture().draw(
+                    Shader.ENTITY,
+                    particle.getLocation()
+            );
             Texture.unbind();
-        }
+        });
 
         Shader.HUD.use();
         Shader.HUD.uploadMatrix4f("uProjection", new Matrix4f().ortho(0, Window.getWidth(), Window.getHeight(), 0, -1, 1));
@@ -184,78 +153,114 @@ public class WorldScene extends Scene {
 
         //Generamos la pantalla de debug
         if (Main.isDebugging) {
-            Shader.HUD.upload2f("uHudPosition", 0, 0);
-            Shader.HUD.upload2f("uHudSize", Window.getWidth() /2f, Window.getHeight());
-            Shader.HUD.uploadInt("texture_sampler", 0);
-            GL20.glActiveTexture(GL20.GL_TEXTURE0);
             String debug = String.format("""
                             game:
                                 fps=%d
+                                tickSpeed=%d
                             
-                            selection:
-                                x=%.2f, y=%.2f
-                            %s
-                                            
-                            camera:
-                                x=%.2f, y=%.2f
-                                zoom=%s
+                            player:
+                                isPaused=%s
+                                isHidingUI=%s
+                                isUsingBulldozer=%s
+                                isMouseOnInventory=%s
+                                selection:
+                                    x=%.2f, y=%.2f
+                                    %scamera:
+                                    x=%.2f, y=%.2f
+                                    zoom=%s
                             
                             world:
                                 seed=%d
-                                daytime=%d
-                                features = %d, entities = %d
+                                dayTime=%d (%s) (dayLight=%.03f), day=%d, month=%d, years=%d
+                                features = %d, entities = %d, particles = %d
+                                
+                                happiness=%.03f
                             """,
                     (int) (1/ Time.nanosecondsToSeconds(dTime)),
-                    MouseListener.inGameLocation.getX(),
-                    MouseListener.inGameLocation.getY(),
-                    MouseListener.inGameLocation.isOutOfTheWorld() ? "    OutOfTheWorld" : String.format("""
-                                        terrain: %s type=%s
-                                        %s
-                                        biome=%s
-                                        wordBuilder: c=%.4f,w=%.4f,r=%.4f
-                                    """,
-                            MouseListener.inGameLocation.getTerrain(),
-                            MouseListener.inGameLocation.getTerrain().getType(),
-                            MouseListener.inGameLocation.getFeature() == null ? "feature: null" : String.format("feature: %s type=%s",
-                                    MouseListener.inGameLocation.getFeature(),
-                                    MouseListener.inGameLocation.getFeature().getFeatureType()),
-                            MouseListener.inGameLocation.getTerrain().getBiome(),
-                            MouseListener.inGameLocation.getTerrain().getContinentalityNoise(),
-                            MouseListener.inGameLocation.getTerrain().getWeirdnessNoise(),
-                            MouseListener.inGameLocation.getTerrain().getRiversNoise()),
-                    WorldScene.CAMERA.getCameraPosition().x(),
-                    WorldScene.CAMERA.getCameraPosition().y(),
-                    WorldScene.CAMERA.getZoom(),
-                    Main.WORLD.getSeed(),
-                    Main.WORLD.getDayTime(),
-                    Main.WORLD.getFeaturesCount(),
-                    Main.WORLD.getEntitiesCount());
-            Graphics2dTexture texture = new Graphics2dTexture(Window.getWidth() / 2, Window.getHeight());
-            Graphics2D graphics2D = texture.getGraphics();
-            int posY = 10;
-            for (String debugLine : debug.split("\n")) {
-                graphics2D.drawString(debugLine, 0, posY);
-                posY += graphics2D.getFontMetrics().getHeight();
-            }
+                    Main.tickSpeed,
+                    Main.PLAYER.isPaused(),
+                    Main.PLAYER.isHidingUi(),
+                    Main.PLAYER.isUsingBulldozer(),
+                    Main.PLAYER.isMouseOnInventory(),
+                    MouseListener.getInGameLocation().getX(),
+                    MouseListener.getInGameLocation().getY(),
+                    MouseListener.getInGameLocation().isOutOfTheWorld() ? "    OutOfTheWorld" : String.format("""
+                                            terrain: %s type=%s
+                                                    %s
+                                                    biome=%s
+                                                    wordBuilder: c=%.4f,w=%.4f,r=%.4f
+                                            """,
+                            MouseListener.getInGameLocation().getTerrain(),
+                            MouseListener.getInGameLocation().getTerrain().getType(),
+                            MouseListener.getInGameLocation().getFeature() == null ? "feature: null" : String.format("feature: %s type=%s,variant=%d",
+                                    MouseListener.getInGameLocation().getFeature(),
+                                    MouseListener.getInGameLocation().getFeature().getFeatureType(),
+                                    MouseListener.getInGameLocation().getFeature().getVariant()),
+                            MouseListener.getInGameLocation().getTerrain().getBiome(),
+                            MouseListener.getInGameLocation().getTerrain().getContinentalityNoise(),
+                            MouseListener.getInGameLocation().getTerrain().getWeirdnessNoise(),
+                            MouseListener.getInGameLocation().getTerrain().getRiversNoise()),
+                    Main.PLAYER.getCamera().getCameraPosition().x(),
+                    Main.PLAYER.getCamera().getCameraPosition().y(),
+                    Main.PLAYER.getCamera().getZoom(),
+                    Main.world.getSeed(),
+                    Main.world.getDayTime(),
+                    Main.world.getFormattedDayTime(),
+                    Main.world.getDayLight(),
+                    Main.world.getDay(),
+                    Main.world.getMonth(),
+                    Main.world.getYear(),
+                    Main.world.getFeaturesCount(),
+                    Main.world.getEntitiesCount(),
+                    Main.world.getParticlesList().size(),
+                    Main.world.getHappiness()
+            );
 
-            texture.convert();
-            texture.bind();
-            this.HUD_MESH.draw();
-            texture.remove();
+            Graphics2dTexture debugScreen = GameFont.DEBUG.drawText(debug, Font.PLAIN, 12);
+
+            debugScreen.draw(Shader.HUD, 5f, 5f, debugScreen.getSize().x(), debugScreen.getSize().y());
+            debugScreen.remove();
+
             Texture.unbind();
         }
-        this.INVENTORY.draw(this.HUD_MESH);
+
+        Main.PLAYER.updateDateTime(Main.world.getFormattedDayTime(), String.format("%d-%d-%d", Main.world.getDay(), Main.world.getMonth(), Main.world.getYear()));
+        if (!Main.PLAYER.isHidingUi() || !(Main.PLAYER.getContainer() instanceof Inventory)) {
+            Main.PLAYER.getContainer().onHoverEvent();
+            Main.PLAYER.getContainer().draw();
+        }
+
+        //Dibujamos el selector del ratón
+        if (!Main.PLAYER.isPaused() && MouseListener.getInGameLocation() != null && !MouseListener.getInGameLocation().isOutOfTheWorld() && !Main.PLAYER.isMouseOnInventory()) {
+            Feature selectedFeature;
+            if ((selectedFeature = MouseListener.getInGameLocation().getFeature()) != null) {
+                for (int x = 1; x <= selectedFeature.getSize().x(); x++) for (int y = 1; y <= selectedFeature.getSize().y(); y++) {
+                    Main.world.spawnParticle(new CursorParticle(selectedFeature.getLocation().add(x -1, y -1)));
+                }
+            } else {
+                Main.world.spawnParticle(new CursorParticle(MouseListener.getInGameLocation()));
+            }
+        }
 
         Shader.detach();
     }
 
     @Override
     public void resizeWindow() {
-        this.INVENTORY.setPixelSizeInScreen(Window.getHeight() / 205f);
+        Main.PLAYER.getContainer().onResizeWindowEvent(Window.getWidth(), Window.getHeight());
     }
 
     @Override
     public void click(float mouseX, float mouseY) {
-        this.INVENTORY.click(mouseX, mouseY);
+        if (!Main.PLAYER.isHidingUi() && Main.PLAYER.isMouseOnInventory()) {
+            Main.PLAYER.getContainer().onClickEvent(mouseX, mouseY);
+        }
+    }
+
+    @Override
+    public void moveMouse(float mouseX, float mouseY) {
+        if (!Main.PLAYER.isHidingUi()) {
+            Main.PLAYER.setMouseOnInventory(Main.PLAYER.getContainer().onMouseMoveEvent(mouseX, mouseY));
+        }
     }
 }
