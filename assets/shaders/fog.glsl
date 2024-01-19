@@ -21,6 +21,8 @@ uniform sampler2D textureSampler1;
 uniform sampler2D textureSampler2;
 uniform sampler2D textureSampler3;
 uniform sampler2D textureSampler4;
+uniform sampler2D textureSampler5;
+uniform sampler2D textureSampler6;
 
 
 /**
@@ -88,5 +90,9 @@ void main() {
         color = calculateColor(textureSampler3, fragmentUVCoords);
     } else if (textureUnit == 4) {
         color = calculateColor(textureSampler4, fragmentUVCoords);
+    } else if (textureUnit == 5) {
+        color = calculateColor(textureSampler5, fragmentUVCoords);
+    } else if (textureUnit == 6) {
+        color = calculateColor(textureSampler6, fragmentUVCoords);
     }
 }
