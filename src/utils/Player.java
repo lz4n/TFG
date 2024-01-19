@@ -44,7 +44,17 @@ public class Player {
      */
     private final static HashMap<Tab, List<List<MenuItem>>> ITEMS = new HashMap<>() {{
         this.put(Player.GENERAL_TAB, new ArrayList<>());
-        this.put(Player.ZONING_TAB, new ArrayList<>());
+        this.put(Player.ZONING_TAB, Arrays.asList(
+                Arrays.asList(
+                        new MenuItem(Textures.HOUSE_LVL1, Feature.FeatureType.HOUSE, 0),
+                        new MenuItem(Textures.HOUSE_LVL2, Feature.FeatureType.HOUSE, 1),
+                        new MenuItem(Textures.HOUSE_LVL3, Feature.FeatureType.HOUSE, 2),
+                        new MenuItem(Textures.HOUSE_LVL4, Feature.FeatureType.HOUSE, 3),
+                        new MenuItem(Textures.HOUSE_LVL5, Feature.FeatureType.HOUSE, 4),
+                        new MenuItem(Textures.HOUSE_LVL6, Feature.FeatureType.HOUSE, 5),
+                        new MenuItem(Textures.HOUSE_LVL7, Feature.FeatureType.HOUSE, 6)
+                )
+        ));
         this.put(Player.INDUSTRY_TAB, new ArrayList<>());
         this.put(Player.SERVICES_TAB, new ArrayList<>());
         this.put(Player.NATURE_TAB, Arrays.asList(

@@ -113,6 +113,8 @@ public class WorldScene implements Scene {
             Shader.WORLD.uploadInt("textureSampler2", 2);
             Shader.WORLD.uploadInt("textureSampler3", 3);
             Shader.WORLD.uploadInt("textureSampler4", 4);
+            Shader.WORLD.uploadInt("textureSampler5", 5);
+            Shader.WORLD.uploadInt("textureSampler6", 6);
             for (int variant = 0; variant < featureType.getVariants(); variant++) {
                 featureType.getTextures().get(variant).bind(variant);
             }

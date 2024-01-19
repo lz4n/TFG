@@ -6,6 +6,7 @@ import org.joml.Vector2i;
 import utils.render.mesh.WorldMesh;
 import utils.render.texture.Texture;
 import utils.render.texture.Textures;
+import world.feature.building.House;
 import world.location.Location;
 
 import java.io.Serializable;
@@ -149,6 +150,16 @@ public abstract class Feature implements Comparable<Feature>, Serializable {
         TREE(
                 Textures.TREE1,
                 Textures.TREE2
+        ),
+        HOUSE(
+                Textures.HOUSE_LVL1,
+                Textures.HOUSE_LVL2,
+                Textures.HOUSE_LVL3,
+                Textures.HOUSE_LVL4,
+                Textures.HOUSE_LVL5,
+                Textures.HOUSE_LVL6,
+                Textures.HOUSE_LVL7
+
         );
 
         /**
@@ -226,6 +237,9 @@ public abstract class Feature implements Comparable<Feature>, Serializable {
                 }
                 case FLOWER -> {
                     return new Flower(location, variant);
+                }
+                case HOUSE -> {
+                    return new House(location, variant);
                 }
             }
             return null;
