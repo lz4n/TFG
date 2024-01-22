@@ -1,5 +1,5 @@
 # El Pato Juego: TFG
-El Pato Juego es un juego de **simulación y construcción de ciudades**, **cuyos habitantes son patos**. El proyecto se ha realizado como **Trabajo de Fin de Grado** por tres alumnos del Módulo de Grado Superior de **Desarrollo de Aplicaciones Multiplataforma** del instituto IES Luis Braille.
+El Pato Juego es un juego de **simulación y construcción de ciudades** con estética pixel art, **cuyos habitantes son patos**. El proyecto se ha realizado como **Trabajo de Fin de Grado** por tres alumnos del Módulo de Grado Superior de **Desarrollo de Aplicaciones Multiplataforma** del instituto IES Luis Braille.
 
 *Nota: Al ser un trabajo de grado y no un proyecto personal, varios de los assets utilzados se han extraido de otros juegos.*
 
