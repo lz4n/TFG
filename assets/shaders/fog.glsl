@@ -5,6 +5,11 @@ Shader de fragmentos común para los shaders WORLD y ENTITY. Dibuja la textura a
 */
 
 /**
+Cantidad de samplers de texturas.
+*/
+const int SAMPLERS_COUNT = 7;
+
+/**
 Atributos de los objetos a renderizar.
 */
 uniform float uDaylight; //Intensidad lumínica de la luz del sol.
@@ -14,15 +19,9 @@ uniform float uRotationAngle = 0; //Rotación del objeto.
 uniform float uScale = 1; //Escala del objeto.
 
 /**
-Samplers de texturas.
+Array de samplers de texturas.
 */
-uniform sampler2D textureSampler0;
-uniform sampler2D textureSampler1;
-uniform sampler2D textureSampler2;
-uniform sampler2D textureSampler3;
-uniform sampler2D textureSampler4;
-uniform sampler2D textureSampler5;
-uniform sampler2D textureSampler6;
+uniform sampler2D textureSamplers[SAMPLERS_COUNT];
 
 
 /**
@@ -80,19 +79,7 @@ vec4 calculateColor(sampler2D textureSampler, vec2 uvCoords) {
 
 void main() {
     //Según sea textureUnit se utilizará un sampler u otro.
-    if (textureUnit == 0) {
-        color = calculateColor(textureSampler0, fragmentUVCoords);
-    } else if (textureUnit == 1) {
-        color = calculateColor(textureSampler1, fragmentUVCoords);
-    } else if (textureUnit == 2) {
-        color = calculateColor(textureSampler2, fragmentUVCoords);
-    } else if (textureUnit == 3) {
-        color = calculateColor(textureSampler3, fragmentUVCoords);
-    } else if (textureUnit == 4) {
-        color = calculateColor(textureSampler4, fragmentUVCoords);
-    } else if (textureUnit == 5) {
-        color = calculateColor(textureSampler5, fragmentUVCoords);
-    } else if (textureUnit == 6) {
-        color = calculateColor(textureSampler6, fragmentUVCoords);
+    if (textureUnit >= 0 && textureUnit < SAMPLERS_COUNT) {
+        color = calculateColor(textureSamplers[textureUnit], fragmentUVCoords);
     }
 }
