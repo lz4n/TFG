@@ -18,6 +18,9 @@ import utils.render.Window;
 import utils.render.texture.Texture;
 import utils.render.texture.Textures;
 import world.feature.Feature;
+import world.particle.BulldozerParticle;
+import world.particle.NegativeParticle;
+import world.particle.PositiveParticle;
 
 import java.awt.*;
 import java.io.*;
@@ -413,6 +416,39 @@ public class Player {
         this.container = this.INVENTORY;
         this.isPaused = false;
         this.container.onResizeWindowEvent(Window.getWidth(), Window.getHeight());
+    }
+
+    /**
+     * Elimina la feature que esté seleccionando el jugador.
+     */
+    public void destroySelectedFeature() {
+        Feature selectedFeature = MouseListener.getInGameLocation().getFeature();
+        if (selectedFeature != null) {
+            Main.world.removeFeature(selectedFeature);
+            for (int particles = 0; particles < selectedFeature.getSize().x() * selectedFeature.getSize().y() * 5; particles++) {
+                Main.world.spawnParticle(new BulldozerParticle(MouseListener.getInGameLocation().truncate().add(-0.5f, -0.5f).add(
+                        Main.RANDOM.nextFloat(0, selectedFeature.getSize().x()),
+                        Main.RANDOM.nextFloat(0, selectedFeature.getSize().y())
+                )));
+            }
+        }
+    }
+
+    public void placeSelectedFeature() {
+        Feature selectedFeature = Main.PLAYER.createSelectedFeature();
+        if (selectedFeature != null) {
+            if (selectedFeature.canBePlaced()) {
+                Main.world.addFeature(selectedFeature);
+                for (int particles = 0; particles < selectedFeature.getSize().x() * selectedFeature.getSize().y() * 5; particles++) {
+                    Main.world.spawnParticle(new PositiveParticle(MouseListener.getInGameLocation().truncate().add(-0.5f, -0.5f).add(
+                            Main.RANDOM.nextFloat(0, selectedFeature.getSize().x()),
+                            Main.RANDOM.nextFloat(0, selectedFeature.getSize().y())
+                    )));
+                }
+            } else {
+                Main.world.spawnParticle(new NegativeParticle(MouseListener.getInGameLocation().add(-0.5f, -0.5f)));
+            }
+        }
     }
 
     /**

@@ -15,11 +15,6 @@ public class Tree extends Feature {
     private static final Vector2i FEATURE_SIZE = new Vector2i(1, 2);
 
     /**
-     * Desplazamiento aleatorio de la feature en unidades in-game.
-     */
-    private static final Vector2f RANDOM_OFFSET = new Vector2f(4, 4);
-
-    /**
      * @param location Posición donde se va a generar la feature.
      * @param variant Variante de la feature.
      */
@@ -30,10 +25,5 @@ public class Tree extends Feature {
     @Override
     protected boolean checkSpecificConditions() {
         return this.getLocation().getTerrain().getType().equals(Terrain.TerrainType.GRASS);
-    }
-
-    @Override
-    public Vector2f getRandomOffset() {
-        return Tree.RANDOM_OFFSET;
     }
 }

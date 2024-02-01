@@ -43,13 +43,14 @@ public abstract class Feature implements Comparable<Feature>, Serializable {
     public Feature(Location location, Vector2i sizeInBlocks, FeatureType featureType, int variant) {
 
         //Calculamos el desplazamiento, para que las features no estén todas en la misma posición dentro de la casilla.
-        float offsetX = 0;
-        float offsetY = 0;
-
-        this.LOCATION = location.add(offsetX, offsetY);
+        this.LOCATION = location.clone();
         this.SIZE_IN_BLOCKS = sizeInBlocks;
         this.FEATURE_TYPE = featureType;
         this.VARIANT = variant;
+
+        float offsetX =  Main.RANDOM.nextFloat() *this.getRandomOffset().x();
+        float offsetY =  Main.RANDOM.nextFloat() *this.getRandomOffset().x();
+        this.LOCATION.add(offsetX, offsetY);
     }
 
     /**
@@ -109,10 +110,16 @@ public abstract class Feature implements Comparable<Feature>, Serializable {
      */
     protected abstract boolean checkSpecificConditions();
 
+    public Vector2f getRealSize() {
+        return new Vector2f(this.getSize().x(), this.getSize().y());
+    }
+
     /**
      * @return Desplazamiento máximo que puede tener la feature.
      */
-    public abstract Vector2f getRandomOffset();
+    public Vector2f getRandomOffset() {
+        return new Vector2f((this.getSize().x() - this.getRealSize().x()));
+    }
 
     @Override
     public int hashCode() {
@@ -193,7 +200,7 @@ public abstract class Feature implements Comparable<Feature>, Serializable {
             List<Feature> features = Main.world.getFeatures();
             features.removeIf(feature -> feature == null || !feature.getFeatureType().equals(this));
             this.mesh = new WorldMesh(features.size(), 2, 2, 1);
-            features.forEach(feature -> mesh.addVertex(feature.getLocation().getX(), feature.getLocation().getY(), feature.getSize().x(), feature.getSize().y(), feature.VARIANT));
+            features.forEach(feature -> mesh.addVertex(feature.getLocation().getX(), feature.getLocation().getY(), feature.getRealSize().x(), feature.getRealSize().y(), feature.VARIANT));
             this.mesh.load();
         }
 

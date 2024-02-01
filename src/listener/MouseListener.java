@@ -67,34 +67,10 @@ public class MouseListener {
         Window.currentScene.moveMouse((float) posX, (float) posY);
 
         if (!Main.PLAYER.isMouseOnInventory() && !Main.PLAYER.isPaused()) {
-            //Colocar/Destruir features cuando se hace click sobre ellas.
+            //Destruir features cuando se mantiene click sobre ellas.
             if (KeyBind.INTERACT.isPressed()) {
-                Feature selectedFeature = MouseListener.getInGameLocation().getFeature();
                 if (Main.PLAYER.isUsingBulldozer()) {
-                    if (selectedFeature != null) {
-                        Main.world.removeFeature(selectedFeature);
-                        for (int particles = 0; particles < selectedFeature.getSize().x() * selectedFeature.getSize().y() * 5; particles++) {
-                            Main.world.spawnParticle(new BulldozerParticle(MouseListener.getInGameLocation().truncate().add(-0.5f, -0.5f).add(
-                                    Main.RANDOM.nextFloat(0, selectedFeature.getSize().x()),
-                                    Main.RANDOM.nextFloat(0, selectedFeature.getSize().y())
-                            )));
-                        }
-                    }
-                } else {
-                    selectedFeature = Main.PLAYER.createSelectedFeature();
-                    if (selectedFeature != null) {
-                        if (selectedFeature.canBePlaced()) {
-                            Main.world.addFeature(selectedFeature);
-                            for (int particles = 0; particles < selectedFeature.getSize().x() * selectedFeature.getSize().y() * 5; particles++) {
-                                Main.world.spawnParticle(new PositiveParticle(MouseListener.getInGameLocation().truncate().add(-0.5f, -0.5f).add(
-                                        Main.RANDOM.nextFloat(0, selectedFeature.getSize().x()),
-                                        Main.RANDOM.nextFloat(0, selectedFeature.getSize().y())
-                                )));
-                            }
-                        } else {
-                            Main.world.spawnParticle(new NegativeParticle(MouseListener.getInGameLocation().add(-0.5f, -0.5f)));
-                        }
-                    }
+                    Main.PLAYER.destroySelectedFeature();
                 }
             }
         }
@@ -111,6 +87,17 @@ public class MouseListener {
       if (action == GLFW.GLFW_PRESS) {
           MouseListener.setIsMouseButtonPressed(button, true);
           Window.currentScene.click((float) MouseListener.posX, (float) MouseListener.posY);
+
+          if (!Main.PLAYER.isMouseOnInventory() && !Main.PLAYER.isPaused()) {
+              //Colocar/Destruir features cuando se hace click sobre ellas.
+              if (KeyBind.INTERACT.isPressed()) {
+                  if (Main.PLAYER.isUsingBulldozer()) {
+                      Main.PLAYER.destroySelectedFeature();
+                  } else {
+                      Main.PLAYER.placeSelectedFeature();
+                  }
+              }
+          }
       } else if (action == GLFW.GLFW_RELEASE) {
           MouseListener.setIsMouseButtonPressed(button, false);
           MouseListener.isDragging = false;
