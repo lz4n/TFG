@@ -21,11 +21,6 @@ public class House extends Building {
     }
 
     @Override
-    protected boolean checkSpecificConditions() {
-        return true;
-    }
-
-    @Override
     public Vector2f getRealSize() {
         return switch (this.getVariant() +1) {
             case 1 -> new Vector2f(15, 12).div(WorldScene.SPRITE_SIZE);
