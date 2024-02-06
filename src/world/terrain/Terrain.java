@@ -1,6 +1,7 @@
 package world.terrain;
 
 import main.Main;
+import utils.Logger;
 import utils.render.mesh.Mesh;
 import utils.render.mesh.WorldMesh;
 import utils.render.scene.WorldScene;
@@ -91,6 +92,7 @@ public class Terrain implements Serializable {
      */
     public enum TerrainType implements Serializable {
         WATER(Textures.WATER, false),
+        PATH(Textures.PATH, true),
         SAND(Textures.SAND, true),
         GRAVEL(Textures.GRAVEL, true),
         GRASS(Textures.GRASS, true),
@@ -135,17 +137,26 @@ public class Terrain implements Serializable {
 
         public void updateMesh() {
             this.mesh = this.createMesh();
-            for (int x = 0; x < Main.world.getSize(); x++) for (int y = Main.world.getSize() -1; y >=0; y--) {
-                if (Main.world.getTerrain(x, y).getType().equals(this)) {
-                    Main.world.getTerrain(x, y).getType().getMesh().addVertex(
-                            x  - (1f/WorldScene.SPRITE_SIZE),
-                            y  - (1f/WorldScene.SPRITE_SIZE),
-                            1 + (1f/WorldScene.SPRITE_SIZE) *2,
-                            1 + (1f/WorldScene.SPRITE_SIZE) *2);
+            Thread thread = new Thread(() -> {
+                for (int x = 0; x < Main.world.getSize(); x++) for (int y = Main.world.getSize() -1; y >=0; y--) {
+                    if (Main.world.getTerrain(x, y).getType().equals(this)) {
+                        Main.world.getTerrain(x, y).getType().getMesh().addVertex(
+                                x  - (1f/WorldScene.SPRITE_SIZE),
+                                y  - (1f/WorldScene.SPRITE_SIZE),
+                                1 + (1f/WorldScene.SPRITE_SIZE) *2,
+                                1 + (1f/WorldScene.SPRITE_SIZE) *2);
+                    }
                 }
+            });
+
+            thread.start();
+            try {
+                thread.join();
+                this.mesh.adjust();
+                this.mesh.load();
+            } catch (InterruptedException exception) {
+                Logger.sendMessage("Error encolando hilo de recalculado de terreno: %s.", Logger.LogMessageType.FATAL, exception.getMessage());
             }
-            this.mesh.adjust();
-            this.mesh.load();
         }
 
         /**

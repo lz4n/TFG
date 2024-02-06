@@ -18,6 +18,7 @@ public final class Textures {
         STONE = new StaticTexture("assets/textures/terrain/stone.png"),
         SNOW = new StaticTexture("assets/textures/terrain/snow.png"),
         GRAVEL = new StaticTexture("assets/textures/terrain/gravel.png"),
+        PATH = new StaticTexture("assets/textures/terrain/path.png"),
 
         /** FEATURES **/
         ROCK = new StaticTexture("assets/textures/feature/rock/rock.png"),

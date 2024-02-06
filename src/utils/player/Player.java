@@ -58,7 +58,8 @@ public class Player {
                         new TerrainItem(Textures.SAND, Terrain.TerrainType.SAND),
                         new TerrainItem(Textures.GRAVEL, Terrain.TerrainType.GRAVEL),
                         new TerrainItem(Textures.STONE, Terrain.TerrainType.STONE),
-                        new TerrainItem(Textures.SNOW, Terrain.TerrainType.SNOW)
+                        new TerrainItem(Textures.SNOW, Terrain.TerrainType.SNOW),
+                        new TerrainItem(Textures.PATH, Terrain.TerrainType.PATH)
                 )
         ));
         this.put(Player.ZONING_TAB, Arrays.asList(
@@ -477,23 +478,19 @@ public class Player {
                         )));
                     }
                 } else {
-                    Main.world.spawnParticle(new NegativeParticle(MouseListener.getInGameLocation().add(-0.5f, -0.5f)));
+                    Main.world.spawnParticle(new NegativeParticle(MouseListener.getInGameLocation().add(-.5f, .5f)));
                 }
             }
         }
         if (this.selectedItem instanceof TerrainItem) {
             Terrain selectedTerrain = this.createSelectedTerrain();
             Terrain.TerrainType oldTerrainType = MouseListener.getInGameLocation().getTerrain().getType();
-            System.out.println(!selectedTerrain.getType().equals(oldTerrainType));
             if (selectedTerrain != null && !selectedTerrain.getType().equals(oldTerrainType)) {
-                System.out.println("bbbbb");
                 Main.world.setTerrain(
                         (int) MouseListener.getInGameLocation().getX(),
                         (int) MouseListener.getInGameLocation().getY(),
                         selectedTerrain
                 );
-                oldTerrainType.updateMesh();
-                selectedTerrain.getType().updateMesh();
 
                 Feature feature = Main.world.getFeature(
                         (int) MouseListener.getInGameLocation().getX(),

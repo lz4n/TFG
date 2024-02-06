@@ -16,6 +16,7 @@ import world.World;
 import world.WorldGenerator;
 import world.entity.Entity;
 import world.feature.Feature;
+import world.location.Location;
 import world.particle.*;
 import world.terrain.Terrain;
 
@@ -143,7 +144,7 @@ public class WorldScene implements Scene {
             Shader.ENTITY.uploadFloat("uScale", particle.getScale());
             particle.getTexture().draw(
                     Shader.ENTITY,
-                    particle.getLocation()
+                    particle.getLocation().add(0, 1)
             );
             Texture.unbind();
         });

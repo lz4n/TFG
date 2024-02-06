@@ -67,6 +67,8 @@ public class MouseListener {
             if (KeyBind.INTERACT.isPressed()) {
                 if (Main.PLAYER.isUsingBulldozer()) {
                     Main.PLAYER.destroySelectedFeature();
+                } else if (Main.PLAYER.createSelectedTerrain() != null) {
+                    Main.PLAYER.placeSelectedItem();
                 }
             }
         }
