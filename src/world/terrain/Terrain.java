@@ -1,7 +1,10 @@
 package world.terrain;
 
 import main.Main;
+import utils.Logger;
+import utils.render.mesh.Mesh;
 import utils.render.mesh.WorldMesh;
+import utils.render.scene.WorldScene;
 import utils.render.texture.Texture;
 import utils.render.texture.Textures;
 import world.worldBuilder.Biome;
@@ -89,17 +92,20 @@ public class Terrain implements Serializable {
      */
     public enum TerrainType implements Serializable {
         WATER(Textures.WATER, false),
-        GRASS(Textures.GRASS, true),
+        PATH(Textures.PATH, true),
         SAND(Textures.SAND, true),
+        GRAVEL(Textures.GRAVEL, true),
+        GRASS(Textures.GRASS, true),
         STONE(Textures.STONE, true),
-        SNOW(Textures.SNOW, true),
-        GRAVEL(Textures.GRAVEL, true);
+        SNOW(Textures.SNOW, true);
+
+        private final boolean HAS_RANDOM_UV;
 
         /**
          * Mesh que se utiliza para el renderizado del terreno.
          * @see utils.render.mesh.Mesh
          */
-        private final WorldMesh MESH;
+        private WorldMesh mesh;
 
         /**
          * Textura del tipo de terreno.
@@ -111,25 +117,53 @@ public class Terrain implements Serializable {
          * @param hasRandomUV Determina si se van a randomizar las coordenadas UV del terreno.
          */
         TerrainType(Texture texture, boolean hasRandomUV) {
-            if (hasRandomUV) {
-                this.MESH = new WorldMesh(Main.world.getSize() * Main.world.getSize(), new int[]{2, 2},
-                        () -> switch (new Random().nextInt(4)) {
+            this.HAS_RANDOM_UV = hasRandomUV;
+            this.mesh = this.createMesh();
+            this.TEXTURE = texture;
+        }
+
+        private WorldMesh createMesh() {
+            if (this.HAS_RANDOM_UV) {
+                return new WorldMesh(Main.world.getSize() * Main.world.getSize(), new int[]{2, 2},
+                        (posX, posY) -> switch (new Random((long) Main.world.getSeed() *Main.world.mapCoordinatesToIndex(posX, posY)).nextInt(4)) {
                             case 0 -> new int[]{1, 1, 0, 0, 1, 0, 0, 1};
                             case 1 -> new int[]{1, 1, 0, 0, 0, 1, 1, 0};
                             case 2 -> new int[]{0, 0, 1, 1, 1, 0, 0, 1};
                             default -> new int[]{0, 0, 1, 1, 0, 1, 1, 0};
-                });
-            } else {
-                this.MESH = new WorldMesh(Main.world.getSize() * Main.world.getSize(), 2, 2);
+                        });
             }
-            this.TEXTURE = texture;
+            return new WorldMesh(Main.world.getSize() * Main.world.getSize(), 2, 2);
+        }
+
+        public void updateMesh() {
+            this.mesh = this.createMesh();
+            Thread thread = new Thread(() -> {
+                for (int x = 0; x < Main.world.getSize(); x++) for (int y = Main.world.getSize() -1; y >=0; y--) {
+                    if (Main.world.getTerrain(x, y).getType().equals(this)) {
+                        Main.world.getTerrain(x, y).getType().getMesh().addVertex(
+                                x  - (1f/WorldScene.SPRITE_SIZE),
+                                y  - (1f/WorldScene.SPRITE_SIZE),
+                                1 + (1f/WorldScene.SPRITE_SIZE) *2,
+                                1 + (1f/WorldScene.SPRITE_SIZE) *2);
+                    }
+                }
+            });
+
+            thread.start();
+            try {
+                thread.join();
+                this.mesh.adjust();
+                this.mesh.load();
+            } catch (InterruptedException exception) {
+                Logger.sendMessage("Error encolando hilo de recalculado de terreno: %s.", Logger.LogMessageType.FATAL, exception.getMessage());
+            }
         }
 
         /**
          * @return Mesh que está utilizando el tipo de terreno.
          */
         public WorldMesh getMesh() {
-            return this.MESH;
+            return this.mesh;
         }
 
         /**

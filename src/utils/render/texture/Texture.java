@@ -21,10 +21,14 @@ import java.util.List;
 
 /**
  * Representa una textura. Permite aplicar y desaplicar una textura en la <code>GPU</code>.
- *
- * @author Izan
  */
 public abstract class Texture {
+    /**
+     * Cantidad de samplers de textura que están disponibles para su uso.
+     */
+    public static final int SAMPLERS_COUNT = 7;
+
+
     /**
      * Almacena el tamaño de la textura en píxeles.
      */

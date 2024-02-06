@@ -1,7 +1,7 @@
 package main;
 
 import utils.Logger;
-import utils.Player;
+import utils.player.Player;
 import utils.render.Window;
 import world.World;
 

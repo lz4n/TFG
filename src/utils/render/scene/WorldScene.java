@@ -4,6 +4,7 @@ import listener.MouseListener;
 import main.Main;
 import org.joml.Matrix4f;
 import ui.container.Inventory;
+import utils.Logger;
 import utils.Time;
 import utils.render.GameFont;
 import utils.render.Window;
@@ -11,9 +12,11 @@ import utils.render.mesh.*;
 import org.lwjgl.opengl.*;
 import utils.render.Shader;
 import utils.render.texture.*;
+import world.World;
 import world.WorldGenerator;
 import world.entity.Entity;
 import world.feature.Feature;
+import world.location.Location;
 import world.particle.*;
 import world.terrain.Terrain;
 
@@ -32,14 +35,14 @@ public class WorldScene implements Scene {
 
     private final WorldMesh WORLD_BORDER_MESH = new WorldMesh(1, 2, 2);
 
-
     @Override
     public void init() {
-        new WorldGenerator(Main.world, this).run();
+        new WorldGenerator().run();
 
         for (Terrain.TerrainType terrainType: Terrain.TerrainType.values()) {
             terrainType.getMesh().adjust();
         }
+
         for (Feature.FeatureType featureType: Feature.FeatureType.values()) {
             featureType.updateMesh();
             featureType.getMesh().adjust();
@@ -86,10 +89,12 @@ public class WorldScene implements Scene {
         Shader.WORLD.uploadFloat("uDaylight", Main.world.getDayLight());
         Shader.WORLD.uploadFloat("uHappiness", Main.world.getHappiness());
         Shader.WORLD.uploadInt("uIsPaused", Main.PLAYER.isPaused() ? 1 : 0);
+        for (int samplerId = 0; samplerId < Texture.SAMPLERS_COUNT; samplerId++) {
+            Shader.WORLD.uploadInt("textureSamplers[" + samplerId + "]", samplerId);
+        }
 
         //Dibujamos el borde del mundo
         Shader.WORLD.uploadInt("customTextureUnit", 0);
-        Shader.WORLD.uploadInt("textureSampler0", 0);
         Shader.WORLD.uploadInt("repeatingTimes", Main.world.getSize() +2);
         Textures.WORLD_BORDER.bind();
         this.WORLD_BORDER_MESH.draw();
@@ -99,7 +104,6 @@ public class WorldScene implements Scene {
         //Dibujamos el terreno.
         Shader.WORLD.uploadInt("customTextureUnit", 0);
         for (Terrain.TerrainType terrainType: Terrain.TerrainType.values()) {
-            Shader.WORLD.uploadInt("textureSampler0", 0);
             terrainType.getTexture().bind();
             terrainType.getMesh().draw();
             Texture.unbind();
@@ -108,11 +112,6 @@ public class WorldScene implements Scene {
         //Dibujamos las features.
         Shader.WORLD.uploadInt("customTextureUnit", -1);
         for (Feature.FeatureType featureType: Feature.FeatureType.values()) {
-            Shader.WORLD.uploadInt("textureSampler0", 0);
-            Shader.WORLD.uploadInt("textureSampler1", 1);
-            Shader.WORLD.uploadInt("textureSampler2", 2);
-            Shader.WORLD.uploadInt("textureSampler3", 3);
-            Shader.WORLD.uploadInt("textureSampler4", 4);
             for (int variant = 0; variant < featureType.getVariants(); variant++) {
                 featureType.getTextures().get(variant).bind(variant);
             }
@@ -131,6 +130,9 @@ public class WorldScene implements Scene {
         Shader.ENTITY.uploadFloat("uRotationAngle", 0);
         Shader.ENTITY.uploadFloat("uScale", 1);
         Shader.ENTITY.uploadInt("uIsPaused", Main.PLAYER.isPaused() ? 1: 0);
+        for (int samplerId = 0; samplerId < Texture.SAMPLERS_COUNT; samplerId++) {
+            Shader.ENTITY.uploadInt("textureSamplers[" + samplerId + "]", samplerId);
+        }
 
         Main.world.getEntities().forEach(entity -> {
             entity.getTexture().draw(Shader.ENTITY, entity.getLocation());
@@ -142,7 +144,7 @@ public class WorldScene implements Scene {
             Shader.ENTITY.uploadFloat("uScale", particle.getScale());
             particle.getTexture().draw(
                     Shader.ENTITY,
-                    particle.getLocation()
+                    particle.getLocation().add(0, 1)
             );
             Texture.unbind();
         });
@@ -150,6 +152,9 @@ public class WorldScene implements Scene {
         Shader.HUD.use();
         Shader.HUD.uploadMatrix4f("uProjection", new Matrix4f().ortho(0, Window.getWidth(), Window.getHeight(), 0, -1, 1));
         Shader.HUD.uploadMatrix4f("uView", new Matrix4f().identity());
+        for (int samplerId = 0; samplerId < Texture.SAMPLERS_COUNT; samplerId++) {
+            Shader.HUD.uploadInt("textureSamplers[" + samplerId + "]", samplerId);
+        }
 
         //Generamos la pantalla de debug
         if (Main.isDebugging) {

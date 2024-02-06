@@ -44,7 +44,7 @@ public class WorldMesh extends Mesh {
      * @param attributesSize Tamaños de los atributos, en bytes.
      */
     public WorldMesh(int capacity, int... attributesSize) {
-        this(capacity, attributesSize, () -> new int[]{1, 1, 0, 0, 1, 0, 0, 1});
+        this(capacity, attributesSize, (posX, posY) -> new int[]{1, 1, 0, 0, 1, 0, 0, 1});
     }
 
     /**
@@ -57,7 +57,7 @@ public class WorldMesh extends Mesh {
      */
     public void addVertex(float posX, float posY, float sizeX, float sizeY, float... attributes) {
         float screenPosX = WorldScene.SPRITE_SIZE * posX, screenPosY = WorldScene.SPRITE_SIZE * posY;
-        int[] uvCoords = this.UV_COORDS_RANDOMIZER.getUVCoords();
+        int[] uvCoords = this.UV_COORDS_RANDOMIZER.getUVCoords((int) posX, (int) posY);
 
         if (this.previousVertexArrayPos >= this.vertexArray.length) {
             this.vertexArray = Arrays.copyOf(this.vertexArray, this.previousVertexArrayPos +this.vertexSize *4);
@@ -144,6 +144,6 @@ public class WorldMesh extends Mesh {
         /**
          * @return Array que contiene las coordenadas UV de los 4 vértices.
          */
-        int[] getUVCoords();
+        int[] getUVCoords(int posX, int posY);
     }
 }

@@ -4,6 +4,7 @@ import main.Main;
 import utils.Logger;
 import world.entity.Entity;
 import world.feature.*;
+import world.feature.building.Building;
 import world.location.Location;
 import world.particle.CloudParticle;
 import world.particle.Particle;
@@ -122,7 +123,7 @@ public class World extends Ticking implements Serializable {
 
         //Generamos el terreno.
         terrain = new Terrain(biome.getTerrainType(), biome, continentality, weirdness, rivers);
-        this.setTerrain(x, y, terrain);
+        this.setTerrain(x, y, terrain, false);
 
         //Generamos las features según el bioma.
         Location location = new Location(x, y);
@@ -178,9 +179,31 @@ public class World extends Ticking implements Serializable {
      * @param x Posición en el eje X dodne se quiere colocar el terreno.
      * @param y Posición en el eje Y donde se quiere colcoar el terreno.
      * @param terrain Terreno que se quiere colocar.
+     * @param updateMesh Indica si se van a actualizar los Mesh.
+     * @see utils.render.mesh.Mesh
+     */
+    public void setTerrain(int x, int y, Terrain terrain, boolean updateMesh) {
+        int terrainIndex = this.mapCoordinatesToIndex(x, y);
+        Terrain oldTerrain = this.TERRAIN[terrainIndex];
+
+        this.TERRAIN[this.mapCoordinatesToIndex(x, y)] = terrain;
+
+        if (oldTerrain != null && !oldTerrain.getType().equals(terrain.getType()) && updateMesh) {
+            oldTerrain.getType().updateMesh();
+            terrain.getType().updateMesh();
+        }
+
+    }
+
+    /**
+     * Establece el terreno en una determinada posición.
+     * @param x Posición en el eje X dodne se quiere colocar el terreno.
+     * @param y Posición en el eje Y donde se quiere colcoar el terreno.
+     * @param terrain Terreno que se quiere colocar.
      */
     public void setTerrain(int x, int y, Terrain terrain) {
-        this.TERRAIN[this.mapCoordinatesToIndex(x, y)] = terrain;
+        this.setTerrain(x, y, terrain, true);
+
     }
 
     /**
@@ -211,6 +234,16 @@ public class World extends Ticking implements Serializable {
             for (int x = 0; x < feature.getSize().x(); x++) {
                 for (int y = 0; y < feature.getSize().y(); y++) {
                     this.FEATURES[this.mapCoordinatesToIndex(posX + x, posY + y)] = feature;
+                    if (feature instanceof Building) {
+                        Terrain terrain = this.getTerrain(posX +x, posY +y);
+                        this.setTerrain(posX + x, posY + y, new Terrain(
+                                Terrain.TerrainType.PATH,
+                                terrain.getBiome(),
+                                terrain.getContinentalityNoise(),
+                                terrain.getWeirdnessNoise(),
+                                terrain.getRiversNoise()
+                        ));
+                    }
                 }
             }
             Feature.FeatureType featureType = feature.getFeatureType();
@@ -317,7 +350,7 @@ public class World extends Ticking implements Serializable {
      * @param y Coordenada en el eje Y.
      * @return Índice equivalente a la posición que se pasa como parámetros.
      */
-    private int mapCoordinatesToIndex(int x, int y) {
+    public int mapCoordinatesToIndex(int x, int y) {
         return x * this.WORLD_SIZE + y;
     }
 

@@ -18,6 +18,7 @@ public final class Textures {
         STONE = new StaticTexture("assets/textures/terrain/stone.png"),
         SNOW = new StaticTexture("assets/textures/terrain/snow.png"),
         GRAVEL = new StaticTexture("assets/textures/terrain/gravel.png"),
+        PATH = new StaticTexture("assets/textures/terrain/path.png"),
 
         /** FEATURES **/
         ROCK = new StaticTexture("assets/textures/feature/rock/rock.png"),
@@ -29,6 +30,13 @@ public final class Textures {
         BUSH = new StaticTexture("assets/textures/feature/bush.png"),
         TREE1 = new StaticTexture("assets/textures/feature/tree.png"),
         TREE2 = new StaticTexture("assets/textures/feature/tree2.png"),
+        HOUSE_LVL1 = new StaticTexture("assets/textures/feature/building/house/house_lvl1.png"),
+        HOUSE_LVL2 = new StaticTexture("assets/textures/feature/building/house/house_lvl2.png"),
+        HOUSE_LVL3 = new StaticTexture("assets/textures/feature/building/house/house_lvl3.png"),
+        HOUSE_LVL4 = new StaticTexture("assets/textures/feature/building/house/house_lvl4.png"),
+        HOUSE_LVL5 = new StaticTexture("assets/textures/feature/building/house/house_lvl5.png"),
+        HOUSE_LVL6 = new StaticTexture("assets/textures/feature/building/house/house_lvl6.png"),
+        HOUSE_LVL7 = new StaticTexture("assets/textures/feature/building/house/house_lvl7.png"),
 
         /** ENTITIES **/
         DUCK = new StaticTexture("assets/textures/entity/duck.png"),
