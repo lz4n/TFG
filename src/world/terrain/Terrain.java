@@ -51,13 +51,21 @@ public class Terrain implements Serializable {
         this.RIVERS_NOISE = riversNoise;
     }
 
+    public void addToMesh(int x, int y) {
+        this.getType().getMesh().addVertex(
+                x -(this.getType().HAS_CONNECTED_TEXTURES ? (1f/WorldScene.SPRITE_SIZE) : 0),
+                y -(this.getType().HAS_CONNECTED_TEXTURES ? (1f/WorldScene.SPRITE_SIZE) : 0),
+                1 +(this.getType().HAS_CONNECTED_TEXTURES ? (1f/WorldScene.SPRITE_SIZE) *2 : 0),
+                1 +(this.getType().HAS_CONNECTED_TEXTURES ? (1f/WorldScene.SPRITE_SIZE) *2 : 0)
+        );
+    }
+
     /**
      * @return Tipo de terreno que tiene la celda.
      */
     public TerrainType getType() {
         return this.TYPE;
     }
-
 
     /**
      * @return Bioma de la celda.
@@ -91,15 +99,16 @@ public class Terrain implements Serializable {
      * Son los diferentes materiales que componen el terreno del mundo.
      */
     public enum TerrainType implements Serializable {
-        WATER(Textures.WATER, false),
-        PATH(Textures.PATH, true),
-        SAND(Textures.SAND, true),
-        GRAVEL(Textures.GRAVEL, true),
-        GRASS(Textures.GRASS, true),
-        STONE(Textures.STONE, true),
-        SNOW(Textures.SNOW, true);
+        WATER(Textures.WATER, false, false),
+        PATH(Textures.PATH, true, true),
+        SAND(Textures.SAND, true, true),
+        GRAVEL(Textures.GRAVEL, true, true),
+        GRASS(Textures.GRASS, true, true),
+        STONE(Textures.STONE, true, true),
+        SNOW(Textures.SNOW, true, true);
 
         private final boolean HAS_RANDOM_UV;
+        private final boolean HAS_CONNECTED_TEXTURES;
 
         /**
          * Mesh que se utiliza para el renderizado del terreno.
@@ -115,9 +124,11 @@ public class Terrain implements Serializable {
         /**
          * @param texture Textura del tipo de terreno.
          * @param hasRandomUV Determina si se van a randomizar las coordenadas UV del terreno.
+         * @param hasConnectedTextures Determina si las texturas se van a conectar con la textura de otros terrenos.
          */
-        TerrainType(Texture texture, boolean hasRandomUV) {
+        TerrainType(Texture texture, boolean hasRandomUV, boolean hasConnectedTextures) {
             this.HAS_RANDOM_UV = hasRandomUV;
+            this.HAS_CONNECTED_TEXTURES = hasConnectedTextures;
             this.mesh = this.createMesh();
             this.TEXTURE = texture;
         }
@@ -140,11 +151,7 @@ public class Terrain implements Serializable {
             Thread thread = new Thread(() -> {
                 for (int x = 0; x < Main.world.getSize(); x++) for (int y = Main.world.getSize() -1; y >=0; y--) {
                     if (Main.world.getTerrain(x, y).getType().equals(this)) {
-                        Main.world.getTerrain(x, y).getType().getMesh().addVertex(
-                                x  - (1f/WorldScene.SPRITE_SIZE),
-                                y  - (1f/WorldScene.SPRITE_SIZE),
-                                1 + (1f/WorldScene.SPRITE_SIZE) *2,
-                                1 + (1f/WorldScene.SPRITE_SIZE) *2);
+                        Main.world.getTerrain(x, y).addToMesh(x, y);
                     }
                 }
             });

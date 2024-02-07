@@ -36,7 +36,7 @@ public final class Textures {
         HOUSE_LVL4 = new StaticTexture("assets/textures/feature/building/house/house_lvl4.png"),
         HOUSE_LVL5 = new StaticTexture("assets/textures/feature/building/house/house_lvl5.png"),
         HOUSE_LVL6 = new StaticTexture("assets/textures/feature/building/house/house_lvl6.png"),
-        HOUSE_LVL7 = new StaticTexture("assets/textures/feature/building/house/house_lvl7.png"),
+        HOUSE_LVL7 = new AnimatedTexture("assets/textures/feature/building/house/house_lvl7", 4, 28),
 
         /** ENTITIES **/
         DUCK = new StaticTexture("assets/textures/entity/duck.png"),
@@ -47,6 +47,7 @@ public final class Textures {
         POSITIVE_PARTICLE = new StaticTexture("assets/textures/particle/positive.png"),
         CLOUD_PARTICLE = new StaticTexture("assets/textures/particle/cloud/cloud_1.png"),
         CLOUD_SHADOW_PARTICLE = new StaticTexture("assets/textures/particle/cloud/cloud_shadow_1.png"),
+        SMOKE_PARTICLE = new StaticTexture("assets/textures/particle/smoke.png"),
 
         /** USER INTERFACE **/
         CONTAINER = new StaticTexture("assets/textures/ui/inventory/container.png"),
