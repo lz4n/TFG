@@ -58,15 +58,6 @@ public class Ticking implements Tickable {
         Ticking.FORCE_TICKABLE_OBJETS.remove(this);
     }
 
-    /**
-     * Elimina el objeto de las listas de tickable objects, haciendo que ya no se procese.
-     * @param tickable Objeto tickable que se va a eliminar.
-     */
-    public static void removeTicking(Tickable tickable) {
-        Ticking.TICKABLE_OBJETS.remove(tickable);
-        Ticking.FORCE_TICKABLE_OBJETS.remove(tickable);
-    }
-
     @Override
     public void onTick(long deltaTime) {}
 

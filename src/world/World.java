@@ -9,7 +9,6 @@ import world.location.Location;
 import world.particle.CloudParticle;
 import world.particle.Particle;
 import world.terrain.Terrain;
-import world.tick.Tickable;
 import world.tick.Ticking;
 import world.worldBuilder.Biome;
 import world.worldBuilder.WorldBuilder;
@@ -256,10 +255,6 @@ public class World extends Ticking implements Serializable {
                 featureType.getMesh().addVertex(feature.getLocation().getX(), feature.getLocation().getY(), feature.getSize().x(), feature.getSize().y(), feature.getVariant());
             }
 
-            if (feature instanceof Tickable tickable) {
-                new Ticking(tickable, false);
-            }
-
             this.featuresCount++;
             return feature;
         } catch (ArrayIndexOutOfBoundsException ignore) {
@@ -293,10 +288,6 @@ public class World extends Ticking implements Serializable {
 
             //Actualizamos el mesh.
             feature.getFeatureType().updateMesh();
-
-            if (feature instanceof Tickable tickable) {
-                Ticking.removeTicking(tickable);
-            }
 
             this.featuresCount--;
         } catch (ArrayIndexOutOfBoundsException ignore) {

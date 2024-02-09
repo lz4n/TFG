@@ -1,15 +1,12 @@
 package world.feature.building;
 
-import main.Main;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import utils.render.scene.Scene;
 import utils.render.scene.WorldScene;
 import world.location.Location;
-import world.particle.SmokeParticle;
-import world.tick.Tickable;
 
-public class House extends Building implements Tickable {
+public class House extends Building {
 
     public House(Location location, int variant) {
         super(location, House.getHouseSize(variant +1), FeatureType.HOUSE, variant);
@@ -21,13 +18,6 @@ public class House extends Building implements Tickable {
             case 2, 3, 4, 5, 6, 7 -> new Vector2i(2, 2);
             default -> new Vector2i(1, 1);
         };
-    }
-
-    @Override
-    public void onTick(long deltaTime) {
-        if (this.getVariant() +1 >= 3 && this.getVariant() +1 <= 5 && Main.RANDOM.nextFloat() > 0.97) {
-            Main.world.spawnParticle(new SmokeParticle(this.getLocation().add(0.4f, 0.8f)));
-        }
     }
 
     @Override
