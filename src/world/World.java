@@ -9,6 +9,7 @@ import world.location.Location;
 import world.particle.CloudParticle;
 import world.particle.Particle;
 import world.terrain.Terrain;
+import world.tick.Tickable;
 import world.tick.Ticking;
 import world.worldBuilder.Biome;
 import world.worldBuilder.WorldBuilder;
@@ -237,7 +238,7 @@ public class World extends Ticking implements Serializable {
                     if (feature instanceof Building) {
                         Terrain terrain = this.getTerrain(posX +x, posY +y);
                         this.setTerrain(posX + x, posY + y, new Terrain(
-                                Terrain.TerrainType.PATH,
+                                (terrain.getType().equals(Terrain.TerrainType.STONE) || terrain.getType().equals(Terrain.TerrainType.SNOW) || terrain.getType().equals(Terrain.TerrainType.STONE_TILE))? Terrain.TerrainType.STONE_TILE : Terrain.TerrainType.PATH,
                                 terrain.getBiome(),
                                 terrain.getContinentalityNoise(),
                                 terrain.getWeirdnessNoise(),
@@ -253,6 +254,10 @@ public class World extends Ticking implements Serializable {
                 featureType.updateMesh();
             } else {
                 featureType.getMesh().addVertex(feature.getLocation().getX(), feature.getLocation().getY(), feature.getSize().x(), feature.getSize().y(), feature.getVariant());
+            }
+
+            if (feature instanceof Tickable tickable) {
+                new Ticking(tickable, false);
             }
 
             this.featuresCount++;
@@ -288,6 +293,10 @@ public class World extends Ticking implements Serializable {
 
             //Actualizamos el mesh.
             feature.getFeatureType().updateMesh();
+
+            if (feature instanceof Tickable tickable) {
+                Ticking.removeTicking(tickable);
+            }
 
             this.featuresCount--;
         } catch (ArrayIndexOutOfBoundsException ignore) {
