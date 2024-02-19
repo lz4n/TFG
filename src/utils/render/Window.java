@@ -7,10 +7,7 @@ import main.Main;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.lwjgl.BufferUtils;
-import org.lwjgl.glfw.Callbacks;
-import org.lwjgl.glfw.GLFW;
-import org.lwjgl.glfw.GLFWErrorCallback;
-import org.lwjgl.glfw.GLFWImage;
+import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryUtil;
 import ui.container.Inventory;
@@ -56,6 +53,8 @@ public class Window {
      * Escena actual de la ventana.
      */
     public static Scene currentScene = new WorldScene();
+
+    private static boolean fullscreen = false;
 
     /**
      * Inicia la ventana: inicializa sus componentes y genera el loop principal. Cuando el loop termina libera memoria
@@ -271,5 +270,19 @@ public class Window {
      */
     public static int getHeight() {
         return Window.getDimensions().y();
+    }
+
+    public static void toggleFullscreen() {
+        Window.fullscreen = !Window.fullscreen;
+
+        long monitor;
+        monitor = GLFW.glfwGetWindowMonitor(Window.window);
+        if (monitor == MemoryUtil.NULL) {
+            monitor = GLFW.glfwGetPrimaryMonitor();
+        }
+
+        System.out.println(monitor);
+        GLFWVidMode vidmode = GLFW.glfwGetVideoMode(monitor);
+        GLFW.glfwSetWindowMonitor(Window.window, Window.fullscreen?monitor:MemoryUtil.NULL, 0, 0, vidmode.width(), vidmode.height(), vidmode.refreshRate());
     }
 }

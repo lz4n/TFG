@@ -1,6 +1,7 @@
 package main;
 
 import utils.Logger;
+import utils.Settings;
 import utils.player.Player;
 import utils.render.Window;
 import world.World;
@@ -84,6 +85,7 @@ public class Main {
             Logger.sendMessage("No se ha podido leer el mundo: %s", Logger.LogMessageType.WARNING, exception.getMessage());
         }
 
+        Settings.load();
         Window.run();
     }
 

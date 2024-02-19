@@ -98,6 +98,9 @@ public class KeyListener {
                                 inventory.goToTab(9);
                             }
                             break;
+                        case TOGGLE_FULLSCREEN:
+                            Window.toggleFullscreen();
+                            break;
                     }
                 }
             }
