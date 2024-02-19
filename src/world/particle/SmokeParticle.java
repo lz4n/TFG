@@ -8,7 +8,7 @@ import world.location.Location;
 import world.tick.ForceTicking;
 
 /**
- * Partícula que se genera cuando se utiliza el bulldozer en algún elemento del juego.
+ * Partícula que simula humo.
  */
 @ForceTicking
 public class SmokeParticle extends AbstractPhysicsParticle {
@@ -18,7 +18,7 @@ public class SmokeParticle extends AbstractPhysicsParticle {
      */
     public SmokeParticle(Location location) {
         super(location,
-                new Vector2f(Main.RANDOM.nextFloat(-0.0001f, 0.001f), Main.RANDOM.nextFloat(0.01f, 0.08f)),
+                new Vector2f(Main.RANDOM.nextFloat(-0.0001f, 0.001f), Main.RANDOM.nextFloat(0.01f, 0.08f)), //La partícula se meueve para arriba.
                 0f,
                 -0.07f,
                 0f);
@@ -41,6 +41,7 @@ public class SmokeParticle extends AbstractPhysicsParticle {
     public void onTick(long deltaTime) {
         super.onTick(deltaTime);
 
+        //Gira lentamente sobre si misma.
         super.rotation += 0.001f;
         if (super.rotation > 360) {
             super.rotation = 0;

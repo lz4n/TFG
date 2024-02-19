@@ -27,6 +27,7 @@ import world.entity.Duck;
 import world.tick.Ticking;
 
 import javax.imageio.ImageIO;
+import javax.swing.plaf.PanelUI;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.io.IOException;
@@ -61,7 +62,7 @@ public class Window {
      * y desactiva GLSL.
      */
     public static void run() {
-        init();
+        Window.init();
         currentScene.init();
         Main.PLAYER.init();
 
@@ -118,10 +119,12 @@ public class Window {
         GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 3);
 
         //Creamos la ventana
-        window = GLFW.glfwCreateWindow(Window.WIDTH, Window.HEIGHT, "Test OpenGL", MemoryUtil.NULL, MemoryUtil.NULL);
+        window = GLFW.glfwCreateWindow(Window.WIDTH, Window.HEIGHT, "El pato juego", MemoryUtil.NULL, MemoryUtil.NULL);
         if (window == MemoryUtil.NULL) {
             throw new RuntimeException("No se ha podido crear la ventana.");
         }
+
+        GLFW.glfwMaximizeWindow(window);
 
         //Generamos los eventos de teclado, ratón y pantalla
         GLFW.glfwSetCursorPosCallback(window, MouseListener::mousePosCallback);
@@ -170,8 +173,8 @@ public class Window {
             GLFWImage iconGI = GLFWImage.create().set(bufferedImage.getWidth(), bufferedImage.getHeight(), appIconBuffer);
             glfwImage.put(0, iconGI);
             GLFW.glfwSetWindowIcon(window, glfwImage);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (IOException exception) {
+            throw new RuntimeException(exception);
         }
     }
 
@@ -194,7 +197,6 @@ public class Window {
                 }
                 Ticking.tickForced(dTime);
                 Window.currentScene.update(dTime);
-                GLFW.glfwSetWindowTitle(window, "EL PATO JUEGO");
             }
 
             if (!Main.PLAYER.isPaused()) {

@@ -97,7 +97,7 @@ public class Camera {
      * @param mousePosition Posición del ratón en la pantalla.
      * @return Posición del ratón in-game.
      *
-     * @see MouseListener#inGameLocation
+     * @see MouseListener#getInGameLocation()
      */
     public Location getInGameLocationMousePosition(Vector2f mousePosition) {
         //Calculamos las coordenadas normalizadas del cursor en pantalla (de -1 a 1)

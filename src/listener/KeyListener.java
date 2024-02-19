@@ -4,6 +4,7 @@ import main.Main;
 import org.lwjgl.glfw.GLFW;
 import ui.container.Inventory;
 import utils.KeyBind;
+import utils.render.Window;
 
 /**
  * Listener para los eventos de teclado. Rastrea el estado de cada tecla y lanza un evento cuando se presiona una.

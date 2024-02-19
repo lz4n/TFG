@@ -3,6 +3,9 @@ package utils.player.inventory;
 import utils.render.texture.Texture;
 import world.feature.Feature;
 
+/**
+ * Representa un item que sirve para colocar una feature.
+ */
 public class FeatureItem extends Item {
     /**
      * Tipo de feature que colocará el jugador cuando seleccione ese slot.
