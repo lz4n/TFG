@@ -9,10 +9,12 @@ import org.joml.Vector2i;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.GL;
+import org.lwjgl.opengl.GL11;
 import org.lwjgl.system.MemoryUtil;
 import ui.container.Inventory;
 import utils.KeyBind;
 import utils.Logger;
+import utils.Setting;
 import utils.Time;
 import utils.render.scene.Scene;
 import utils.render.scene.WorldScene;
@@ -24,7 +26,6 @@ import world.entity.Duck;
 import world.tick.Ticking;
 
 import javax.imageio.ImageIO;
-import javax.swing.plaf.PanelUI;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.io.IOException;
@@ -54,7 +55,6 @@ public class Window {
      */
     public static Scene currentScene = new WorldScene();
 
-    private static boolean fullscreen = false;
 
     /**
      * Inicia la ventana: inicializa sus componentes y genera el loop principal. Cuando el loop termina libera memoria
@@ -78,6 +78,9 @@ public class Window {
         }
 
         Window.loop();
+
+        //Guardamos las opciones
+        Setting.save();
 
         //Liberamos memoria
         Callbacks.glfwFreeCallbacks(window);
@@ -118,9 +121,13 @@ public class Window {
         GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 3);
 
         //Creamos la ventana
+        System.out.println(Setting.FULLSCREEN.getAsBoolean());
         window = GLFW.glfwCreateWindow(Window.WIDTH, Window.HEIGHT, "El pato juego", MemoryUtil.NULL, MemoryUtil.NULL);
         if (window == MemoryUtil.NULL) {
             throw new RuntimeException("No se ha podido crear la ventana.");
+        }
+        if (Setting.FULLSCREEN.getAsBoolean()) {
+            Window.setFullScreen(true);
         }
 
         GLFW.glfwMaximizeWindow(window);
@@ -272,17 +279,20 @@ public class Window {
         return Window.getDimensions().y();
     }
 
-    public static void toggleFullscreen() {
-        Window.fullscreen = !Window.fullscreen;
-
+    public static void setFullScreen(boolean fullScreen) {
         long monitor;
         monitor = GLFW.glfwGetWindowMonitor(Window.window);
         if (monitor == MemoryUtil.NULL) {
             monitor = GLFW.glfwGetPrimaryMonitor();
         }
 
-        System.out.println(monitor);
         GLFWVidMode vidmode = GLFW.glfwGetVideoMode(monitor);
-        GLFW.glfwSetWindowMonitor(Window.window, Window.fullscreen?monitor:MemoryUtil.NULL, 0, 0, vidmode.width(), vidmode.height(), vidmode.refreshRate());
+        GLFW.glfwSetWindowMonitor(Window.window, fullScreen?monitor:MemoryUtil.NULL, 0, 0, vidmode.width(), vidmode.height(), vidmode.refreshRate());
+    }
+
+    public static void toggleFullscreen() {
+        boolean fullScreen = !Setting.FULLSCREEN.getAsBoolean();
+        setFullScreen(fullScreen);
+        Setting.FULLSCREEN.setSetting(fullScreen);
     }
 }
