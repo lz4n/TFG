@@ -19,6 +19,10 @@ public class Item {
         this.TEXTURE = texture;
     }
 
+    /**
+     * @return Textura
+     *
+     */
     public Texture getTexture() {
         return this.TEXTURE;
     }

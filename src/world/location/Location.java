@@ -49,6 +49,15 @@ public class Location implements Cloneable, Serializable {
     }
 
     /**
+     * Calcula la distancia entre el punto y otro que se le pasa cómo parámetro, utilizando el Teorema de Pitágoras.
+     * @param location Otro punto desde el cuál se quiere obtener la distancia.
+     * @return Distancia entre ambos puntos.
+     */
+    public double getDistance(Location location) {
+        return Math.sqrt(Math.pow(this.getX() - location.getX(), 2) + Math.pow(this.getY() - location.getY(), 2));
+    }
+
+    /**
      * Añade un valor a los componentes de la posición.
      * @param x Adición en el eje X.
      * @param y Adición en el eje Y.

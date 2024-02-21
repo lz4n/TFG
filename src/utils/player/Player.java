@@ -58,8 +58,11 @@ public class Player {
                         new TerrainItem(Textures.SAND, Terrain.TerrainType.SAND),
                         new TerrainItem(Textures.GRAVEL, Terrain.TerrainType.GRAVEL),
                         new TerrainItem(Textures.STONE, Terrain.TerrainType.STONE),
-                        new TerrainItem(Textures.SNOW, Terrain.TerrainType.SNOW),
-                        new TerrainItem(Textures.PATH, Terrain.TerrainType.PATH)
+                        new TerrainItem(Textures.SNOW, Terrain.TerrainType.SNOW)
+                ),
+                Arrays.asList(
+                        new TerrainItem(Textures.PATH, Terrain.TerrainType.PATH),
+                        new TerrainItem(Textures.STONE_TILE, Terrain.TerrainType.STONE_TILE)
                 )
         ));
         this.put(Player.ZONING_TAB, Arrays.asList(
