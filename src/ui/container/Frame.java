@@ -1,5 +1,7 @@
 package ui.container;
 
+import org.lwjgl.glfw.GLFW;
+import org.lwjgl.opengl.GL11;
 import ui.widget.Widget;
 import ui.widget.widgetUtils.CustomDrawWidget;
 import utils.BoundingBox;
@@ -85,6 +87,7 @@ public class Frame extends Container {
                 this.nameTexture.getSize().x(),
                 this.nameTexture.getSize().y());
 
+        GL11.glScissor((int) this.posX, (int) this.posY, (int) Frame.BASE_BOUNDING_BOX.getWidth(), (int) Frame.BASE_BOUNDING_BOX.getHeight());
         //Dibujamos los widgets.
         super.widgets.forEach(widget -> {
             float widgetPosX = Container.pixelSizeInScreen *(widget.getPosX() +this.posX), //Las coordenadas del frame son relativas, cuyo origen está en la esquina superior izquierda del frame.
