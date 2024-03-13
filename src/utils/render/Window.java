@@ -16,6 +16,7 @@ import utils.KeyBind;
 import utils.Logger;
 import utils.Setting;
 import utils.Time;
+import utils.render.mesh.SingleObjectMesh;
 import utils.render.scene.Scene;
 import utils.render.scene.WorldScene;
 import utils.render.texture.AnimatedTexture;
@@ -121,13 +122,9 @@ public class Window {
         GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 3);
 
         //Creamos la ventana
-        System.out.println(Setting.FULLSCREEN.getAsBoolean());
         window = GLFW.glfwCreateWindow(Window.WIDTH, Window.HEIGHT, "El pato juego", MemoryUtil.NULL, MemoryUtil.NULL);
         if (window == MemoryUtil.NULL) {
             throw new RuntimeException("No se ha podido crear la ventana.");
-        }
-        if (Setting.FULLSCREEN.getAsBoolean()) {
-            Window.setFullScreen(true);
         }
 
         GLFW.glfwMaximizeWindow(window);
@@ -182,6 +179,12 @@ public class Window {
         } catch (IOException exception) {
             throw new RuntimeException(exception);
         }
+
+        //Si la opción FULLSCREEN está en true lo ponemos en pantalla completa.
+        if (Setting.FULLSCREEN.getAsBoolean()) {
+            Window.setFullScreen(true);
+        }
+
     }
 
     /**
@@ -279,20 +282,26 @@ public class Window {
         return Window.getDimensions().y();
     }
 
+    /**
+     * Pone o quita la ventana en pantalla completa. Si deja de estar en pantalla completa se maximizará la pantalla.
+     * @param fullScreen Si se va a poner a pantalla completa o no.
+     */
     public static void setFullScreen(boolean fullScreen) {
-        long monitor;
-        monitor = GLFW.glfwGetWindowMonitor(Window.window);
-        if (monitor == MemoryUtil.NULL) {
-            monitor = GLFW.glfwGetPrimaryMonitor();
-        }
-
+        long monitor = GLFW.glfwGetPrimaryMonitor();
         GLFWVidMode vidmode = GLFW.glfwGetVideoMode(monitor);
         GLFW.glfwSetWindowMonitor(Window.window, fullScreen?monitor:MemoryUtil.NULL, 0, 0, vidmode.width(), vidmode.height(), vidmode.refreshRate());
+
+        if (!fullScreen) {
+            GLFW.glfwMaximizeWindow(Window.window);
+        }
     }
 
+    /**
+     * Alterna la pantalla completa.
+     */
     public static void toggleFullscreen() {
         boolean fullScreen = !Setting.FULLSCREEN.getAsBoolean();
         setFullScreen(fullScreen);
-        Setting.FULLSCREEN.setSetting(fullScreen);
+        Setting.FULLSCREEN.setValue(fullScreen);
     }
 }
