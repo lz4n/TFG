@@ -7,6 +7,7 @@ import ui.widget.widgetUtils.CustomDrawWidget;
 import utils.BoundingBox;
 import utils.render.GameFont;
 import utils.render.Shader;
+import utils.render.Window;
 import utils.render.texture.Graphics2dTexture;
 import utils.render.texture.Textures;
 
@@ -87,7 +88,24 @@ public class Frame extends Container {
                 this.nameTexture.getSize().x(),
                 this.nameTexture.getSize().y());
 
-        GL11.glScissor((int) this.posX, (int) this.posY, (int) Frame.BASE_BOUNDING_BOX.getWidth(), (int) Frame.BASE_BOUNDING_BOX.getHeight());
+        /*
+          Activamos el Scissor. El Scissor sirve para definir un rectángulo, y lo que se vaya a dibujar fuera del rectangulo
+          no se dibuje. En este caso, solo se dibujarán los widgets que estén dentro del Frame, con 8 pixeles de márgen a cada lado (más el titulo)
+         */
+        GL11.glEnable(GL11.GL_SCISSOR_TEST);
+
+        //Obtenemos la escala respecto al tamaño inicial de la ventana, ya que al scissor no le llegan los cambios en las dimensiones de la ventana.
+        float scaleX = (float) Window.getWidth() /Window.getInitialWidth(),
+                scaleY = (float) Window.getHeight() /Window.getInitialHeight();
+
+        //Calculamos la esquina inferior izquierda, y el tamaño del Scissor.
+        GL11.glScissor(
+                (int) ((this.posX +8) *scaleX *Container.pixelSizeInScreen),
+                (int) (Window.getHeight() - ((Frame.BASE_BOUNDING_BOX.getHeight() +this.posY -8) *Container.pixelSizeInScreen) *scaleY),
+                (int) ((Frame.BASE_BOUNDING_BOX.getWidth() -16) *scaleX *Container.pixelSizeInScreen),
+                (int) (((Frame.BASE_BOUNDING_BOX.getHeight() -16) *Container.pixelSizeInScreen -nameTexture.getSize().y()) *scaleY)
+        );
+
         //Dibujamos los widgets.
         super.widgets.forEach(widget -> {
             float widgetPosX = Container.pixelSizeInScreen *(widget.getPosX() +this.posX), //Las coordenadas del frame son relativas, cuyo origen está en la esquina superior izquierda del frame.
@@ -101,6 +119,9 @@ public class Frame extends Container {
                 customDrawWidget.draw(Container.pixelSizeInScreen, Container.pixelSizeInScreen *(widget.getPosX() +this.posX), Container.pixelSizeInScreen *(widget.getPosY() +this.posY));
             }
         });
+
+        //Desactivamos el Scissor
+        GL11.glDisable(GL11.GL_SCISSOR_TEST);
     }
 
     @Override

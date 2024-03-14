@@ -47,6 +47,11 @@ public class Window {
     private final static int WIDTH = 1920, HEIGHT = 1080;
 
     /**
+     * Tamaño inicial de la ventana.
+     */
+    private static int initialWidth, initialHeight;
+
+    /**
      * Identificador numérico de la ventana.
      */
     public static long window;
@@ -77,6 +82,9 @@ public class Window {
                 }
             } catch (IllegalAccessException | ClassCastException ignore) {}
         }
+
+        Window.initialWidth = Window.getWidth();
+        Window.initialHeight = Window.getHeight();
 
         Window.loop();
 
@@ -280,6 +288,20 @@ public class Window {
      */
     public static int getHeight() {
         return Window.getDimensions().y();
+    }
+
+    /**
+     * @return Ancho inicial de la ventana.
+     */
+    public static int getInitialWidth() {
+        return Window.initialWidth;
+    }
+
+    /**
+     * @return Alto inicial de la ventana.
+     */
+    public static int getInitialHeight() {
+        return Window.initialHeight;
     }
 
     /**
