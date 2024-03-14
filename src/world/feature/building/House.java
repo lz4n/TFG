@@ -5,14 +5,23 @@ import org.joml.Vector2f;
 import org.joml.Vector2i;
 import utils.render.scene.Scene;
 import utils.render.scene.WorldScene;
+import world.entity.Duck;
 import world.location.Location;
 import world.particle.SmokeParticle;
 import world.tick.Tickable;
 
 public class House extends Building implements Tickable {
-
     public House(Location location, int variant) {
         super(location, House.getHouseSize(variant +1), FeatureType.HOUSE, variant);
+        switch (variant) {
+            case 1 -> this.inhabitants = new Duck[3];
+            case 2 -> this.inhabitants = new Duck[6];
+            case 3 -> this.inhabitants = new Duck[9];
+            case 4 -> this.inhabitants = new Duck[12];
+            case 5 -> this.inhabitants = new Duck[15];
+            case 6 -> this.inhabitants = new Duck[21];
+            case 7 -> this.inhabitants = new Duck[25];
+        }
     }
 
     private static Vector2i getHouseSize(int level) {
@@ -22,6 +31,8 @@ public class House extends Building implements Tickable {
             default -> new Vector2i(1, 1);
         };
     }
+
+
 
     @Override
     public void onTick(long deltaTime) {
@@ -43,4 +54,6 @@ public class House extends Building implements Tickable {
             default -> super.getRealSize();
         };
     }
+
+
 }

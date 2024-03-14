@@ -1,12 +1,15 @@
 package npc;
 
 import org.joml.Vector2d;
+import org.joml.Vector2i;
 import world.World;
+import world.location.Location;
 import world.terrain.Terrain;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Collections;
+import java.util.Locale;
 
 public class Node {
     private int x, y;
@@ -22,6 +25,10 @@ public class Node {
     -pathWalk es la distancia que se tiene en cuenta desde el nodo inicio hasta el punto
     por el que irá el NPC. Así como hace GoogleMaps.
     */
+
+    public Node(Location location) {
+        this((int) location.getX(), (int) location.getY());
+    }
 
     public Node(int x, int y) {
         this.x = x;

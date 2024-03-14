@@ -70,6 +70,15 @@ public class Location implements Cloneable, Serializable {
     }
 
     /**
+     * Añade un valor total tanto al eje x como y
+     * @param amount cantidad de distancia.
+     * @return <code>this</code>.
+     */
+    public Location add(float amount) {
+        return this.add(amount, amount);
+    }
+
+    /**
      * Multiplica los componentes por un valor.
      * @param factor Valor por el cuál se quiere multiplicar.
      * @return <code>this</code>.
@@ -126,6 +135,13 @@ public class Location implements Cloneable, Serializable {
      */
     public Feature getFeature() {
         return Main.world.getFeature((int) this.getX(), (int) this.getY());
+    }
+
+    public Location randomLocation(int radius) {
+        return this.clone()
+                .add(Main.RANDOM.nextInt(radius));
+
+
     }
 
     @Override
