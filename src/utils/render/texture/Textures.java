@@ -94,6 +94,8 @@ public final class Textures {
         X5_GAME_ICON = new StaticTexture("assets/textures/ui/inventory/button/game_speed_button/x5_game_icon.png"),
         BULLDOZER_BUTTON_ICON = new StaticTexture("assets/textures/ui/inventory/button/bulldozer_button/bulldozer_icon.png"),
         BULLDOZER_ICON = new StaticTexture("assets/textures/ui/icon/bulldozer_icon.png"),
-        FRAME_CONTAINER = new StaticTexture("assets/textures/ui/inventory/frame/frame.png");
+        FRAME_CONTAINER = new StaticTexture("assets/textures/ui/inventory/frame/frame.png"),
+        FRAME_SCROLL_BAR_RAIL = new StaticTexture("assets/textures/ui/inventory/frame/frame_scroll_bar_rail.png"),
+        FRAME_SCROLL_BAR_SLIDER = new StaticTexture("assets/textures/ui/inventory/frame/frame_scroll_bar_slider.png");
 
 }

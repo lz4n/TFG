@@ -11,6 +11,7 @@ import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.system.MemoryUtil;
+import ui.container.Frame;
 import ui.container.Inventory;
 import utils.KeyBind;
 import utils.Logger;
@@ -244,6 +245,16 @@ public class Window {
 
                     if (KeyListener.isKeyPressed(GLFW.GLFW_KEY_LEFT)) {
                         inventory.moveScroll((KeyListener.isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT) ? 2 : 1) * .7f);
+                    }
+                }
+            } else {
+                if (currentScene instanceof WorldScene && Main.PLAYER.getContainer() instanceof Frame frame) {
+                    if (KeyListener.isKeyPressed(GLFW.GLFW_KEY_DOWN)) {
+                        frame.moveScroll((KeyListener.isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT) ? 2 : 1) * -.7f);
+                    }
+
+                    if (KeyListener.isKeyPressed(GLFW.GLFW_KEY_UP)) {
+                        frame.moveScroll((KeyListener.isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT) ? 2 : 1) * .7f);
                     }
                 }
             }

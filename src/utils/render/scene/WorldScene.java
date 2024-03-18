@@ -236,7 +236,7 @@ public class WorldScene implements Scene {
         }
 
         //Dibujamos el selector del ratón
-        if (!Main.PLAYER.isPaused() && MouseListener.getInGameLocation() != null && !MouseListener.getInGameLocation().isOutOfTheWorld() && !Main.PLAYER.isMouseOnInventory()) {
+        if (!Main.PLAYER.isHidingUi() && !Main.PLAYER.isPaused() && MouseListener.getInGameLocation() != null && !MouseListener.getInGameLocation().isOutOfTheWorld() && !Main.PLAYER.isMouseOnInventory()) {
             Feature selectedFeature;
             if ((selectedFeature = MouseListener.getInGameLocation().getFeature()) != null) {
                 for (int x = 1; x <= selectedFeature.getSize().x(); x++) for (int y = 1; y <= selectedFeature.getSize().y(); y++) {

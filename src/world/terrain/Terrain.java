@@ -95,6 +95,10 @@ public class Terrain implements Serializable {
         return RIVERS_NOISE;
     }
 
+    public boolean isPassable() {
+        return true;
+    }
+
     /**
      * Son los diferentes materiales que componen el terreno del mundo.
      */

@@ -3,9 +3,11 @@ package listener;
 import main.Main;
 import org.joml.Vector2f;
 import org.lwjgl.glfw.GLFW;
+import ui.container.Frame;
 import utils.KeyBind;
 import utils.render.Window;
 import utils.render.scene.WorldScene;
+import world.World;
 import world.location.Location;
 
 /**
@@ -114,6 +116,14 @@ public class MouseListener {
                 Main.PLAYER.getCamera().zoomIn();
             } else if (offsetY <= -1) {
                 Main.PLAYER.getCamera().zoomOut();
+            }
+        } else {
+            if (Window.currentScene instanceof WorldScene && Main.PLAYER.getContainer() instanceof Frame frame) {
+                if (offsetY <= -1) {
+                    frame.moveScroll((KeyListener.isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT) ? 2 : 1) * -3.5f);
+                } else if (offsetY >= 1) {
+                    frame.moveScroll((KeyListener.isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT) ? 2 : 1) * 3.5f);
+                }
             }
         }
     }

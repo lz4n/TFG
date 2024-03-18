@@ -107,6 +107,11 @@ public class Player {
     private final Frame GAME_MENU = new Frame("Menu");
 
     /**
+     * Menú de configuración.
+     */
+    private final Frame CONFIG_MENU = new Frame("Config");
+
+    /**
      * Mapa que almacena los slots correspondientes a cada item del inventario.
      */
     private final HashMap<Item, SlotWidget> MENU_ITEMS_BY_SLOT = new HashMap<>();
@@ -213,12 +218,16 @@ public class Player {
         this.INVENTORY.setCurrentTab(Player.GENERAL_TAB);
 
         //** MENU DE JUEGO **//
-        FrameButtonWidget returnGameButton = new FrameButtonWidget(4, 24, "Volver");
+        FrameButtonWidget returnGameButton = new FrameButtonWidget(8, 24, "Volver");
         returnGameButton.setOnClickEvent(this::openInventory);
         this.GAME_MENU.addWidget(returnGameButton);
-        this.GAME_MENU.addWidget(new FrameButtonWidget(4, 56, "Abrir mundo"));
-        this.GAME_MENU.addWidget(new FrameButtonWidget(4, 88, "Configuracion"));
-        FrameButtonWidget leaveGameButton = new FrameButtonWidget(4, 120, "Guardar y salir");
+        this.GAME_MENU.addWidget(new FrameButtonWidget(8, 56, "Abrir mundo"));
+
+        FrameButtonWidget configButton = new FrameButtonWidget(8, 88, "Configuracion");
+        configButton.setOnClickEvent(this::openConfig);
+        this.GAME_MENU.addWidget(configButton);
+
+        FrameButtonWidget leaveGameButton = new FrameButtonWidget(8, 120, "Guardar y salir");
         leaveGameButton.setOnClickEvent(() -> {
             File worldFile = new File(Main.installDirectory, "worlds/world.dat");
             worldFile.getParentFile().mkdirs();
@@ -231,6 +240,12 @@ public class Player {
             GLFW.glfwSetWindowShouldClose(Window.window, true);
         });
         this.GAME_MENU.addWidget(leaveGameButton);
+
+        //** MENU DE CONFIGURACIÓN **//
+        for (int i = 0; i < 10; i++) {
+            FrameButtonWidget a = new FrameButtonWidget(6, 24 + 32*i, "test " + i);
+            this.CONFIG_MENU.addWidget(a);
+        }
     }
 
     /**
@@ -439,6 +454,15 @@ public class Player {
      */
     public void openMenu() {
         this.container = this.GAME_MENU;
+        this.isPaused = true;
+        this.container.onResizeWindowEvent(Window.getWidth(), Window.getHeight());
+    }
+
+    /**
+     * Cierra el contenedor anterior y abre el menú de configuración.
+     */
+    public void openConfig() {
+        this.container = this.CONFIG_MENU;
         this.isPaused = true;
         this.container.onResizeWindowEvent(Window.getWidth(), Window.getHeight());
     }
