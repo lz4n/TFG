@@ -7,7 +7,7 @@ Shader de fragmentos común para los shaders WORLD y ENTITY. Dibuja la textura a
 /**
 Cantidad de samplers de texturas.
 */
-const int SAMPLERS_COUNT = 7;
+const int SAMPLERS_COUNT = 10;
 
 /**
 Atributos de los objetos a renderizar.
@@ -71,7 +71,7 @@ vec4 calculateColor(sampler2D textureSampler, vec2 uvCoords) {
     //Si está en pausa se aplica un filtro gris.
     if (uIsPaused == 1) {
         float gray = (color.r + color.g + color.b) / 3.0;
-        color = mix(color, vec3(gray), 0.4);
+        color = mix(color, vec3(gray), 0.8);
     }
 
     return vec4(color, fragmentColor.a);

@@ -10,6 +10,7 @@ Especifica los layout de la hubicación, coordenadas UV y textura del terreno a 
 layout (location=0) in vec2 position;
 layout (location=1) in vec2 uvCoords;
 layout (location=2) in vec2 layoutTextureUnit;
+layout (location=3) in vec2 flip;
 
 /**
 Matrices de proyección y vista de la cámara.
@@ -47,6 +48,14 @@ void main() {
         textureUnit = int(layoutTextureUnit.x);
     } else {
         textureUnit = customTextureUnit;
+    }
+
+    if (int(flip.x) == 1) {
+        // Flip horizontal: reflejamos la textura horizontalmente
+        vec2 flippedTexCoord = vec2(1.0 - uvCoords.x, uvCoords.y);
+
+        // Enviamos las coordenadas de textura al fragment shader
+        fragmentUVCoords = flippedTexCoord;
     }
 
     gl_Position = uProjection * uView * vec4(position, 0, 1.0);
