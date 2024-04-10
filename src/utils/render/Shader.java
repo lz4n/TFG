@@ -34,7 +34,12 @@ public enum Shader {
     /**
      * Shader utilizado para renderizar objetos sobre la pantalla. La posición de estos objetos siempre será la misma, sin importar la posición de la cámara.
      */
-    HUD("assets/shaders/hud", true);
+    HUD("assets/shaders/hud", true),
+
+    /**
+     * Shader utilizado para renderizar la caja de las  tooltips.
+     */
+    TOOLTIP("assets/shaders/tooltip", true);
 
     /**
      * Indica si el shader puede instanciar texturas.
@@ -177,6 +182,19 @@ public enum Shader {
     public void upload3f(String variableName, float floatValue1, float floatValue2, float floatValue3) {
         GL20.glUniform3f(GL20.glGetUniformLocation(this.shaderProgramID, variableName), floatValue1, floatValue2, floatValue3);
     }
+
+    /**
+     * Envía un vector tetradimensional de flotantes al shader.
+     * @param variableName Nombre de la variable en el shader (declarada con <code>uniform</code> en el archivo <code>.glsl</code>).
+     * @param floatValue1 Primer componente del vector.
+     * @param floatValue2 Segundo componente del vector.
+     * @param floatValue3 Tercer componente del vector.
+     * @param floatValue4 Cuarto componente del vector.
+     */
+    public void upload4f(String variableName, float floatValue1, float floatValue2, float floatValue3, float floatValue4) {
+        GL20.glUniform4f(GL20.glGetUniformLocation(this.shaderProgramID, variableName), floatValue1, floatValue2, floatValue3, floatValue4);
+    }
+
 
     /**
      * Envía un vector bidimensional de flotantes al shader.

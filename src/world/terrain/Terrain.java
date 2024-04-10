@@ -103,15 +103,16 @@ public class Terrain implements Serializable {
      * Son los diferentes materiales que componen el terreno del mundo.
      */
     public enum TerrainType implements Serializable {
-        WATER(Textures.WATER, false, false),
-        STONE_TILE(Textures.STONE_TILE, false, false),
-        PATH(Textures.PATH, true, true),
-        SAND(Textures.SAND, true, true),
-        GRAVEL(Textures.GRAVEL, true, true),
-        GRASS(Textures.GRASS, true, true),
-        STONE(Textures.STONE, true, true),
-        SNOW(Textures.SNOW, true, true);
+        WATER(Textures.WATER, false, false, false),
+        STONE_TILE(Textures.STONE_TILE, true, false, false),
+        PATH(Textures.PATH, true, true, true),
+        SAND(Textures.SAND, true, true, true),
+        GRAVEL(Textures.GRAVEL, true, true, true),
+        GRASS(Textures.GRASS, true, true, true),
+        STONE(Textures.STONE, true, true, true),
+        SNOW(Textures.SNOW, false, true, true);
 
+        private final boolean IS_BUILDABLE;
         private final boolean HAS_RANDOM_UV;
         private final boolean HAS_CONNECTED_TEXTURES;
 
@@ -131,7 +132,8 @@ public class Terrain implements Serializable {
          * @param hasRandomUV Determina si se van a randomizar las coordenadas UV del terreno.
          * @param hasConnectedTextures Determina si las texturas se van a conectar con la textura de otros terrenos.
          */
-        TerrainType(Texture texture, boolean hasRandomUV, boolean hasConnectedTextures) {
+        TerrainType(Texture texture, boolean isBuildable, boolean hasRandomUV, boolean hasConnectedTextures) {
+            this.IS_BUILDABLE = isBuildable;
             this.HAS_RANDOM_UV = hasRandomUV;
             this.HAS_CONNECTED_TEXTURES = hasConnectedTextures;
             this.mesh = this.createMesh();
@@ -169,6 +171,10 @@ public class Terrain implements Serializable {
             } catch (InterruptedException exception) {
                 Logger.sendMessage("Error encolando hilo de recalculado de terreno: %s.", Logger.LogMessageType.FATAL, exception.getMessage());
             }
+        }
+
+        public boolean isBuildable() {
+            return this.IS_BUILDABLE;
         }
 
         /**

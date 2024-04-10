@@ -5,6 +5,7 @@ import utils.Logger;
 import world.entity.Entity;
 import world.feature.*;
 import world.feature.building.Building;
+import world.feature.building.jobSite.Port;
 import world.location.Location;
 import world.particle.CloudParticle;
 import world.particle.Particle;
@@ -235,7 +236,7 @@ public class World extends Ticking implements Serializable {
             for (int x = 0; x < feature.getSize().x(); x++) {
                 for (int y = 0; y < feature.getSize().y(); y++) {
                     this.FEATURES[this.mapCoordinatesToIndex(posX + x, posY + y)] = feature;
-                    if (feature instanceof Building) {
+                    if ((feature instanceof Building) && !(feature instanceof Port)) {
                         Terrain terrain = this.getTerrain(posX +x, posY +y);
                         this.setTerrain(posX + x, posY + y, new Terrain(
                                 (terrain.getType().equals(Terrain.TerrainType.STONE) || terrain.getType().equals(Terrain.TerrainType.SNOW) || terrain.getType().equals(Terrain.TerrainType.STONE_TILE))? Terrain.TerrainType.STONE_TILE : Terrain.TerrainType.PATH,

@@ -101,6 +101,9 @@ public class KeyListener {
                         case TOGGLE_FULLSCREEN:
                             Window.toggleFullscreen();
                             break;
+                        case MAKE_SCREENSHOT:
+                            Window.createScreenshot();
+                            break;
                     }
                 }
             }

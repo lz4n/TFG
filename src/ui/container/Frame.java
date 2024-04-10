@@ -1,14 +1,18 @@
 package ui.container;
 
+import listener.MouseListener;
 import org.joml.Vector2f;
+import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import ui.widget.Widget;
 import ui.widget.widgetUtils.CustomDrawWidget;
+import ui.widget.widgetUtils.OnMouseDragEvent;
 import utils.BoundingBox;
 import utils.render.GameFont;
 import utils.render.Shader;
 import utils.render.Window;
 import utils.render.texture.Graphics2dTexture;
+import utils.render.texture.Texture;
 import utils.render.texture.Textures;
 
 import java.awt.*;
@@ -67,8 +71,11 @@ public class Frame extends Container {
     private Graphics2dTexture nameTexture;
 
     private boolean hasScrollbar = false;
-    private float scrollbarPos = 0;
+    private float sliderPos = 0;
     private float maxScrollbarPos = 0;
+    private BoundingBox scrollSliderBoundingBox = new BoundingBox(0, 0, 0, 0);
+    private boolean isSliderHovered = true;
+    private byte sliderClickTime = -1;
 
     /**
      * @param name Título del frame, que se mostrará en la parte superior del frame. No se puede modificar una vez creado.
@@ -92,14 +99,28 @@ public class Frame extends Container {
      */
     public void moveScroll(float amount) {
         if (this.hasScrollbar()) {
-            float originalScrollbarPos = this.scrollbarPos;
 
-            this.scrollbarPos += amount;
-            System.out.println(this.scrollbarPos);
-            if (this.scrollbarPos < -this.maxScrollbarPos || this.scrollbarPos >= 0) {
-                this.scrollbarPos = originalScrollbarPos;
+            float clampValue = Math.clamp(this.sliderPos +amount, -this.maxScrollbarPos, 0);
+            if (clampValue != this.sliderPos) {
+                this.sliderPos = clampValue;
+                if (sliderClickTime != -2) {
+                    this.sliderClickTime = 30;
+                }
             }
+
+            this.updateScrollbarSlider();
         }
+    }
+
+    private void updateScrollbarSlider() {
+        float sliderPosX = this.posX + Frame.SCROLL_BAR_RAIL_POS.x(),
+            sliderPosY = this.posY + Frame.SCROLL_BAR_RAIL_POS.y() - ((this.sliderPos /this.maxScrollbarPos) *(Frame.SCROLL_BAR_RAIL_SIZE.y() -Frame.SLIDER_HEIGHT));
+        this.scrollSliderBoundingBox = new BoundingBox(
+                sliderPosX,
+                sliderPosY,
+                sliderPosX +Frame.SCROLL_BAR_RAIL_SIZE.x(),
+                sliderPosY +Frame.SLIDER_HEIGHT
+        );
     }
 
     /**
@@ -137,12 +158,18 @@ public class Frame extends Container {
                     Frame.SCROLL_BAR_RAIL_SIZE.y() * Container.pixelSizeInScreen
             );
 
-            Textures.FRAME_SCROLL_BAR_SLIDER.draw(
+            Texture scrollbarSliderTexture = Textures.FRAME_SCROLL_BAR_SLIDER;
+            if (this.sliderClickTime > -1 || sliderClickTime == -2) {
+                if (this.sliderClickTime > -1) {
+                    this.sliderClickTime--;
+                }
+                scrollbarSliderTexture = Textures.CLICKED_FRAME_SCROLL_BAR_SLIDER;
+            } else if (this.isSliderHovered) {
+                scrollbarSliderTexture = Textures.HOVERED_FRAME_SCROLL_BAR_SLIDER;
+            }
+            scrollbarSliderTexture.draw(
                     Shader.HUD,
-                    (this.posX + Frame.SCROLL_BAR_RAIL_POS.x()) * Container.pixelSizeInScreen,
-                    (this.posY + Frame.SCROLL_BAR_RAIL_POS.y() - ((this.scrollbarPos /this.maxScrollbarPos) *(Frame.SCROLL_BAR_RAIL_SIZE.y() -Frame.SLIDER_HEIGHT))) * Container.pixelSizeInScreen,
-                    Frame.SCROLL_BAR_RAIL_SIZE.x() * Container.pixelSizeInScreen,
-                    Frame.SLIDER_HEIGHT * Container.pixelSizeInScreen
+                    this.scrollSliderBoundingBox.clone().multiply(Container.pixelSizeInScreen)
             );
         }
 
@@ -152,34 +179,40 @@ public class Frame extends Container {
          */
         GL11.glEnable(GL11.GL_SCISSOR_TEST);
 
-        //Obtenemos la escala respecto al tamaño inicial de la ventana, ya que al scissor no le llegan los cambios en las dimensiones de la ventana.
-        float scaleX = (float) Window.getWidth() /Window.getInitialWidth(),
-                scaleY = (float) Window.getHeight() /Window.getInitialHeight();
-
         //Calculamos la esquina inferior izquierda, y el tamaño del Scissor.
         GL11.glScissor(
-                (int) (this.posX *scaleX *Container.pixelSizeInScreen),
-                (int) (Window.getHeight() - ((Frame.BASE_BOUNDING_BOX.getHeight() +this.posY -8) *Container.pixelSizeInScreen) *scaleY),
-                (int) (Frame.BASE_BOUNDING_BOX.getWidth() *scaleX *Container.pixelSizeInScreen),
-                (int) (((Frame.BASE_BOUNDING_BOX.getHeight() -16) *Container.pixelSizeInScreen -nameTexture.getSize().y()) *scaleY)
+                (int) (this.posX *Container.pixelSizeInScreen),
+                (int) (Window.getHeight() - ((Frame.BASE_BOUNDING_BOX.getHeight() +this.posY -8) *Container.pixelSizeInScreen)),
+                (int) (Frame.BASE_BOUNDING_BOX.getWidth() *Container.pixelSizeInScreen),
+                (int) (((Frame.BASE_BOUNDING_BOX.getHeight() -16) *Container.pixelSizeInScreen -nameTexture.getSize().y()))
         );
 
         //Dibujamos los widgets.
         super.widgets.forEach(widget -> {
             float widgetPosX = Container.pixelSizeInScreen *(widget.getPosX() +this.posX), //Las coordenadas del frame son relativas, cuyo origen está en la esquina superior izquierda del frame.
-                    widgetPosY = Container.pixelSizeInScreen *(widget.getPosY() +this.posY +this.scrollbarPos), //Las coordenadas del frame son relativas, cuyo origen está en la esquina superior izquierda del frame. Se le suma la posición del scroll.
+                    widgetPosY = Container.pixelSizeInScreen *(widget.getPosY() +this.posY +this.sliderPos), //Las coordenadas del frame son relativas, cuyo origen está en la esquina superior izquierda del frame. Se le suma la posición del scroll.
                     widgetSizeX = Container.pixelSizeInScreen *widget.getBoundingBox().getWidth(),
                     widgetSizeY = Container.pixelSizeInScreen *widget.getBoundingBox().getHeight();
 
             widget.getTexture().draw(Shader.HUD, widgetPosX, widgetPosY, widgetSizeX, widgetSizeY);
 
             if (widget instanceof CustomDrawWidget customDrawWidget) {
-                customDrawWidget.draw(Container.pixelSizeInScreen, Container.pixelSizeInScreen *(widget.getPosX() +this.posX), Container.pixelSizeInScreen *(widget.getPosY() +this.posY +this.scrollbarPos));
+                customDrawWidget.draw(Container.pixelSizeInScreen, Container.pixelSizeInScreen *(widget.getPosX() +this.posX), Container.pixelSizeInScreen *(widget.getPosY() +this.posY +this.sliderPos));
             }
         });
 
         //Desactivamos el Scissor
         GL11.glDisable(GL11.GL_SCISSOR_TEST);
+    }
+
+    @Override
+    public void onClickEvent(float mouseX, float mouseY) {
+        if (this.scrollSliderBoundingBox.clone().multiply(Container.pixelSizeInScreen).containsLocation(mouseX, mouseY)) {
+            this.sliderClickTime = -2;
+            return;
+        }
+
+        super.onClickEvent(mouseX, mouseY);
     }
 
     @Override
@@ -192,11 +225,18 @@ public class Frame extends Container {
         //Miramos a ver si el ratón está sobre algún widget.
         boolean isMouseOnAnyWidget = false;
         for (Widget widget: this.widgets) {
-            if (widget.getBoundingBox().containsLocation(interfaceX, interfaceY)) {
+            if (widget.getBoundingBox().containsLocation(interfaceX, interfaceY + -this.sliderPos)) {
                 widget.setHovered(true);
                 isMouseOnAnyWidget = true;
             } else {
                 widget.setHovered(false);
+            }
+        }
+
+        this.isSliderHovered = this.scrollSliderBoundingBox.clone().multiply(Container.pixelSizeInScreen).containsLocation(mouseX, mouseY);
+        if (this.sliderClickTime == -2) {
+            if (!this.isSliderHovered && !MouseListener.isMouseButtonPressed(GLFW.GLFW_MOUSE_BUTTON_1)) {
+                this.sliderClickTime = -1;
             }
         }
 
@@ -229,5 +269,30 @@ public class Frame extends Container {
                 this.hasScrollbar = true;
             }
         });
+        this.maxScrollbarPos -= Frame.BASE_BOUNDING_BOX.getHeight() -16 -nameTexture.getSize().y() /Container.pixelSizeInScreen;
+
+        this.updateScrollbarSlider();
+    }
+
+    @Override
+    public void onDragEvent(float mouseX, float mouseY) {
+        //Calculamos las coordenadas del ratón en pixeles in-game, cuyo origen de coordenadas es la esquina superior izquierda del Frame.
+        float interfaceY = mouseY /Container.pixelSizeInScreen -this.posY;
+
+        if (this.sliderClickTime == -2) {
+            float sliderMousePosY = -Math.clamp(
+                    interfaceY,
+                    Frame.SCROLL_BAR_RAIL_POS.y(),
+                    Frame.SCROLL_BAR_RAIL_POS.y() +  Frame.SCROLL_BAR_RAIL_SIZE.y()
+            ) +Frame.SCROLL_BAR_RAIL_POS.y();
+
+            this.sliderPos = (sliderMousePosY *this.maxScrollbarPos) /Frame.SCROLL_BAR_RAIL_SIZE.y();
+            this.moveScroll(0);
+            return;
+        }
+
+        this.widgets.stream()
+                .filter(widget -> widget instanceof OnMouseDragEvent)
+                .forEach(widget -> ((OnMouseDragEvent) widget).onMouseDragEvent(mouseX /Container.pixelSizeInScreen -this.posX, mouseY /Container.pixelSizeInScreen  -this.posY));
     }
 }

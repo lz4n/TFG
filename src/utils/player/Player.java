@@ -7,6 +7,8 @@ import org.lwjgl.glfw.GLFW;
 import ui.container.Container;
 import ui.container.Frame;
 import ui.container.Inventory;
+import ui.tooltip.TextTooltip;
+import ui.tooltip.Tooltip;
 import ui.widget.*;
 import ui.widget.buttonWidget.AbstractButtonWidget;
 import ui.widget.buttonWidget.FrameButtonWidget;
@@ -19,6 +21,7 @@ import utils.player.inventory.FeatureItem;
 import utils.player.inventory.Item;
 import utils.player.inventory.TerrainItem;
 import utils.render.Camera;
+import utils.render.GameFont;
 import utils.render.Window;
 import utils.render.texture.Texture;
 import utils.render.texture.Textures;
@@ -28,6 +31,8 @@ import world.particle.NegativeParticle;
 import world.particle.PositiveParticle;
 import world.terrain.Terrain;
 
+import javax.tools.Tool;
+import java.awt.*;
 import java.io.*;
 import java.util.*;
 import java.util.List;
@@ -65,7 +70,7 @@ public class Player {
                         new TerrainItem(Textures.STONE_TILE, Terrain.TerrainType.STONE_TILE)
                 )
         ));
-        this.put(Player.ZONING_TAB, Arrays.asList(
+        this.put(Player.ZONING_TAB, List.of(
                 Arrays.asList(
                         new FeatureItem(Textures.HOUSE_LVL1, Feature.FeatureType.HOUSE, 0),
                         new FeatureItem(Textures.HOUSE_LVL2, Feature.FeatureType.HOUSE, 1),
@@ -76,7 +81,11 @@ public class Player {
                         new FeatureItem(Textures.HOUSE_LVL7, Feature.FeatureType.HOUSE, 6)
                 )
         ));
-        this.put(Player.INDUSTRY_TAB, new ArrayList<>());
+        this.put(Player.INDUSTRY_TAB, List.of(
+                Arrays.asList(
+                        new FeatureItem(Textures.PORT, Feature.FeatureType.HOUSE, 7)
+                )
+        ));
         this.put(Player.SERVICES_TAB, new ArrayList<>());
         this.put(Player.NATURE_TAB, Arrays.asList(
                 Arrays.asList(
@@ -157,11 +166,39 @@ public class Player {
      */
     private Item selectedItem;
 
+    private Tooltip tooltip = null;
+
     /**
      * Inicializa los datos del jugador. Crea el inventario y el menú.
      */
     public void init() {
         //** INVENTARIO **//
+
+        Player.GENERAL_TAB.setTooltip(
+                new TextTooltip().addLine("Terreno", GameFont.PIXEL, Font.PLAIN, TextTooltip.TITLE_TEXT_SIZE)
+
+        );
+
+        Player.ZONING_TAB.setTooltip(
+                new TextTooltip().addLine("Edificios", GameFont.PIXEL, Font.PLAIN, TextTooltip.TITLE_TEXT_SIZE)
+        );
+
+        Player.INDUSTRY_TAB.setTooltip(
+                new TextTooltip().addLine("Industria", GameFont.PIXEL, Font.PLAIN, TextTooltip.TITLE_TEXT_SIZE)
+        );
+
+        Player.SERVICES_TAB.setTooltip(
+                new TextTooltip().addLine("Servicios", GameFont.PIXEL, Font.PLAIN, TextTooltip.TITLE_TEXT_SIZE)
+        );
+
+        Player.NATURE_TAB.setTooltip(
+                new TextTooltip().addLine("Naturaleza", GameFont.PIXEL, Font.PLAIN, TextTooltip.TITLE_TEXT_SIZE)
+        );
+
+        Player.SPECIAL_TAB.setTooltip(
+                new TextTooltip().addLine("Edificios especiales", GameFont.PIXEL, Font.PLAIN, TextTooltip.TITLE_TEXT_SIZE)
+        );
+
         this.timeTextBox = new DateTimeTextBox(4, 4);
 
         this.gameSpeedButton = new AbstractButtonWidget(4, 24, Textures.HORIZONTAL_BUTTON, Textures.CLICKED_HORIZONTAL_BUTTON, new Vector2f(0, -1), new BoundingBox(36, 16)) {
@@ -242,7 +279,9 @@ public class Player {
         this.GAME_MENU.addWidget(leaveGameButton);
 
         //** MENU DE CONFIGURACIÓN **//
-        for (int i = 0; i < 10; i++) {
+        SliderWidget s = new SliderWidget(6, 24, "test slider");
+        this.CONFIG_MENU.addWidget(s);
+        for (int i = 1; i < 10; i++) {
             FrameButtonWidget a = new FrameButtonWidget(6, 24 + 32*i, "test " + i);
             this.CONFIG_MENU.addWidget(a);
         }
@@ -541,5 +580,13 @@ public class Player {
                 }
             }
         }
+    }
+
+    public Tooltip getTooltip() {
+        return tooltip;
+    }
+
+    public void setTooltip(Tooltip tooltip) {
+        this.tooltip = tooltip;
     }
 }

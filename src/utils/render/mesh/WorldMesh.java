@@ -27,7 +27,7 @@ public class WorldMesh extends Mesh {
     private int previousVertexArrayPos = 0, previousElementArrayPos = 0;
 
     /**
-     * @param capacity Capacidad que va a tener el mesh.
+     * @param capacity Número de vértices que va a tener el mesh.
      * @param attributesSize Array que almacena los tamaños de los atributos, en bytes.
      * @param uvCoordsGenerator Generador de coordenadas UV.
      */
@@ -40,7 +40,7 @@ public class WorldMesh extends Mesh {
 
     /**
      * Constructor que utiliza las coordenadas UV normales para todos los objetos.
-     * @param capacity Capacidad que va a tener el mesh.
+     * @param capacity Número de vértices que va a tener el mesh.
      * @param attributesSize Tamaños de los atributos, en bytes.
      */
     public WorldMesh(int capacity, int... attributesSize) {

@@ -7,6 +7,7 @@ import utils.render.mesh.WorldMesh;
 import utils.render.texture.Texture;
 import utils.render.texture.Textures;
 import world.feature.building.House;
+import world.feature.building.jobSite.Port;
 import world.location.Location;
 
 import java.io.Serializable;
@@ -19,6 +20,8 @@ import java.util.*;
  * Un mismo tipo de feature
  */
 public abstract class Feature implements Comparable<Feature>, Serializable {
+    public static final float NO_FLIP = 0, FLIP_HORIZONTAL = 1, FLIP_VERTICAL = 2, FLIP_BOTH = 3;
+
 
     /**
      * Posición donde está hubicada la feature.
@@ -40,10 +43,12 @@ public abstract class Feature implements Comparable<Feature>, Serializable {
      */
     private final int VARIANT;
 
+    private float flip = Feature.NO_FLIP;
+
     public Feature(Location location, Vector2i sizeInBlocks, FeatureType featureType, int variant) {
 
         //Calculamos el desplazamiento, para que las features no estén todas en la misma posición dentro de la casilla.
-        this.LOCATION = location.clone();
+        this.LOCATION = location;
         this.SIZE_IN_BLOCKS = sizeInBlocks;
         this.FEATURE_TYPE = featureType;
         this.VARIANT = variant;
@@ -110,6 +115,17 @@ public abstract class Feature implements Comparable<Feature>, Serializable {
      */
     public abstract boolean checkSpecificConditions();
 
+    public void setFlip(float flip) {
+        if (flip < 0 || flip > 3) {
+            throw new IllegalArgumentException(String.format("El valor 'flip' sólo puede ser 0, 1, 2 o 3, no: %f", flip));
+        }
+        this.flip = flip;
+    }
+
+    public float getFlip() {
+        return this.flip;
+    }
+
     public Vector2f getRealSize() {
         return new Vector2f(this.getSize().x(), this.getSize().y());
     }
@@ -165,7 +181,8 @@ public abstract class Feature implements Comparable<Feature>, Serializable {
                 Textures.HOUSE_LVL4,
                 Textures.HOUSE_LVL5,
                 Textures.HOUSE_LVL6,
-                Textures.HOUSE_LVL7
+                Textures.HOUSE_LVL7,
+                Textures.PORT
 
         );
 
@@ -188,7 +205,7 @@ public abstract class Feature implements Comparable<Feature>, Serializable {
          * @param textures Variantes de features que puede tener ese tipo.
          */
         FeatureType(Texture... textures) {
-            this.mesh = new WorldMesh(Main.world.getSize() * Main.world.getSize(), 2, 2, 1);
+            this.mesh = new WorldMesh(Main.world.getSize() * Main.world.getSize(), 2, 2, 1, 1);
             this.TEXTURES = Arrays.asList(textures);
             this.VARIANTS = textures.length;
         }
@@ -199,8 +216,8 @@ public abstract class Feature implements Comparable<Feature>, Serializable {
         public void updateMesh() {
             List<Feature> features = Main.world.getFeatures();
             features.removeIf(feature -> feature == null || !feature.getFeatureType().equals(this));
-            this.mesh = new WorldMesh(features.size(), 2, 2, 1);
-            features.forEach(feature -> mesh.addVertex(feature.getLocation().getX(), feature.getLocation().getY(), feature.getRealSize().x(), feature.getRealSize().y(), feature.VARIANT));
+            this.mesh = new WorldMesh(features.size(), 2, 2, 1, 1);
+            features.forEach(feature -> mesh.addVertex(feature.getLocation().getX(), feature.getLocation().getY(), feature.getRealSize().x(), feature.getRealSize().y(), feature.getVariant(), feature.getFlip()));
             this.mesh.load();
         }
 
@@ -246,7 +263,12 @@ public abstract class Feature implements Comparable<Feature>, Serializable {
                     return new Flower(location, variant);
                 }
                 case HOUSE -> {
-                    return new House(location, variant);
+                    if (variant <= 6) {
+                        return new House(location, variant);
+                    }
+                    if (variant == 7) {
+                        return new Port(location);
+                    }
                 }
             }
             return null;

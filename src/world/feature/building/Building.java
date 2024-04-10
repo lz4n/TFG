@@ -17,7 +17,7 @@ public abstract class Building extends Feature {
         for (int x = (int) location.getX(); x <= location.getX() +this.getSize().x() -1; x++) {
             for (int y = (int) location.getY(); y <= location.getY() +this.getSize().y() -1; y++) {
                 Terrain.TerrainType terrainType = Main.world.getTerrain(x, y).getType();
-                if (terrainType.equals(Terrain.TerrainType.WATER) || terrainType.equals(Terrain.TerrainType.SNOW)) {
+                if (!terrainType.isBuildable()) {
                     return false;
                 }
             }

@@ -7,7 +7,6 @@ import ui.container.Frame;
 import utils.KeyBind;
 import utils.render.Window;
 import utils.render.scene.WorldScene;
-import world.World;
 import world.location.Location;
 
 /**
@@ -61,8 +60,12 @@ public class MouseListener {
         MouseListener.updateInGameLocation();
 
         MouseListener.isDragging = MouseListener.isMouseButtonPressed[0] || MouseListener.isMouseButtonPressed[1] || MouseListener.isMouseButtonPressed[2];
+        if (MouseListener.isDragging) {
+            Main.PLAYER.getContainer().onDragEvent((float) posX, (float) posY);
+        }
 
         Window.currentScene.moveMouse((float) posX, (float) posY);
+        Main.PLAYER.getContainer().onMouseMoveEvent();
 
         if (!Main.PLAYER.isMouseOnInventory() && !Main.PLAYER.isPaused()) {
             //Destruir features cuando se mantiene click sobre ellas.
@@ -87,6 +90,7 @@ public class MouseListener {
       if (action == GLFW.GLFW_PRESS) {
           MouseListener.setIsMouseButtonPressed(button, true);
           Window.currentScene.click((float) MouseListener.posX, (float) MouseListener.posY);
+          Main.PLAYER.getContainer().onDragEvent((float) posX, (float) posY);
 
           if (!Main.PLAYER.isMouseOnInventory() && !Main.PLAYER.isPaused()) {
               //Colocar/Destruir features cuando se hace click sobre ellas.
@@ -160,5 +164,9 @@ public class MouseListener {
 
     public static Location getInGameLocation() {
         return MouseListener.inGameLocation.clone();
+    }
+
+    public static Location getInScreenLocation() {
+        return new Location((float) MouseListener.posX, (float) MouseListener.posY);
     }
 }
