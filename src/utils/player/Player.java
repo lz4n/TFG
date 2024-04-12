@@ -23,6 +23,7 @@ import utils.player.inventory.TerrainItem;
 import utils.render.Camera;
 import utils.render.GameFont;
 import utils.render.Window;
+import utils.render.texture.Colors;
 import utils.render.texture.Texture;
 import utils.render.texture.Textures;
 import world.feature.Feature;
@@ -31,7 +32,6 @@ import world.particle.NegativeParticle;
 import world.particle.PositiveParticle;
 import world.terrain.Terrain;
 
-import javax.tools.Tool;
 import java.awt.*;
 import java.io.*;
 import java.util.*;
@@ -58,52 +58,55 @@ public class Player {
     private final static HashMap<Tab, List<List<Item>>> ITEMS = new HashMap<>() {{
         this.put(Player.GENERAL_TAB,Arrays.asList(
                 Arrays.asList(
-                        new TerrainItem(Textures.WATER, Terrain.TerrainType.WATER),
-                        new TerrainItem(Textures.GRASS, Terrain.TerrainType.GRASS),
-                        new TerrainItem(Textures.SAND, Terrain.TerrainType.SAND),
-                        new TerrainItem(Textures.GRAVEL, Terrain.TerrainType.GRAVEL),
-                        new TerrainItem(Textures.STONE, Terrain.TerrainType.STONE),
-                        new TerrainItem(Textures.SNOW, Terrain.TerrainType.SNOW)
+                        new TerrainItem(Textures.WATER, Terrain.TerrainType.WATER, "Agua", null, 0),
+                        new TerrainItem(Textures.GRASS, Terrain.TerrainType.GRASS, "Césped", null, 0),
+                        new TerrainItem(Textures.SAND, Terrain.TerrainType.SAND, "Arena", null, 0),
+                        new TerrainItem(Textures.GRAVEL, Terrain.TerrainType.GRAVEL, "Grava", null, 0),
+                        new TerrainItem(Textures.STONE, Terrain.TerrainType.STONE, "Piedra", null, 0),
+                        new TerrainItem(Textures.SNOW, Terrain.TerrainType.SNOW, "Nieve", null, 0)
                 ),
                 Arrays.asList(
-                        new TerrainItem(Textures.PATH, Terrain.TerrainType.PATH),
-                        new TerrainItem(Textures.STONE_TILE, Terrain.TerrainType.STONE_TILE)
+                        new TerrainItem(Textures.PATH, Terrain.TerrainType.PATH, "Camino", null, 0),
+                        new TerrainItem(Textures.STONE_TILE, Terrain.TerrainType.STONE_TILE, "Camino empedrado", null, 0)
                 )
         ));
         this.put(Player.ZONING_TAB, List.of(
                 Arrays.asList(
-                        new FeatureItem(Textures.HOUSE_LVL1, Feature.FeatureType.HOUSE, 0),
-                        new FeatureItem(Textures.HOUSE_LVL2, Feature.FeatureType.HOUSE, 1),
-                        new FeatureItem(Textures.HOUSE_LVL3, Feature.FeatureType.HOUSE, 2),
-                        new FeatureItem(Textures.HOUSE_LVL4, Feature.FeatureType.HOUSE, 3),
-                        new FeatureItem(Textures.HOUSE_LVL5, Feature.FeatureType.HOUSE, 4),
-                        new FeatureItem(Textures.HOUSE_LVL6, Feature.FeatureType.HOUSE, 5),
-                        new FeatureItem(Textures.HOUSE_LVL7, Feature.FeatureType.HOUSE, 6)
+                        new FeatureItem(Textures.HOUSE_LVL1, Feature.FeatureType.HOUSE, 0, "Casa (nvl. I)", "Casa para que habiten 7 patos.", 100),
+                        new FeatureItem(Textures.HOUSE_LVL2, Feature.FeatureType.HOUSE, 1, "Casa (nvl. II)", "Casa para que habiten 7 patos.", 400),
+                        new FeatureItem(Textures.HOUSE_LVL3, Feature.FeatureType.HOUSE, 2, "Casa (nvl. III)", "Casa para que habiten 7 patos.", 800),
+                        new FeatureItem(Textures.HOUSE_LVL4, Feature.FeatureType.HOUSE, 3, "Casa (nvl. IV)", "Casa para que habiten 7 patos.", 1200),
+                        new FeatureItem(Textures.HOUSE_LVL5, Feature.FeatureType.HOUSE, 4, "Casa (nvl. V)", "Casa para que habiten 7 patos.", 1600),
+                        new FeatureItem(Textures.HOUSE_LVL6, Feature.FeatureType.HOUSE, 5, "Casa (nvl. VI)", "Casa para que habiten 7 patos.", 2000),
+                        new FeatureItem(Textures.HOUSE_LVL7, Feature.FeatureType.HOUSE, 6, "Casa (nvl. VII)", "Casa para que habiten 7 patos.", 10000)
                 )
         ));
         this.put(Player.INDUSTRY_TAB, List.of(
                 Arrays.asList(
-                        new FeatureItem(Textures.PORT, Feature.FeatureType.HOUSE, 7)
+                        new FeatureItem(Textures.PORT, Feature.FeatureType.HOUSE, 7, "Puerto", "Un puerto.", 8000)
                 )
         ));
         this.put(Player.SERVICES_TAB, new ArrayList<>());
         this.put(Player.NATURE_TAB, Arrays.asList(
                 Arrays.asList(
-                        new FeatureItem(Textures.BUSH, Feature.FeatureType.BUSH, 0),
-                        new FeatureItem(Textures.TREE1, Feature.FeatureType.TREE, 0),
-                        new FeatureItem(Textures.TREE2, Feature.FeatureType.TREE, 1)),
+                        new FeatureItem(Textures.BUSH, Feature.FeatureType.BUSH, 0, "Hierba", null, 25),
+                        new FeatureItem(Textures.TREE1, Feature.FeatureType.TREE, 0, "Arbol de roble", null, 50),
+                        new FeatureItem(Textures.TREE2, Feature.FeatureType.TREE, 1, "Árbol de abedúl", null, 50)),
                 Arrays.asList(
-                        new FeatureItem(Textures.TULIP, Feature.FeatureType.FLOWER, 0),
-                        new FeatureItem(Textures.TULIP_2, Feature.FeatureType.FLOWER, 1),
-                        new FeatureItem(Textures.BLUE_ORCHID, Feature.FeatureType.FLOWER, 2),
-                        new FeatureItem(Textures.DANDELION, Feature.FeatureType.FLOWER, 3),
-                        new FeatureItem(Textures.RED_LILY, Feature.FeatureType.FLOWER, 4)),
+                        new FeatureItem(Textures.TULIP, Feature.FeatureType.FLOWER, 0, "Tulipanes", null, 75),
+                        new FeatureItem(Textures.TULIP_2, Feature.FeatureType.FLOWER, 1, "Más tulipanes", null, 75),
+                        new FeatureItem(Textures.BLUE_ORCHID, Feature.FeatureType.FLOWER, 2, "Orquidea azul", null, 75),
+                        new FeatureItem(Textures.DANDELION, Feature.FeatureType.FLOWER, 3, "Diente de león", null, 75),
+                        new FeatureItem(Textures.RED_LILY, Feature.FeatureType.FLOWER, 4, "Lirio rojo", null, 75)),
                 List.of(
-                        new FeatureItem(Textures.ROCK, Feature.FeatureType.ROCK, 0))
+                        new FeatureItem(Textures.ROCK, Feature.FeatureType.ROCK, 0, "Una piedra", null, 0))
         ));
         this.put(Player.SPECIAL_TAB, new ArrayList<>());
 
     }};
+
+    private final SmallTextBox MONEY_TEXT_BOX = new SmallTextBox(50, 4),
+        INCOMES_TEXT_BOX = new SmallTextBox(50, 14);
 
     /**
      * Inventario del jugador.
@@ -238,8 +241,10 @@ public class Player {
         this.INVENTORY.addWidgetToAllTabs(this.gameSpeedButton);
         this.INVENTORY.addWidgetToAllTabs(new SeparatorWidget(44, 0));
 
-        this.INVENTORY.addWidgetToAllTabs(new SmallTextBox(50, 4));
-        this.INVENTORY.addWidgetToAllTabs(new SmallTextBox(50, 14));
+        this.INVENTORY.addWidgetToAllTabs(this.MONEY_TEXT_BOX);
+        this.MONEY_TEXT_BOX.setTooltip(new TextTooltip().addLine("Cantidad de dinero que tienes disponible", GameFont.PIXEL_CONTENT, Font.PLAIN, TextTooltip.CONTENT_TEXT_SIZE));
+        this.INVENTORY.addWidgetToAllTabs(this.INCOMES_TEXT_BOX);
+        this.INCOMES_TEXT_BOX.setTooltip(new TextTooltip().addLine("Ingresos diarios", GameFont.PIXEL_CONTENT, Font.PLAIN, TextTooltip.CONTENT_TEXT_SIZE));
         this.INVENTORY.addWidgetToAllTabs(new SmallTextBox(50, 24));
         this.INVENTORY.addWidgetToAllTabs(new SmallTextBox(50, 34));
 
@@ -285,6 +290,9 @@ public class Player {
             FrameButtonWidget a = new FrameButtonWidget(6, 24 + 32*i, "test " + i);
             this.CONFIG_MENU.addWidget(a);
         }
+
+        this.updateMoney(Main.world.getMoney());
+        this.updateIncomes(Main.world.getIncomes());
     }
 
     /**
@@ -331,6 +339,22 @@ public class Player {
                 }
 
                 this.MENU_ITEMS_BY_SLOT.put(item, slotWidget);
+
+                if (item.getName() != null) {
+                    TextTooltip tooltip = new TextTooltip()
+                            .addLine(item.getName(), GameFont.PIXEL, Font.PLAIN, TextTooltip.TITLE_TEXT_SIZE);
+
+                    if (item.getDescription() != null) {
+                        tooltip.addLine(item.getDescription(), GameFont.PIXEL_CONTENT, Font.PLAIN, TextTooltip.CONTENT_TEXT_SIZE);
+                    }
+
+                    if (item.getPrice() != 0) {
+                        tooltip.addLine("-" +item.getPrice() +"€", GameFont.PIXEL_CONTENT, Font.PLAIN, TextTooltip.CONTENT_TEXT_SIZE, Colors.RED);
+                    }
+
+                    slotWidget.setTooltip(tooltip);
+                }
+
                 slotWidget.setOnClickEvent(() -> {
                     this.INVENTORY.removeWidget(this.bulldozerIndicator);
                     this.isUsingBulldozer = false;
@@ -438,6 +462,22 @@ public class Player {
         this.timeTextBox.updateDateTime(date, time);
     }
 
+    public void updateMoney(int money) {
+        this.MONEY_TEXT_BOX.setText(
+                money + "€",
+                Font.PLAIN,
+                money > 0?Color.WHITE:Colors.RED
+        );
+    }
+
+    public void updateIncomes(int incomes) {
+        this.INCOMES_TEXT_BOX.setText(
+                (incomes > 0?"+":"") +incomes + "€/dia",
+                Font.PLAIN,
+                incomes > 0?Colors.GREEN:Colors.RED
+        );
+    }
+
     /**
      * @return Contenedor que está utilizando el jugador, el menú o el inventario.
      */
@@ -532,11 +572,12 @@ public class Player {
     }
 
     public void placeSelectedItem() {
-        if (this.selectedItem instanceof FeatureItem) {
+        if (this.selectedItem instanceof FeatureItem featureItem) {
             Feature selectedFeature = this.createSelectedFeature();
             if (selectedFeature != null) {
-                if (selectedFeature.canBePlaced()) {
+                if (selectedFeature.canBePlaced() && featureItem.getPrice() <= Main.world.getMoney()) {
                     Main.world.addFeature(selectedFeature);
+                    Main.world.addMoney(-featureItem.getPrice());
                     for (int particles = 0; particles < selectedFeature.getSize().x() * selectedFeature.getSize().y() * 5; particles++) {
                         Main.world.spawnParticle(new PositiveParticle(MouseListener.getInGameLocation().truncate().add(-0.5f, -0.5f).add(
                                 Main.RANDOM.nextFloat(0, selectedFeature.getSize().x()),

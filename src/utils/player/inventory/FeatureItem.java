@@ -23,8 +23,8 @@ public class FeatureItem extends Item {
      * @param featureToPlace Tipo de feature del item.
      * @param variant        Variante de la feature del item.
      */
-    public FeatureItem(Texture texture, Feature.FeatureType featureToPlace, int variant) {
-        super(texture);
+    public FeatureItem(Texture texture, Feature.FeatureType featureToPlace, int variant, String name, String description, int price) {
+        super(texture, name, description, price);
         this.FEATURE_TO_PLACE = featureToPlace;
         this.VARIANT = variant;
     }

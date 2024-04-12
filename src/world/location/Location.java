@@ -34,11 +34,19 @@ public class Location implements Cloneable, Serializable {
         return x;
     }
 
+    public void setX(float x) {
+        this.x = x;
+    }
+
     /**
      * @return Devuelve el componente Y.
      */
     public float getY() {
         return y;
+    }
+
+    public void setY(float y) {
+        this.y = y;
     }
 
     /**

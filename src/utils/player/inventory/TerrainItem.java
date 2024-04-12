@@ -17,8 +17,8 @@ public class TerrainItem extends Item {
      * @param texture Textura del item.
      * @param terrainToPlace Terreno que se va a colocar.
      */
-    public TerrainItem(Texture texture, Terrain.TerrainType terrainToPlace) {
-        super(texture);
+    public TerrainItem(Texture texture, Terrain.TerrainType terrainToPlace, String name, String description, int price) {
+        super(texture, name, description, price);
         this.TERRAIN_TO_PLACE = terrainToPlace;
     }
 

@@ -27,13 +27,15 @@ public class World extends Ticking implements Serializable {
     /**
      * Duración de las fases del día, meses y años.
      */
-    private static final int SUNRISE_DURATION = 6000,
-            DAY_DURATION = 48000,
-            NIGHT_DURATION = 30000,
+    private static final int SUNRISE_DURATION = 60,
+            DAY_DURATION = 480,
+            NIGHT_DURATION = 300,
             TOTAL_DAY_DURATION = World.SUNRISE_DURATION +World.DAY_DURATION +World.NIGHT_DURATION +World.SUNRISE_DURATION,
             MONTH_DURATION_IN_DAYS = 30,
             MAX_MONTH = 12;
     private static final float MIN_DAYLIGHT = .2f;
+
+    private static final int INITIAL_MONEY = 10000;
 
     /**
      * Nombre del mundo.
@@ -89,6 +91,8 @@ public class World extends Ticking implements Serializable {
      * Índice de felicidad del mundo.
      */
     private float happiness = 1;
+
+    private int money = World.INITIAL_MONEY, incomes = 50;
 
     /**
      * Ínstancia un mundo, pero no lo genera.
@@ -464,6 +468,26 @@ public class World extends Ticking implements Serializable {
         return new LinkedList<>(this.particlesList);
     }
 
+    public void addMoney(int amount) {
+        this.money += amount;
+
+        Main.PLAYER.updateMoney(this.money);
+    }
+
+    public int getMoney() {
+        return this.money;
+    }
+
+    public void addIncome(int amount) {
+        this.incomes += amount;
+
+        Main.PLAYER.updateIncomes(this.incomes);
+    }
+
+    public int getIncomes() {
+        return this.incomes;
+    }
+
     @Override
     public void onTick(long deltaTime) {
 
@@ -482,6 +506,9 @@ public class World extends Ticking implements Serializable {
 
             //Aumentamos el mes y año si hace falta..
             this.day++;
+
+            this.addMoney(this.getIncomes());
+
             if (this.day >= World.MONTH_DURATION_IN_DAYS) {
                 this.month++;
                 this.day = 0;

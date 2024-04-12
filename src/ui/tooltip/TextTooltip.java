@@ -8,7 +8,7 @@ import utils.render.texture.Texture;
 import java.awt.*;
 
 public class TextTooltip extends Tooltip {
-    public static final int TITLE_TEXT_SIZE = 26, CONTENT_TEXT_SIZE = 14;
+    public static final int TITLE_TEXT_SIZE = 24, CONTENT_TEXT_SIZE = 16;
 
     private float textPosY = 0;
 
@@ -17,7 +17,7 @@ public class TextTooltip extends Tooltip {
 
         addTexture(new Vector2f(0, textPosY), textTexture);
 
-        textPosY += 5;
+        textPosY += 10;
         textPosY += textTexture.getSize().y();
 
         System.out.println(textPosY);

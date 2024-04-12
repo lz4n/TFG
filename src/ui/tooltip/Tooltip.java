@@ -21,13 +21,18 @@ public class Tooltip {
 
     public void show() {
         float tooltipPixelSize = Container.pixelSizeInScreen;
+        Location tooltipLocation = MouseListener.getInScreenLocation().add(8*tooltipPixelSize, 0);
+
+        if (tooltipLocation.getY() +this.size.y() > Window.getHeight()) {
+            tooltipLocation.add(0, -(tooltipLocation.getY() +this.size.y() -Window.getHeight()));
+        }
 
         TooltipMesh mesh;
 
         Shader.TOOLTIP.use();
         Shader.TOOLTIP.uploadMatrix4f("uProjection", new Matrix4f().ortho(0, Window.getWidth(), Window.getHeight(), 0, -1, 1));
         Shader.TOOLTIP.uploadMatrix4f("uView", new Matrix4f().identity());
-        Shader.TOOLTIP.upload2f("uPosition", MouseListener.getInScreenLocation().getX() +8*tooltipPixelSize, MouseListener.getInScreenLocation().getY());
+        Shader.TOOLTIP.upload2f("uPosition", tooltipLocation.getX(), tooltipLocation.getY());
 
         Shader.TOOLTIP.upload4f("uColor", 0.46f, 0.48f, 0.43f, 0.7f);
 
@@ -55,8 +60,8 @@ public class Tooltip {
         textures.forEach((texture, position) -> {
             texture.draw(
                     Shader.HUD,
-                    MouseListener.getInScreenLocation().getX() +position.x() +8*tooltipPixelSize,
-                    MouseListener.getInScreenLocation().getY() +position.y(),
+                    tooltipLocation.getX() +position.x(),
+                    tooltipLocation.getY() +position.y(),
                     texture.getSize().x(),
                     texture.getSize().y()
             );
