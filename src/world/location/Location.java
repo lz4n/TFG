@@ -8,6 +8,7 @@ import world.feature.Feature;
 import world.terrain.Terrain;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * Representa una posición del mundo.
@@ -143,6 +144,20 @@ public class Location implements Cloneable, Serializable {
         } catch (CloneNotSupportedException exception) {
             return null;
         }
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(x, y);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || this.getClass() != obj.getClass()) return false;
+
+        Location location = (Location) obj;
+        return (location.x == this.x) && (location.y == this.y);
     }
 
     @Override

@@ -27,10 +27,14 @@ import utils.render.texture.Colors;
 import utils.render.texture.Texture;
 import utils.render.texture.Textures;
 import world.feature.Feature;
+import world.location.Location;
 import world.particle.BulldozerParticle;
+import world.particle.CursorParticle;
 import world.particle.NegativeParticle;
 import world.particle.PositiveParticle;
 import world.terrain.Terrain;
+import world.tick.ForceTicking;
+import world.tick.Ticking;
 
 import java.awt.*;
 import java.io.*;
@@ -40,7 +44,8 @@ import java.util.List;
 /**
  * Representa a un jugador.
  */
-public class Player {
+@ForceTicking
+public class Player extends Ticking {
 
     /**
      * Pestañas que tiene el inventario del jugador.
@@ -106,7 +111,9 @@ public class Player {
     }};
 
     private final SmallTextBox MONEY_TEXT_BOX = new SmallTextBox(50, 4),
-        INCOMES_TEXT_BOX = new SmallTextBox(50, 14);
+        INCOMES_TEXT_BOX = new SmallTextBox(50, 14),
+        POPULATION_TEXT_BOX = new SmallTextBox(50, 24),
+        HAPPINESS_TEXT_BOX = new SmallTextBox(50, 34);
 
     /**
      * Inventario del jugador.
@@ -170,6 +177,8 @@ public class Player {
     private Item selectedItem;
 
     private Tooltip tooltip = null;
+
+    private LinkedHashSet<Location> terrainSelection = null;
 
     /**
      * Inicializa los datos del jugador. Crea el inventario y el menú.
@@ -245,8 +254,10 @@ public class Player {
         this.MONEY_TEXT_BOX.setTooltip(new TextTooltip().addLine("Cantidad de dinero que tienes disponible", GameFont.PIXEL_CONTENT, Font.PLAIN, TextTooltip.CONTENT_TEXT_SIZE));
         this.INVENTORY.addWidgetToAllTabs(this.INCOMES_TEXT_BOX);
         this.INCOMES_TEXT_BOX.setTooltip(new TextTooltip().addLine("Ingresos diarios", GameFont.PIXEL_CONTENT, Font.PLAIN, TextTooltip.CONTENT_TEXT_SIZE));
-        this.INVENTORY.addWidgetToAllTabs(new SmallTextBox(50, 24));
-        this.INVENTORY.addWidgetToAllTabs(new SmallTextBox(50, 34));
+        this.INVENTORY.addWidgetToAllTabs(this.POPULATION_TEXT_BOX);
+        this.POPULATION_TEXT_BOX.setTooltip(new TextTooltip().addLine("Habitantes totales de la ciudad", GameFont.PIXEL_CONTENT, Font.PLAIN, TextTooltip.CONTENT_TEXT_SIZE));
+        this.INVENTORY.addWidgetToAllTabs(this.HAPPINESS_TEXT_BOX);
+        this.HAPPINESS_TEXT_BOX.setTooltip(new TextTooltip().addLine("Felicidad media de todos los patos", GameFont.PIXEL_CONTENT, Font.PLAIN, TextTooltip.CONTENT_TEXT_SIZE));
 
         this.INVENTORY.addWidgetToAllTabs(new SmallTextBox(90, 4));
         this.INVENTORY.addWidgetToAllTabs(new SmallTextBox(90, 14));
@@ -293,6 +304,8 @@ public class Player {
 
         this.updateMoney(Main.world.getMoney());
         this.updateIncomes(Main.world.getIncomes());
+        this.updatePopulation(Main.world.getPopulation());
+        this.updateHappiness(Main.world.getHappiness());
     }
 
     /**
@@ -438,9 +451,10 @@ public class Player {
         return null;
     }
 
-    public Terrain createSelectedTerrain() {
+    public Terrain createSelectedTerrain(Location location) {
+        if (location.isOutOfTheWorld()) return null;
         if (this.selectedItem != null && this.selectedItem instanceof TerrainItem terrainItem) {
-            Terrain currentTerrain = MouseListener.getInGameLocation().getTerrain();
+            Terrain currentTerrain = location.getTerrain();
             return new Terrain(
                     terrainItem.getTerrainToPlace(),
                     currentTerrain.getBiome(),
@@ -475,6 +489,28 @@ public class Player {
                 (incomes > 0?"+":"") +incomes + "€/dia",
                 Font.PLAIN,
                 incomes > 0?Colors.GREEN:Colors.RED
+        );
+    }
+
+    public void updatePopulation(int population) {
+        this.POPULATION_TEXT_BOX.setText(population +" patos", Font.PLAIN);
+    }
+
+    public void updateHappiness(float happiness) {
+        Color color = Colors.RED;
+
+        if (happiness > .5f) {
+            color = Colors.ORANGE;
+
+            if (happiness > .75f) {
+                color = Colors.GREEN;
+            }
+        }
+
+        this.HAPPINESS_TEXT_BOX.setText(
+                (int) (happiness *100) + "%",
+                Font.PLAIN,
+                color
         );
     }
 
@@ -589,37 +625,49 @@ public class Player {
                 }
             }
         }
-        if (this.selectedItem instanceof TerrainItem) {
-            Terrain selectedTerrain = this.createSelectedTerrain();
-            Terrain.TerrainType oldTerrainType = MouseListener.getInGameLocation().getTerrain().getType();
-            if (selectedTerrain != null && !selectedTerrain.getType().equals(oldTerrainType)) {
-                Main.world.setTerrain(
-                        (int) MouseListener.getInGameLocation().getX(),
-                        (int) MouseListener.getInGameLocation().getY(),
-                        selectedTerrain
-                );
+        if (this.selectedItem instanceof TerrainItem && this.terrainSelection != null) {
+            LinkedHashSet<Terrain.TerrainType> terrainTypesToUpdate = new LinkedHashSet<>();
+            terrainTypesToUpdate.add(((TerrainItem) this.selectedItem).getTerrainToPlace());
 
-                Feature feature = Main.world.getFeature(
-                        (int) MouseListener.getInGameLocation().getX(),
-                        (int) MouseListener.getInGameLocation().getY()
-                );
-                if (feature != null && !feature.checkSpecificConditions()) {
-                    Main.world.removeFeature(feature);
-                    for (int particles = 0; particles < feature.getSize().x() * feature.getSize().y() * 5; particles++) {
-                        Main.world.spawnParticle(new BulldozerParticle(MouseListener.getInGameLocation().truncate().add(-0.5f, -0.5f).add(
-                                Main.RANDOM.nextFloat(0, feature.getSize().x()),
-                                Main.RANDOM.nextFloat(0, feature.getSize().y())
+            this.terrainSelection.forEach(location -> {
+                Terrain.TerrainType oldTerrainType = location.getTerrain().getType();
+                terrainTypesToUpdate.add(oldTerrainType);
+
+                Terrain selectedTerrain = this.createSelectedTerrain(location);
+
+                if (selectedTerrain != null && !selectedTerrain.getType().equals(oldTerrainType)) {
+                    Main.world.setTerrain(
+                            (int) location.getX(),
+                            (int) location.getY(),
+                            selectedTerrain,
+                            false
+                    );
+
+                    Feature feature = Main.world.getFeature(
+                            (int) location.getX(),
+                            (int) location.getY()
+                    );
+                    if (feature != null && !feature.checkSpecificConditions()) {
+                        Main.world.removeFeature(feature);
+                        for (int particles = 0; particles < feature.getSize().x() * feature.getSize().y() * 5; particles++) {
+                            Main.world.spawnParticle(new BulldozerParticle(location.clone().add(-0.5f, -0.5f).add(
+                                    Main.RANDOM.nextFloat(0, feature.getSize().x()),
+                                    Main.RANDOM.nextFloat(0, feature.getSize().y())
+                            )));
+                        }
+                    }
+
+                    for (int particles = 0; particles < 5; particles++) {
+                        Main.world.spawnParticle(new PositiveParticle(location.clone().add(-0.5f, -0.5f).add(
+                                Main.RANDOM.nextFloat(0, 1),
+                                Main.RANDOM.nextFloat(0, 1)
                         )));
                     }
                 }
+            });
 
-                for (int particles = 0; particles < 5; particles++) {
-                    Main.world.spawnParticle(new PositiveParticle(MouseListener.getInGameLocation().truncate().add(-0.5f, -0.5f).add(
-                            Main.RANDOM.nextFloat(0, 1),
-                            Main.RANDOM.nextFloat(0, 1)
-                    )));
-                }
-            }
+            terrainTypesToUpdate.forEach(Terrain.TerrainType::updateMesh);
+
         }
     }
 
@@ -629,5 +677,35 @@ public class Player {
 
     public void setTooltip(Tooltip tooltip) {
         this.tooltip = tooltip;
+    }
+
+    public boolean isSelectingTerrain() {
+        return this.terrainSelection != null;
+    }
+
+    public LinkedHashSet<Location> getTerrainSelection() {
+        if (!this.isSelectingTerrain()) return null;
+        return new LinkedHashSet<>(this.terrainSelection);
+    }
+
+    public void addToTerrainSelection(Location location) {
+        if (!((TerrainItem) this.selectedItem).getTerrainToPlace().equals(location.getTerrain().getType())) {
+            if (!this.isSelectingTerrain()) this.terrainSelection = new LinkedHashSet<>();
+
+            this.terrainSelection.add(location.clone().truncate());
+        }
+    }
+
+    public void removeTerrainSelection() {
+        this.terrainSelection.clear();
+
+        this.terrainSelection = null;
+    }
+
+    @Override
+    public void onTick(long deltaTime) {
+        if (this.isSelectingTerrain()) {
+            this.getTerrainSelection().forEach(location -> Main.world.spawnParticle(new CursorParticle(location)));
+        }
     }
 }

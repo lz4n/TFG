@@ -92,7 +92,8 @@ public class SmallTextBox extends Widget implements CustomDrawWidget, OnResizeWi
         //Escribimos la fecha
         graphics.setFont(GameFont.PIXEL_CONTENT.getFont(Font.PLAIN, SmallTextBox.TEXT_SIZE *Container.pixelSizeInScreen));
         FontMetrics fontMetrics = graphics.getFontMetrics();
-        graphics.drawString(text, (width - fontMetrics.stringWidth(text)) /2, (height + fontMetrics.getHeight() -fontMetrics.getAscent() /2) /2);
+        System.out.println(fontMetrics.getAscent());
+        graphics.drawString(text, (width - fontMetrics.stringWidth(text)) /2, (height +fontMetrics.getHeight() +fontMetrics.getAscent()/2 +fontMetrics.getDescent()/2) /2);
 
         this.textTexture.convert();
     }

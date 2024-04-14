@@ -1,7 +1,6 @@
 package world;
 
 import main.Main;
-import utils.Logger;
 import world.entity.Entity;
 import world.feature.*;
 import world.feature.building.Building;
@@ -92,7 +91,7 @@ public class World extends Ticking implements Serializable {
      */
     private float happiness = 1;
 
-    private int money = World.INITIAL_MONEY, incomes = 50;
+    private int money = World.INITIAL_MONEY, incomes = 50, population = 0;
 
     /**
      * Ínstancia un mundo, pero no lo genera.
@@ -438,13 +437,6 @@ public class World extends Ticking implements Serializable {
     }
 
     /**
-     * @return Índice de felicidad.
-     */
-    public float getHappiness() {
-        return this.happiness;
-    }
-
-    /**
      * @return Lista con todas las features.
      */
     public List<Feature> getFeatures() {
@@ -488,20 +480,36 @@ public class World extends Ticking implements Serializable {
         return this.incomes;
     }
 
+    public int getPopulation() {
+        return this.population;
+    }
+
+    public void addPopulation(int amount) {
+        this.population += amount;
+
+        Main.PLAYER.updatePopulation(this.population);
+    }
+
+    /**
+     * @return Índice de felicidad.
+     */
+    public float getHappiness() {
+        return this.happiness;
+    }
+
+    public void addHappiness(float aomunt) {
+        this.happiness = Math.clamp(this.happiness +aomunt, 0, 1);
+
+        Main.PLAYER.updateHappiness(this.happiness);
+    }
+
     @Override
     public void onTick(long deltaTime) {
 
         this.dayTime++;
         if (this.dayTime >= World.TOTAL_DAY_DURATION) { //Si ha pasado un día
             //TODO Mecánica de felicidad, que sea random cada dia es temporal.
-            this.happiness += (Main.RANDOM.nextFloat() /10) * (Main.RANDOM.nextBoolean()?1:-1);
-            if (this.happiness > 1) {
-                this.happiness = 1;
-            }
-            if (this.happiness < 0) {
-                this.happiness = 0;
-            }
-
+            this.addHappiness((Main.RANDOM.nextFloat() /10) * (Main.RANDOM.nextBoolean()?-1:-1));
             this.dayTime = 0;
 
             //Aumentamos el mes y año si hace falta..

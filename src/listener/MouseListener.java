@@ -72,8 +72,8 @@ public class MouseListener {
             if (KeyBind.INTERACT.isPressed()) {
                 if (Main.PLAYER.isUsingBulldozer()) {
                     Main.PLAYER.destroySelectedFeature();
-                } else if (Main.PLAYER.createSelectedTerrain() != null) {
-                    Main.PLAYER.placeSelectedItem();
+                } else if (Main.PLAYER.createSelectedTerrain(MouseListener.getInGameLocation()) != null) {
+                    Main.PLAYER.addToTerrainSelection(MouseListener.getInGameLocation());
                 }
             }
         }
@@ -105,6 +105,11 @@ public class MouseListener {
       } else if (action == GLFW.GLFW_RELEASE) {
           MouseListener.setIsMouseButtonPressed(button, false);
           MouseListener.isDragging = false;
+
+          if (Main.PLAYER.getTerrainSelection() != null) {
+              Main.PLAYER.placeSelectedItem();
+              Main.PLAYER.removeTerrainSelection();
+          }
       }
     }
 

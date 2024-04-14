@@ -290,24 +290,27 @@ public class Inventory extends Container {
      * @return Si ha sido posible mover el scroll o no.
      */
     public boolean moveScroll(float amount) {
+        try {
+            float clampValue = (float) Math.clamp(this.currentScrollPosX + amount, this.getMaxRightScrollPos(), this.getMaxLeftScrollPos());
+            if (this.currentScrollPosX == clampValue) {
+                return false;
+            }
 
-        float clampValue = (float) Math.clamp(this.currentScrollPosX +amount, this.getMaxRightScrollPos(), this.getMaxLeftScrollPos());
-        if (this.currentScrollPosX == clampValue) {
+            this.currentScrollPosX = clampValue;
+
+            if (amount > 0) {
+                this.clickTimeLeftArrow = 10;
+                this.clickTimeRightArrow = -1;
+            } else {
+                this.clickTimeLeftArrow = -1;
+                this.clickTimeRightArrow = 10;
+            }
+
+            this.updateShowArrows();
+            return true;
+        } catch (IllegalArgumentException exception) {
             return false;
         }
-
-        this.currentScrollPosX = clampValue;
-
-        if (amount > 0) {
-            this.clickTimeLeftArrow = 10;
-            this.clickTimeRightArrow = -1;
-        } else {
-            this.clickTimeLeftArrow = -1;
-            this.clickTimeRightArrow = 10;
-        }
-
-        this.updateShowArrows();
-        return true;
     }
 
     /**
