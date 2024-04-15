@@ -2,6 +2,7 @@ package npc;
 
 import org.joml.Vector2d; //Es la clase Vector2d qué utilizaremos
 import world.World;
+import world.location.Location;
 import world.terrain.Terrain;
 
 import java.util.ArrayList;
@@ -10,12 +11,14 @@ import java.util.List;
 public class Pathfinding {
     private World world;
 
+    public Pathfinding() {
+    }
     public Pathfinding(World world) { //Creamos el constructor Pathfinding donde le añadimos el mundo como atributo pues es la base que utilizaremos.
         this.world = world;
     }
 
     //Creamos un método que encuentre el path, dentro ocurrirá la magia: algortimo a star.
-    public List<Vector2d> findPath(Vector2d start, Vector2d goal) { //La lista la utilizaremos para crear el path a través del algortimo star A.
+    public List<Vector2d> findPath(Location start, Location goal) { //La lista la utilizaremos para crear el path a través del algortimo star A.
         List<Vector2d> path = new ArrayList<>(); //Arraylist porque jugamos con arrays juju.
 
         /*
@@ -28,10 +31,10 @@ public class Pathfinding {
         */
 
         //Marcamos las coordenadas y las volvemos una ubicación en el mapa.
-        int startX = (int) start.x; //Marca el start de x e y
-        int startY = (int) start.y;
-        int goalX = (int) goal.x; //Marca el end de x e y
-        int goalY = (int) goal.y;
+        int startX = (int) start.getX(); //Marca el start de x e y
+        int startY = (int) start.getY();
+        int goalX = (int) goal.getX(); //Marca el end de x e y
+        int goalY = (int) goal.getY();
 
         //Ahora implementamos el cálculo de la ruta con el algortimo de a star:
         /*En primer lugar, tendremos que crear dos nodos, uno el de la ubicación actual y otro con la ubicación final

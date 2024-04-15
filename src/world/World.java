@@ -26,7 +26,7 @@ public class World extends Ticking implements Serializable {
     /**
      * Duración de las fases del día, meses y años.
      */
-    private static final int SUNRISE_DURATION = 6000,
+    public static final int SUNRISE_DURATION = 6000,
             DAY_DURATION = 48000,
             NIGHT_DURATION = 30000,
             TOTAL_DAY_DURATION = World.SUNRISE_DURATION +World.DAY_DURATION +World.NIGHT_DURATION +World.SUNRISE_DURATION,
