@@ -37,6 +37,8 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Date;
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Representa la ventana en la que se ejecuta el juego.
@@ -63,6 +65,8 @@ public class Window {
      * Escena actual de la ventana.
      */
     public static Scene currentScene = new WorldScene();
+
+    private static ExecutorService screenshotExecutor = Executors.newCachedThreadPool();
 
 
     /**
@@ -94,11 +98,14 @@ public class Window {
         //Guardamos las opciones
         Setting.save();
 
+        //Cerramos los servicios
+        Window.screenshotExecutor.shutdown();
+
         //Liberamos memoria
         Callbacks.glfwFreeCallbacks(window);
         GLFW.glfwDestroyWindow(window);
         GLFW.glfwTerminate();
-        Objects.requireNonNull(GLFW.glfwSetErrorCallback(null)).free();
+        GLFW.glfwSetErrorCallback(null).free();
 
         for (Field field: Textures.class.getDeclaredFields()) {
             try {
@@ -341,15 +348,16 @@ public class Window {
     }
 
     public static void createScreenshot() {
-        //Creamos un buffer para almecenar los bytes de la pantalla: ancho *alto *4 (canales de color, RGBA)
-        ByteBuffer screenBuffer = BufferUtils.createByteBuffer(Window.getWidth() *Window.getHeight() *4);
+        //Crear la captura e invertir la imagen pixel a pixel lleva tiempo, así que lo ejecutamos en un servicio propio.
+        Window.screenshotExecutor.submit(() -> {
+            //Creamos un buffer para almecenar los bytes de la pantalla: ancho *alto *4 (canales de color, RGBA)
+            ByteBuffer screenBuffer = BufferUtils.createByteBuffer(Window.getWidth() *Window.getHeight() *4);
 
-        //Capturamos la pantalla y la guardamos en el buffer.
-        GL11.glReadBuffer(GL11.GL_FRONT);
-        GL11.glReadPixels(0, 0, Window.getWidth(), Window.getHeight(), GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, screenBuffer);
+            //Capturamos la pantalla y la guardamos en el buffer.
+            GL11.glReadBuffer(GL11.GL_FRONT);
+            GL11.glReadPixels(0, 0, Window.getWidth(), Window.getHeight(), GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, screenBuffer);
 
-        //Invertir la imagen pixel a pixel lleva tiempo, así que creamos un hilo secundario para no parar la ejecución hilo principal.
-        new Thread(() -> {
+
             //Invertimos la imagen verticalmente (OpenGL almacena los píxeles de abajo hasta arriba).
             ByteBuffer flippedBuffer = BufferUtils.createByteBuffer(Window.getWidth() *Window.getHeight() *4);
             for (int y = 0; y < Window.getHeight(); y++) {
@@ -377,6 +385,6 @@ public class Window {
             //Limpiamos los buffers.
             screenBuffer.clear();
             flippedBuffer.clear();
-        }).start();
+        });
     }
 }
