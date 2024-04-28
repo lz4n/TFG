@@ -3,6 +3,7 @@ package world.feature;
 import main.Main;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
+import utils.sounds.SoundEffect;
 import utils.render.mesh.WorldMesh;
 import utils.render.texture.Texture;
 import utils.render.texture.Textures;
@@ -158,9 +159,12 @@ public abstract class Feature implements Comparable<Feature>, Serializable {
      */
     public enum FeatureType implements Serializable {
         ROCK(
+                SoundEffect.WORLD_EFFECT_PLACE_STONE,
+
                 Textures.ROCK
         ),
-        FLOWER(
+        FLOWER(SoundEffect.WORLD_EFFECT_PLACE_GRASS,
+
                 Textures.TULIP,
                 Textures.TULIP_2,
                 Textures.BLUE_ORCHID,
@@ -168,13 +172,19 @@ public abstract class Feature implements Comparable<Feature>, Serializable {
                 Textures.RED_LILY
         ),
         BUSH(
+                SoundEffect.WORLD_EFFECT_PLACE_GRASS,
+
                 Textures.BUSH
         ),
         TREE(
+                SoundEffect.WORLD_EFFECT_PLACE_GRASS,
+
                 Textures.TREE1,
                 Textures.TREE2
         ),
         HOUSE(
+                SoundEffect.WORLD_EFFECT_PLACE_BUILDING,
+
                 Textures.HOUSE_LVL1,
                 Textures.HOUSE_LVL2,
                 Textures.HOUSE_LVL3,
@@ -201,13 +211,22 @@ public abstract class Feature implements Comparable<Feature>, Serializable {
          */
         private final int VARIANTS;
 
+        private final SoundEffect SOUND_EFFECT;
+
         /**
+         * @param soundEffect Efecto de sonido que sonará cuando se coloque la feature.
          * @param textures Variantes de features que puede tener ese tipo.
          */
-        FeatureType(Texture... textures) {
+        FeatureType(SoundEffect soundEffect, Texture... textures) {
+            this.SOUND_EFFECT = soundEffect;
+
             this.mesh = new WorldMesh(Main.world.getSize() * Main.world.getSize(), 2, 2, 1, 1);
             this.TEXTURES = Arrays.asList(textures);
             this.VARIANTS = textures.length;
+        }
+
+        public SoundEffect getSoundEffect() {
+            return this.SOUND_EFFECT;
         }
 
         /**
