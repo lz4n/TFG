@@ -1,5 +1,6 @@
 package main;
 
+import sounds.BackgroundMusicPlayer;
 import utils.Logger;
 import utils.Setting;
 import utils.player.Player;
@@ -49,6 +50,11 @@ public class Main {
      */
     public static boolean isDebugging = false;
 
+    /**
+     * Reproductor de música de fondo.
+     */
+    private static BackgroundMusicPlayer musicPlayer;
+
     public static void main(String[] args) {
         //Leemos los argumentos.
         for (String argument: args) {
@@ -86,7 +92,12 @@ public class Main {
         }
 
         Setting.load();
+       musicPlayer = new BackgroundMusicPlayer();
+       musicPlayer.play();
         Window.run();
+    }
+    public static BackgroundMusicPlayer getBackgroundMusicPlayer() {
+        return musicPlayer;
     }
 
 
