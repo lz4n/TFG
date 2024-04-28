@@ -1,5 +1,6 @@
 package main;
 
+import sounds.BackgroundMusicPlayer;
 import utils.Logger;
 import utils.Setting;
 import utils.player.Player;
