@@ -1,6 +1,5 @@
 package main;
 
-import sounds.BackgroundMusicPlayer;
 import utils.Logger;
 import utils.Setting;
 import utils.player.Player;
@@ -46,14 +45,14 @@ public class Main {
     public static final Random RANDOM = new Random();
 
     /**
-     * Indica si el juego está en modo debug o no.
-     */
-    public static boolean isDebugging = false;
-
-    /**
      * Reproductor de música de fondo.
      */
     private static BackgroundMusicPlayer musicPlayer;
+    
+    /**
+     * Indica si el juego está en modo debug o no.
+     */
+    public static boolean isDebugging = false;
 
     public static void main(String[] args) {
         //Leemos los argumentos.
@@ -92,13 +91,12 @@ public class Main {
         }
 
         Setting.load();
-       musicPlayer = new BackgroundMusicPlayer();
-       musicPlayer.play();
+        musicPlayer = new BackgroundMusicPlayer();
+        musicPlayer.play();
         Window.run();
     }
+
     public static BackgroundMusicPlayer getBackgroundMusicPlayer() {
         return musicPlayer;
-    }
-
-
+    }    
 }
