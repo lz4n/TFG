@@ -45,6 +45,11 @@ public class Main {
     public static final Random RANDOM = new Random();
 
     /**
+     * Reproductor de música de fondo.
+     */
+    private static BackgroundMusicPlayer musicPlayer;
+    
+    /**
      * Indica si el juego está en modo debug o no.
      */
     public static boolean isDebugging = false;
@@ -86,8 +91,12 @@ public class Main {
         }
 
         Setting.load();
+        musicPlayer = new BackgroundMusicPlayer();
+        musicPlayer.play();
         Window.run();
     }
 
-
+    public static BackgroundMusicPlayer getBackgroundMusicPlayer() {
+        return musicPlayer;
+    }    
 }
