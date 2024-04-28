@@ -4,6 +4,8 @@ import listener.MouseListener;
 import main.Main;
 import org.joml.Vector2f;
 import org.lwjgl.glfw.GLFW;
+import utils.sounds.SoundCategory;
+import utils.sounds.SoundEffect;
 import ui.container.Container;
 import ui.container.Frame;
 import ui.container.Inventory;
@@ -446,7 +448,7 @@ public class Player extends Ticking {
      */
     public Feature createSelectedFeature() {
         if (this.selectedItem != null && this.selectedItem instanceof FeatureItem featureItem) {
-            return featureItem.getFeatureToPlace().createFeature(MouseListener.getInGameLocation().truncate(), featureItem.getVariantToPlace());
+            return featureItem.getFeatureType().createFeature(MouseListener.getInGameLocation().truncate(), featureItem.getVariantToPlace());
         }
         return null;
     }
@@ -620,6 +622,8 @@ public class Player extends Ticking {
                                 Main.RANDOM.nextFloat(0, selectedFeature.getSize().y())
                         )));
                     }
+
+                    featureItem.getFeatureType().getSoundEffect().play(SoundCategory.SOUND_EFFECTS);
                 } else {
                     Main.world.spawnParticle(new NegativeParticle(MouseListener.getInGameLocation().add(-.5f, .5f)));
                 }
@@ -668,6 +672,7 @@ public class Player extends Ticking {
 
             terrainTypesToUpdate.forEach(Terrain.TerrainType::updateMesh);
 
+            SoundEffect.WORLD_EFFECT_PLACE_TERRAIN.play(SoundCategory.SOUND_EFFECTS);
         }
     }
 
@@ -692,7 +697,9 @@ public class Player extends Ticking {
         if (!((TerrainItem) this.selectedItem).getTerrainToPlace().equals(location.getTerrain().getType())) {
             if (!this.isSelectingTerrain()) this.terrainSelection = new LinkedHashSet<>();
 
-            this.terrainSelection.add(location.clone().truncate());
+            if (this.terrainSelection.add(location.clone().truncate())) {
+                SoundEffect.WORLD_EFFECT_PLACE_TERRAIN.play(SoundCategory.SOUND_EFFECTS);
+            }
         }
     }
 

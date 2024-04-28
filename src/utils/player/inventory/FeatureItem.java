@@ -29,7 +29,7 @@ public class FeatureItem extends Item {
         this.VARIANT = variant;
     }
 
-    public Feature.FeatureType getFeatureToPlace() {
+    public Feature.FeatureType getFeatureType() {
         return FEATURE_TO_PLACE;
     }
 

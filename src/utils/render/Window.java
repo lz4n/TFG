@@ -12,6 +12,8 @@ import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.stb.STBImageWrite;
 import org.lwjgl.system.MemoryUtil;
+import utils.sounds.SoundCategory;
+import utils.sounds.SoundEffect;
 import ui.container.Frame;
 import ui.container.Inventory;
 import utils.KeyBind;
@@ -24,7 +26,6 @@ import utils.render.texture.AnimatedTexture;
 import utils.render.texture.CacheTexture;
 import utils.render.texture.Texture;
 import utils.render.texture.Textures;
-import world.entity.Duck;
 import world.tick.Ticking;
 
 import javax.imageio.ImageIO;
@@ -36,7 +37,6 @@ import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Date;
-import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -92,6 +92,8 @@ public class Window {
 
         Window.initialWidth = Window.getWidth();
         Window.initialHeight = Window.getHeight();
+
+        SoundEffect.SOUND_TEST.play(SoundCategory.MUSIC);
 
         Window.loop();
 
