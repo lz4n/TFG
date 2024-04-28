@@ -8,6 +8,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.stb.STBImage;
+import utils.BoundingBox;
 import utils.Logger;
 import utils.render.Shader;
 import utils.render.mesh.SingleObjectMesh;
@@ -26,7 +27,7 @@ public abstract class Texture {
     /**
      * Cantidad de samplers de textura que están disponibles para su uso.
      */
-    public static final int SAMPLERS_COUNT = 7;
+    public static final int SAMPLERS_COUNT = 10;
 
 
     /**
@@ -98,6 +99,16 @@ public abstract class Texture {
         }
     }
 
+    public void draw(Shader shader, BoundingBox boundingBox) {
+        this.draw(
+                shader,
+                boundingBox.getOrigin().getX(),
+                boundingBox.getOrigin().getY(),
+                boundingBox.getWidth(),
+                boundingBox.getHeight()
+        );
+    }
+
     /**
      * Instancia una textura en cierta posición y con un tamaño determinado (ambos en unidades in-game).
      * @param shader Shader encargado de la instanciacion.
@@ -156,7 +167,6 @@ public abstract class Texture {
 
         image = STBImage.stbi_load(path, width, height, channels, 0);
         if (image != null) {
-            //Para poder utilizar imágenes con 32 y 24 bits de color.
             int format = (channels.get(0) == 4) ? GL20.GL_RGBA : GL20.GL_RGB;
 
             GL20.glTexImage2D(GL20.GL_TEXTURE_2D, 0, format, width.get(0), height.get(0), 0, format, GL20.GL_UNSIGNED_BYTE, image);

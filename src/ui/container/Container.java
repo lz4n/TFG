@@ -1,8 +1,10 @@
 package ui.container;
 
+import main.Main;
 import ui.widget.Widget;
+import ui.widget.widgetUtils.OnMouseDragEvent;
+import ui.widget.widgetUtils.OnMouseMoveEvent;
 import ui.widget.widgetUtils.OnResizeWindowEvent;
-import utils.render.mesh.Mesh;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -42,9 +44,16 @@ public abstract class Container {
      * Evento que se llama cuando se llama en cada bucle de renderizado. Redirecciona el evento de hover (pasar el ratón por encima) a los widgets.
      */
     public void onHoverEvent() {
+        Main.PLAYER.setTooltip(null);
         this.widgets.stream()
                 .filter(Widget::isHovered) //Si la bandera hovered está activa es que el ratón está sobre ese widget.
-                .forEach(Widget::onHoverEvent);
+                .forEach(widget -> {
+                    widget.onHoverEvent();
+
+                    if (widget.getTooltip() != null) {
+                        Main.PLAYER.setTooltip(widget.getTooltip());
+                    }
+                });
     }
 
     /**
@@ -71,5 +80,17 @@ public abstract class Container {
         this.widgets.stream()
                 .filter(widget -> widget instanceof OnResizeWindowEvent)
                 .forEach(widget -> ((OnResizeWindowEvent) widget).onResizeWindowEvent(newWidth /Container.pixelSizeInScreen, newHeight /Container.pixelSizeInScreen));
+    }
+
+    public void onDragEvent(float mouseX, float mouseY) {
+        this.widgets.stream()
+                .filter(widget -> widget instanceof OnMouseDragEvent)
+                .forEach(widget -> ((OnMouseDragEvent) widget).onMouseDragEvent(mouseX /Container.pixelSizeInScreen, mouseY /Container.pixelSizeInScreen));
+    }
+
+    public void onMouseMoveEvent() {
+        this.widgets.stream()
+                .filter(widget -> widget instanceof OnMouseMoveEvent)
+                .forEach(widget -> ((OnMouseMoveEvent) widget).onMouseMoveEvent());
     }
 }

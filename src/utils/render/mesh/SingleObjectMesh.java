@@ -9,7 +9,7 @@ package utils.render.mesh;
 public class SingleObjectMesh extends Mesh {
     public static final SingleObjectMesh SINGLE_OBJECT_MESH = new SingleObjectMesh();
 
-    public SingleObjectMesh() {
+    private SingleObjectMesh() {
         super(2);
         this.vertexArray = new float[]{
                 0f, 0f,

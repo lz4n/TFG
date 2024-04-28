@@ -12,11 +12,18 @@ public class Item {
      */
     private final Texture TEXTURE;
 
+    private final String NAME, DESCRIPTION;
+    private final int PRICE;
+
     /**
      * @param texture Textura del item.
      */
-    public Item(Texture texture) {
+    public Item(Texture texture, String name, String description, int price) {
         this.TEXTURE = texture;
+        this.NAME = name;
+        this.DESCRIPTION = description;
+        this.PRICE = price;
+
     }
 
     /**
@@ -25,5 +32,17 @@ public class Item {
      */
     public Texture getTexture() {
         return this.TEXTURE;
+    }
+
+    public String getName() {
+        return NAME;
+    }
+
+    public String getDescription() {
+        return DESCRIPTION;
+    }
+
+    public int getPrice() {
+        return PRICE;
     }
 }

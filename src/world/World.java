@@ -1,10 +1,10 @@
 package world;
 
 import main.Main;
-import utils.Logger;
 import world.entity.Entity;
 import world.feature.*;
 import world.feature.building.Building;
+import world.feature.building.jobSite.Port;
 import world.location.Location;
 import world.particle.CloudParticle;
 import world.particle.Particle;
@@ -26,13 +26,16 @@ public class World extends Ticking implements Serializable {
     /**
      * Duración de las fases del día, meses y años.
      */
-    public static final int SUNRISE_DURATION = 6000,
-            DAY_DURATION = 48000,
-            NIGHT_DURATION = 30000,
+    private static final int SUNRISE_DURATION = 60,
+            DAY_DURATION = 480,
+            NIGHT_DURATION = 300,
+
             TOTAL_DAY_DURATION = World.SUNRISE_DURATION +World.DAY_DURATION +World.NIGHT_DURATION +World.SUNRISE_DURATION,
             MONTH_DURATION_IN_DAYS = 30,
             MAX_MONTH = 12;
     private static final float MIN_DAYLIGHT = .2f;
+
+    private static final int INITIAL_MONEY = 10000;
 
     /**
      * Nombre del mundo.
@@ -88,6 +91,8 @@ public class World extends Ticking implements Serializable {
      * Índice de felicidad del mundo.
      */
     private float happiness = 1;
+
+    private int money = World.INITIAL_MONEY, incomes = 50, population = 0;
 
     /**
      * Ínstancia un mundo, pero no lo genera.
@@ -235,7 +240,7 @@ public class World extends Ticking implements Serializable {
             for (int x = 0; x < feature.getSize().x(); x++) {
                 for (int y = 0; y < feature.getSize().y(); y++) {
                     this.FEATURES[this.mapCoordinatesToIndex(posX + x, posY + y)] = feature;
-                    if (feature instanceof Building) {
+                    if ((feature instanceof Building) && !(feature instanceof Port)) {
                         Terrain terrain = this.getTerrain(posX +x, posY +y);
                         this.setTerrain(posX + x, posY + y, new Terrain(
                                 (terrain.getType().equals(Terrain.TerrainType.STONE) || terrain.getType().equals(Terrain.TerrainType.SNOW) || terrain.getType().equals(Terrain.TerrainType.STONE_TILE))? Terrain.TerrainType.STONE_TILE : Terrain.TerrainType.PATH,
@@ -433,13 +438,6 @@ public class World extends Ticking implements Serializable {
     }
 
     /**
-     * @return Índice de felicidad.
-     */
-    public float getHappiness() {
-        return this.happiness;
-    }
-
-    /**
      * @return Lista con todas las features.
      */
     public List<Feature> getFeatures() {
@@ -463,24 +461,63 @@ public class World extends Ticking implements Serializable {
         return new LinkedList<>(this.particlesList);
     }
 
+    public void addMoney(int amount) {
+        this.money += amount;
+
+        Main.PLAYER.updateMoney(this.money);
+    }
+
+    public int getMoney() {
+        return this.money;
+    }
+
+    public void addIncome(int amount) {
+        this.incomes += amount;
+
+        Main.PLAYER.updateIncomes(this.incomes);
+    }
+
+    public int getIncomes() {
+        return this.incomes;
+    }
+
+    public int getPopulation() {
+        return this.population;
+    }
+
+    public void addPopulation(int amount) {
+        this.population += amount;
+
+        Main.PLAYER.updatePopulation(this.population);
+    }
+
+    /**
+     * @return Índice de felicidad.
+     */
+    public float getHappiness() {
+        return this.happiness;
+    }
+
+    public void addHappiness(float aomunt) {
+        this.happiness = Math.clamp(this.happiness +aomunt, 0, 1);
+
+        Main.PLAYER.updateHappiness(this.happiness);
+    }
+
     @Override
     public void onTick(long deltaTime) {
 
         this.dayTime++;
         if (this.dayTime >= World.TOTAL_DAY_DURATION) { //Si ha pasado un día
             //TODO Mecánica de felicidad, que sea random cada dia es temporal.
-            this.happiness += (Main.RANDOM.nextFloat() /10) * (Main.RANDOM.nextBoolean()?1:-1);
-            if (this.happiness > 1) {
-                this.happiness = 1;
-            }
-            if (this.happiness < 0) {
-                this.happiness = 0;
-            }
-
+            this.addHappiness((Main.RANDOM.nextFloat() /10) * (Main.RANDOM.nextBoolean()?-1:-1));
             this.dayTime = 0;
 
             //Aumentamos el mes y año si hace falta..
             this.day++;
+
+            this.addMoney(this.getIncomes());
+
             if (this.day >= World.MONTH_DURATION_IN_DAYS) {
                 this.month++;
                 this.day = 0;

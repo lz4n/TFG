@@ -1,5 +1,6 @@
 package ui.widget;
 
+import ui.tooltip.Tooltip;
 import ui.widget.widgetUtils.WidgetEvent;
 import utils.BoundingBox;
 import utils.render.texture.Texture;
@@ -32,6 +33,8 @@ public abstract class Widget {
      * Eventos de clic y hover.
      */
     private WidgetEvent onClickEvent = () -> {}, onHoverEvent = () -> {};
+
+    private Tooltip tooltip = null;
 
     /**
      * @param posX Posición en el eje X, en coordendas in-game, con el origen de coordenadas que tenga el contenedor.
@@ -137,5 +140,13 @@ public abstract class Widget {
      */
     public void onClickEvent() {
         this.onClickEvent.widgetEvent();
+    }
+
+    public Tooltip getTooltip() {
+        return tooltip;
+    }
+
+    public void setTooltip(Tooltip tooltip) {
+        this.tooltip = tooltip;
     }
 }

@@ -3,7 +3,13 @@ package utils.render.scene;
 import listener.MouseListener;
 import main.Main;
 import org.joml.Matrix4f;
+import org.joml.Vector2f;
+import org.lwjgl.system.windows.TOUCHINPUT;
+import ui.container.Container;
 import ui.container.Inventory;
+import ui.tooltip.Tooltip;
+import ui.widget.buttonWidget.FrameButtonWidget;
+import utils.BoundingBox;
 import utils.Logger;
 import utils.Time;
 import utils.render.GameFont;
@@ -152,9 +158,6 @@ public class WorldScene implements Scene {
         Shader.HUD.use();
         Shader.HUD.uploadMatrix4f("uProjection", new Matrix4f().ortho(0, Window.getWidth(), Window.getHeight(), 0, -1, 1));
         Shader.HUD.uploadMatrix4f("uView", new Matrix4f().identity());
-        for (int samplerId = 0; samplerId < Texture.SAMPLERS_COUNT; samplerId++) {
-            Shader.HUD.uploadInt("textureSamplers[" + samplerId + "]", samplerId);
-        }
 
         //Generamos la pantalla de debug
         if (Main.isDebugging) {
@@ -236,15 +239,19 @@ public class WorldScene implements Scene {
         }
 
         //Dibujamos el selector del ratón
-        if (!Main.PLAYER.isPaused() && MouseListener.getInGameLocation() != null && !MouseListener.getInGameLocation().isOutOfTheWorld() && !Main.PLAYER.isMouseOnInventory()) {
+        if (!Main.PLAYER.isHidingUi() && !Main.PLAYER.isPaused() && MouseListener.getInGameLocation() != null && !MouseListener.getInGameLocation().isOutOfTheWorld() && !Main.PLAYER.isMouseOnInventory()) {
             Feature selectedFeature;
-            if ((selectedFeature = MouseListener.getInGameLocation().getFeature()) != null) {
+            if ((selectedFeature = MouseListener.getInGameLocation().getFeature()) != null && !Main.PLAYER.isSelectingTerrain()) {
                 for (int x = 1; x <= selectedFeature.getSize().x(); x++) for (int y = 1; y <= selectedFeature.getSize().y(); y++) {
                     Main.world.spawnParticle(new CursorParticle(selectedFeature.getLocation().add(x -1, y -1)));
                 }
             } else {
                 Main.world.spawnParticle(new CursorParticle(MouseListener.getInGameLocation()));
             }
+        }
+
+        if (Main.PLAYER.getTooltip() != null) {
+            Main.PLAYER.getTooltip().show();
         }
 
         Shader.detach();

@@ -10,13 +10,14 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.stb.STBImageWrite;
 import org.lwjgl.system.MemoryUtil;
+import ui.container.Frame;
 import ui.container.Inventory;
 import utils.KeyBind;
 import utils.Logger;
 import utils.Setting;
 import utils.Time;
-import utils.render.mesh.SingleObjectMesh;
 import utils.render.scene.Scene;
 import utils.render.scene.WorldScene;
 import utils.render.texture.AnimatedTexture;
@@ -29,11 +30,15 @@ import world.tick.Ticking;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.Date;
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Representa la ventana en la que se ejecuta el juego.
@@ -47,6 +52,11 @@ public class Window {
     private final static int WIDTH = 1920, HEIGHT = 1080;
 
     /**
+     * Tamaño inicial de la ventana.
+     */
+    private static int initialWidth, initialHeight;
+
+    /**
      * Identificador numérico de la ventana.
      */
     public static long window;
@@ -55,6 +65,8 @@ public class Window {
      * Escena actual de la ventana.
      */
     public static Scene currentScene = new WorldScene();
+
+    private static ExecutorService screenshotExecutor = Executors.newCachedThreadPool();
 
 
     /**
@@ -78,16 +90,22 @@ public class Window {
             } catch (IllegalAccessException | ClassCastException ignore) {}
         }
 
+        Window.initialWidth = Window.getWidth();
+        Window.initialHeight = Window.getHeight();
+
         Window.loop();
 
         //Guardamos las opciones
         Setting.save();
 
+        //Cerramos los servicios
+        Window.screenshotExecutor.shutdown();
+
         //Liberamos memoria
         Callbacks.glfwFreeCallbacks(window);
         GLFW.glfwDestroyWindow(window);
         GLFW.glfwTerminate();
-        Objects.requireNonNull(GLFW.glfwSetErrorCallback(null)).free();
+        GLFW.glfwSetErrorCallback(null).free();
 
         for (Field field: Textures.class.getDeclaredFields()) {
             try {
@@ -238,6 +256,16 @@ public class Window {
                         inventory.moveScroll((KeyListener.isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT) ? 2 : 1) * .7f);
                     }
                 }
+            } else {
+                if (currentScene instanceof WorldScene && Main.PLAYER.getContainer() instanceof Frame frame) {
+                    if (KeyListener.isKeyPressed(GLFW.GLFW_KEY_DOWN)) {
+                        frame.moveScroll((KeyListener.isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT) ? 2 : 1) * -.7f);
+                    }
+
+                    if (KeyListener.isKeyPressed(GLFW.GLFW_KEY_UP)) {
+                        frame.moveScroll((KeyListener.isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT) ? 2 : 1) * .7f);
+                    }
+                }
             }
 
             endTime = Time.getTimeInNanoseconds();
@@ -283,6 +311,20 @@ public class Window {
     }
 
     /**
+     * @return Ancho inicial de la ventana.
+     */
+    public static int getInitialWidth() {
+        return Window.initialWidth;
+    }
+
+    /**
+     * @return Alto inicial de la ventana.
+     */
+    public static int getInitialHeight() {
+        return Window.initialHeight;
+    }
+
+    /**
      * Pone o quita la ventana en pantalla completa. Si deja de estar en pantalla completa se maximizará la pantalla.
      * @param fullScreen Si se va a poner a pantalla completa o no.
      */
@@ -303,5 +345,46 @@ public class Window {
         boolean fullScreen = !Setting.FULLSCREEN.getAsBoolean();
         setFullScreen(fullScreen);
         Setting.FULLSCREEN.setValue(fullScreen);
+    }
+
+    public static void createScreenshot() {
+        //Crear la captura e invertir la imagen pixel a pixel lleva tiempo, así que lo ejecutamos en un servicio propio.
+        Window.screenshotExecutor.submit(() -> {
+            //Creamos un buffer para almecenar los bytes de la pantalla: ancho *alto *4 (canales de color, RGBA)
+            ByteBuffer screenBuffer = BufferUtils.createByteBuffer(Window.getWidth() *Window.getHeight() *4);
+
+            //Capturamos la pantalla y la guardamos en el buffer.
+            GL11.glReadBuffer(GL11.GL_FRONT);
+            GL11.glReadPixels(0, 0, Window.getWidth(), Window.getHeight(), GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, screenBuffer);
+
+
+            //Invertimos la imagen verticalmente (OpenGL almacena los píxeles de abajo hasta arriba).
+            ByteBuffer flippedBuffer = BufferUtils.createByteBuffer(Window.getWidth() *Window.getHeight() *4);
+            for (int y = 0; y < Window.getHeight(); y++) {
+                for (int x = 0; x < Window.getWidth(); x++) {
+                    int pixel = (x + (Window.getHeight() - y - 1) * Window.getWidth()) * 4;
+                    int flippedPixel = (x + y * Window.getWidth()) * 4;
+                    flippedBuffer.put(flippedPixel, screenBuffer.get(pixel));
+                    flippedBuffer.put(flippedPixel + 1, screenBuffer.get(pixel + 1));
+                    flippedBuffer.put(flippedPixel + 2, screenBuffer.get(pixel + 2));
+                    flippedBuffer.put(flippedPixel + 3, screenBuffer.get(pixel + 3));
+                }
+            }
+
+            //Guardamos el buffer en un png
+            File screenshotFile = new File(Main.installDirectory, "screenshots/" +new Date().toString().replace(" ", "_").replace(":", "_") +".png");
+            try {
+                screenshotFile.getParentFile().mkdirs();
+                screenshotFile.createNewFile();
+                STBImageWrite.stbi_write_png(screenshotFile.getAbsolutePath(), Window.getWidth(), Window.getHeight(), 4, flippedBuffer, Window.getWidth() * 4);
+                Logger.sendMessage("Se ha creado la captura de pantalla '%s' correcetamente.", Logger.LogMessageType.INFO, screenshotFile.getAbsolutePath());
+            } catch (IOException exception) {
+                Logger.sendMessage("Error creando la captura de pantalla '%s': %s.", Logger.LogMessageType.WARNING, screenshotFile.getAbsolutePath(), exception.getMessage());
+            }
+
+            //Limpiamos los buffers.
+            screenBuffer.clear();
+            flippedBuffer.clear();
+        });
     }
 }

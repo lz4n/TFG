@@ -13,6 +13,7 @@ import java.io.IOException;
  */
 public enum GameFont {
     PIXEL("assets/fonts/slkscr.ttf"),
+    PIXEL_CONTENT("assets/fonts/pixelated.ttf"),
     DEBUG("assets/fonts/arial.ttf");
 
     /**
@@ -51,7 +52,7 @@ public enum GameFont {
      * @param size Tamaño del texto.
      * @return Textura con el texto.
      */
-    public Graphics2dTexture drawText(String text, int style, int size) {
+    public Graphics2dTexture drawText(String text, int style, int size, Color color) {
         if (this.font != null) {
             int width = 1, height = 1;
             //Generamos una textura auxiliar para conseguir las métricas de la fuente.
@@ -68,6 +69,7 @@ public enum GameFont {
             Graphics2dTexture texture = new Graphics2dTexture(width, height);
             graphics2D = texture.getGraphics();
             graphics2D.setFont(this.font.deriveFont(style, size));
+            graphics2D.setColor(color);
             height = fontMetrics.getAscent();
 
             //Dividimos el texto en lineas y lo dibujamos..
@@ -83,5 +85,9 @@ public enum GameFont {
             return texture;
         }
         return new Graphics2dTexture(1, 1);
+    }
+
+    public Graphics2dTexture drawText(String text, int style, int size) {
+        return this.drawText(text, style, size, Color.WHITE);
     }
 }

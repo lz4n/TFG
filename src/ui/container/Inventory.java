@@ -214,6 +214,7 @@ public class Inventory extends Container {
                     this.isHoveredLeftArrow = true;
                     return true;
             }
+            this.isHoveredLeftArrow = false;
         }
 
         //Miramos si el ratón está sobre la flecha de scroll derecha.
@@ -222,6 +223,7 @@ public class Inventory extends Container {
                 this.isHoveredRightArrow = true;
                 return true;
             }
+            this.isHoveredRightArrow = false;
         }
 
         //Miramos si el ratón está sobre algún widget.
@@ -288,24 +290,27 @@ public class Inventory extends Container {
      * @return Si ha sido posible mover el scroll o no.
      */
     public boolean moveScroll(float amount) {
-        float originalSliderPos = this.currentScrollPosX;
+        try {
+            float clampValue = (float) Math.clamp(this.currentScrollPosX + amount, this.getMaxRightScrollPos(), this.getMaxLeftScrollPos());
+            if (this.currentScrollPosX == clampValue) {
+                return false;
+            }
 
-        this.currentScrollPosX += amount;
-        if (this.currentScrollPosX > this.getMaxLeftScrollPos() || this.currentScrollPosX <= this.getMaxRightScrollPos()) {
-            this.currentScrollPosX = originalSliderPos;
+            this.currentScrollPosX = clampValue;
+
+            if (amount > 0) {
+                this.clickTimeLeftArrow = 10;
+                this.clickTimeRightArrow = -1;
+            } else {
+                this.clickTimeLeftArrow = -1;
+                this.clickTimeRightArrow = 10;
+            }
+
+            this.updateShowArrows();
+            return true;
+        } catch (IllegalArgumentException exception) {
             return false;
         }
-
-        if (amount > 0) {
-            this.clickTimeLeftArrow = 10;
-            this.clickTimeRightArrow = -1;
-        } else {
-            this.clickTimeLeftArrow = -1;
-            this.clickTimeRightArrow = 10;
-        }
-
-        this.updateShowArrows();
-        return true;
     }
 
     /**
