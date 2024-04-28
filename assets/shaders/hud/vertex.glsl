@@ -28,7 +28,7 @@ out vec2 uvCoords;
 
 void main() {
     //Transforma la posición del vértice usando las matrices de proyección y modelo-vista
-    vec4 transformedPosition = uProjection * uView * vec4(position.x * uSize.x + uPosition.x, position.y * uSize.y + uPosition.y, 0.0, 1.0);
+    vec4 transformedPosition = uProjection * uView * vec4(position.x * uSize.x + uPosition.x, position.y * uSize.y + uPosition.y, -1.0, 1.0);
     gl_Position = transformedPosition;
 
     //Pasa las coordenadas de textura a través del shader
