@@ -7,6 +7,7 @@ import ui.container.Container;
 import ui.container.Frame;
 import ui.widget.buttonWidget.AbstractButtonWidget;
 import ui.widget.buttonWidget.FrameButtonWidget;
+import ui.widget.buttonWidget.OptionsFrameButtonWidgets;
 import ui.widget.widgetUtils.CustomDrawWidget;
 import ui.widget.widgetUtils.OnMouseDragEvent;
 import ui.widget.widgetUtils.OnMouseMoveEvent;
@@ -20,6 +21,7 @@ import utils.render.texture.Textures;
 import world.location.Location;
 
 import java.awt.*;
+import java.util.function.Consumer;
 
 public class SliderWidget extends Widget implements CustomDrawWidget, OnResizeWindowEvent, OnMouseDragEvent, OnMouseMoveEvent {
     /**
@@ -28,14 +30,9 @@ public class SliderWidget extends Widget implements CustomDrawWidget, OnResizeWi
     private final static BoundingBox BASE_BOUNDING_BOX = new BoundingBox(84, 16);
 
     /**
-     * Tiempo que se mantiene clicado el botón, para facilitar que el usuario se de cuenta de que se ha clicado el botón.
-     */
-    private static final int CLICK_TIME = 15;
-
-    /**
      * Tamaño del texto por pixel in-game.
      */
-    private final static int UNIT_TEXT_SIZE = 8;
+    private final static int TITLE_TEXT_SIZE = 6, VALUE_TEXT_SIZE = 4;
 
     /**
      * Desplazamiento que tiene el contenido del botón cuando se pasa el ratón por encima.
@@ -52,13 +49,11 @@ public class SliderWidget extends Widget implements CustomDrawWidget, OnResizeWi
      */
     private Graphics2dTexture textTexture;
 
-    /**
-     * Tiempo que va a aparecer el botón como clicado, si es negativo se entiende que el botón no está clicado.
-     * @see SliderWidget#CLICK_TIME
-     */
     private boolean isClicked = false;
 
     private float sliderValue = 0;
+
+    private Consumer<Float> onValueChangeEvent = null;
 
     /**
      * @param posX Posición en el eje X del botón.
@@ -70,16 +65,33 @@ public class SliderWidget extends Widget implements CustomDrawWidget, OnResizeWi
         this.text = text;
     }
 
-    public void setText(String text) {
-        this.text = text;
-        this.reloadTextTexture();
-    }
-
     private void reloadTextTexture() {
+        //Recalculamos la textura del texto (si ya había una textura la borramos, para evitar una fuga de memoria).
         if (this.textTexture != null) {
             this.textTexture.remove();
         }
-        this.textTexture = GameFont.PIXEL.drawText(this.text, Font.PLAIN, SliderWidget.UNIT_TEXT_SIZE *(int) Container.pixelSizeInScreen);
+
+        this.textTexture = new Graphics2dTexture((int) (SliderWidget.BASE_BOUNDING_BOX.getWidth() *Container.pixelSizeInScreen), (int) (SliderWidget.BASE_BOUNDING_BOX.getHeight() *Container.pixelSizeInScreen));
+
+        int width = this.textTexture.getSize().x();
+        int height = this.textTexture.getSize().y();
+
+        Graphics2D graphics = this.textTexture.getGraphics();
+
+        // Escribimos el texto del botón
+        graphics.setFont(GameFont.PIXEL.getFont(Font.PLAIN, SliderWidget.TITLE_TEXT_SIZE * Container.pixelSizeInScreen));
+        FontMetrics fontMetrics = graphics.getFontMetrics();
+        int titleHeight = fontMetrics.getHeight();
+        graphics.drawString(this.text, (width - fontMetrics.stringWidth(this.text)) / 2, titleHeight);
+
+        // Escribimos el valor del botón
+        String value = String.format("%.0f%%", this.sliderValue *100);
+        graphics.setFont(GameFont.PIXEL.getFont(Font.PLAIN, SliderWidget.VALUE_TEXT_SIZE * Container.pixelSizeInScreen));
+        fontMetrics = graphics.getFontMetrics();
+        int valueHeight = fontMetrics.getHeight();
+        graphics.drawString(value, (width - fontMetrics.stringWidth(value)) / 2, height - valueHeight);
+
+        this.textTexture.convert();
     }
 
     @Override
@@ -112,47 +124,43 @@ public class SliderWidget extends Widget implements CustomDrawWidget, OnResizeWi
         }
     }
 
+    public void setValue(float value) {
+        this.sliderValue = value;
+
+        if (this.onValueChangeEvent != null) {
+            this.onValueChangeEvent.accept(this.sliderValue);
+        }
+
+        this.reloadTextTexture();
+    }
+
+    public void setOnValueChangeEvent(Consumer<Float> onValueChangeEvent) {
+        this.onValueChangeEvent = onValueChangeEvent;
+    }
+
     @Override
     public Texture getTexture() {
         return Textures.SLIDER_BACKGROUND;
     }
 
     @Override
-    public void onClickEvent() {
+    public void onMouseClickEvent() {
         this.isClicked = true;
     }
 
     @Override
     public void onResizeWindowEvent(float newWidth, float newHeight) {
-        //Recalculamos la textura del texto (si ya había una textura la borramos, para evitar una fuga de memoria).
-        if (this.textTexture != null) {
-            this.textTexture.remove();
-        }
         this.reloadTextTexture();
     }
 
     @Override
     public void onMouseDragEvent(float mouseX, float mouseY) {
         if (this.isClicked) {
-             this.sliderValue = (Math.clamp(
+             this.setValue((Math.clamp(
                     mouseX,
                     this.getPosX(),
                     this.getPosX() +SliderWidget.BASE_BOUNDING_BOX.getWidth() -SliderWidget.SLIDER_SIZE.x()
-            ) -this.getPosX()) / (SliderWidget.BASE_BOUNDING_BOX.getWidth() -SliderWidget.SLIDER_SIZE.x());
-
-            System.out.printf("""
-                    value=%f
-                    clamp=%f 
-                    max=%f
-                    interfacePos=%f
-                    
-                    """, sliderValue,
-                    Math.clamp(
-                            mouseX,
-                            this.getPosX(),
-                            this.getPosX() +SliderWidget.BASE_BOUNDING_BOX.getWidth() -SliderWidget.SLIDER_SIZE.x()),
-                    this.getPosX() +SliderWidget.BASE_BOUNDING_BOX.getWidth() -SliderWidget.SLIDER_SIZE.x(),
-                    mouseX);
+            ) -this.getPosX()) / (SliderWidget.BASE_BOUNDING_BOX.getWidth() -SliderWidget.SLIDER_SIZE.x()));
         }
     }
 

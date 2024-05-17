@@ -2,6 +2,7 @@ package listener;
 
 import main.Main;
 import org.lwjgl.glfw.GLFW;
+import ui.container.Container;
 import ui.container.Inventory;
 import utils.KeyBind;
 import utils.render.Window;
@@ -32,6 +33,9 @@ public class KeyListener {
 
             //Acciones que se realizan cuando se presiona una tecla.
             if (action == GLFW.GLFW_PRESS) {
+                if (KeyBind.DEBUG_ONLY_CALL_GC.checkKey(key) && Main.isDebugging) {
+                    System.gc();
+                }
                 if (Main.PLAYER.isPaused()) {
                     if (KeyBind.TOGGLE_GAME_MENU.checkKey(key)) {
                         Main.PLAYER.openInventory();

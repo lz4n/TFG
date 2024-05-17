@@ -7,6 +7,7 @@ import org.lwjgl.opengl.GL11;
 import ui.widget.Widget;
 import ui.widget.widgetUtils.CustomDrawWidget;
 import ui.widget.widgetUtils.OnMouseDragEvent;
+import ui.widget.widgetUtils.WidgetEvent;
 import utils.BoundingBox;
 import utils.render.GameFont;
 import utils.render.Shader;
@@ -30,18 +31,6 @@ public class Frame extends Container {
      * @see BoundingBox
      */
     private final static BoundingBox BASE_BOUNDING_BOX = new BoundingBox(100, 156);
-
-    /**
-     * Posición donde se coloca el rail de la scrollbar, y su tamaño. En coordenadas in-game relativas, con origen en la
-     * esquina superior izquierda.
-     */
-    private final static Vector2f SCROLL_BAR_RAIL_POS = new Vector2f(93, 17);
-    private final static Vector2f SCROLL_BAR_RAIL_SIZE = new Vector2f(4, 134);
-
-    /**
-     * Altura del slider de la scrollbar.
-     */
-    private final static int SLIDER_HEIGHT = 6;
 
     /**
      * Tamaño del texto por pixel in-game. Por ejemplo, si los pixeles in-gmae miden 2 veces el pixel en la pantalla, el texto tendrá
@@ -70,6 +59,20 @@ public class Frame extends Container {
      */
     private Graphics2dTexture nameTexture;
 
+    //** SCROLLBAR **//
+
+    /**
+     * Posición donde se coloca el rail de la scrollbar, y su tamaño. En coordenadas in-game relativas, con origen en la
+     * esquina superior izquierda.
+     */
+    private final static Vector2f SCROLL_BAR_RAIL_POS = new Vector2f(93, 17);
+    private final static Vector2f SCROLL_BAR_RAIL_SIZE = new Vector2f(4, 134);
+
+    /**
+     * Altura del slider de la scrollbar.
+     */
+    private final static int SLIDER_HEIGHT = 6;
+
     private boolean hasScrollbar = false;
     private float sliderPos = 0;
     private float maxScrollbarPos = 0;
@@ -77,11 +80,25 @@ public class Frame extends Container {
     private boolean isSliderHovered = true;
     private byte sliderClickTime = -1;
 
+    //** Botón de regreso **//
+    private final static BoundingBox BACK_BUTTON_BOUNDING_BOX = new BoundingBox(0, 0, 4, 7).move(8, 6);
+    private boolean isBackButtonHovered = false;
+    private WidgetEvent onBackClickEvent = null;
+
     /**
      * @param name Título del frame, que se mostrará en la parte superior del frame. No se puede modificar una vez creado.
      */
     public Frame(String name) {
         this.NAME = name;
+    }
+
+    /**
+     * Evento que se lanzará cuando el usuario haga clic sobre el botón de regreso que tiene el frame. Si es nulo no se
+     * mostrará el botón.
+     * @param backClickEvent Evento de widget que se va a ejecutar.
+     */
+    public void setOnBackClickEvent(WidgetEvent backClickEvent) {
+        this.onBackClickEvent = backClickEvent;
     }
 
     /**
@@ -173,9 +190,18 @@ public class Frame extends Container {
             );
         }
 
+        //Dibujamos el botón de regreso.
+        (this.isBackButtonHovered ? Textures.HOVERED_BACK_FRAME_BUTTON : Textures.BACK_FRAME_BUTTON).draw(
+                Shader.HUD,
+                (this.posX +Frame.BACK_BUTTON_BOUNDING_BOX.getXMin()) *Container.pixelSizeInScreen,
+                (this.posY +Frame.BACK_BUTTON_BOUNDING_BOX.getYMin()) *Container.pixelSizeInScreen,
+                Frame.BACK_BUTTON_BOUNDING_BOX.getWidth() * Container.pixelSizeInScreen,
+                Frame.BACK_BUTTON_BOUNDING_BOX.getHeight() * Container.pixelSizeInScreen
+        );
+
         /*
           Activamos el Scissor. El Scissor sirve para definir un rectángulo, y lo que se vaya a dibujar fuera del rectangulo
-          no se dibuje. En este caso, solo se dibujarán los widgets que estén dentro del Frame, con 8 pixeles de márgen a cada lado (más el titulo)
+          no se dibuje. En este caso, solo se dibujarán los widgets que estén dentro del Frame, con 8 píxeles de márgen a cada lado (más el título)
          */
         GL11.glEnable(GL11.GL_SCISSOR_TEST);
 
@@ -207,8 +233,15 @@ public class Frame extends Container {
 
     @Override
     public void onClickEvent(float mouseX, float mouseY) {
+        //Control del clic en el slider.
         if (this.scrollSliderBoundingBox.clone().multiply(Container.pixelSizeInScreen).containsLocation(mouseX, mouseY)) {
             this.sliderClickTime = -2;
+            return;
+        }
+
+        //Control del clic en el botón de regreso.
+        if (this.isBackButtonHovered && this.onBackClickEvent != null) {
+            this.onBackClickEvent.widgetEvent();
             return;
         }
 
@@ -217,7 +250,7 @@ public class Frame extends Container {
 
     @Override
     public boolean onMouseMoveEvent(float mouseX, float mouseY) {
-        //Calculamos las coordenadas del ratón en pixeles in-game, y cuyo origen de coordenadas es la esquina superior izquierda del Frame.
+        //Calculamos las coordenadas del ratón en píxeles in-game, y cuyo origen de coordenadas es la esquina superior izquierda del Frame.
         float interfaceX = mouseX /Container.pixelSizeInScreen -this.posX;
         float interfaceY = mouseY /Container.pixelSizeInScreen -this.posY;
 
@@ -233,12 +266,16 @@ public class Frame extends Container {
             }
         }
 
+        //Miramos si el ratón está sobre el slider.
         this.isSliderHovered = this.scrollSliderBoundingBox.clone().multiply(Container.pixelSizeInScreen).containsLocation(mouseX, mouseY);
         if (this.sliderClickTime == -2) {
             if (!this.isSliderHovered && !MouseListener.isMouseButtonPressed(GLFW.GLFW_MOUSE_BUTTON_1)) {
                 this.sliderClickTime = -1;
             }
         }
+
+        //Miramos si el ratón está sobre el botón de regreso.
+        this.isBackButtonHovered = Frame.BACK_BUTTON_BOUNDING_BOX.containsLocation(interfaceX, interfaceY);
 
         //Si no está sobre algún widget miramos que el ratón esté dentro del Frame.
         return isMouseOnAnyWidget || (
@@ -294,5 +331,27 @@ public class Frame extends Container {
         this.widgets.stream()
                 .filter(widget -> widget instanceof OnMouseDragEvent)
                 .forEach(widget -> ((OnMouseDragEvent) widget).onMouseDragEvent(mouseX /Container.pixelSizeInScreen -this.posX, mouseY /Container.pixelSizeInScreen  -this.posY));
+    }
+
+    public static class FrameLayoutBuilder {
+        private static final int INITIAL_POS = 24;
+
+        private final int SPACING;
+        private int posY = FrameLayoutBuilder.INITIAL_POS;
+
+        public FrameLayoutBuilder(int spacing) {
+            this.SPACING = spacing;
+        }
+
+        public int nextTo(Widget widget) {
+            posY += (int) (widget.getBoundingBox().getHeight() + this.SPACING);
+
+            return posY;
+        }
+
+        public int nextTo() {
+            return this.posY;
+        }
+
     }
 }

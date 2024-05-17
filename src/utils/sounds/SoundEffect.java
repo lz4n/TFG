@@ -18,6 +18,8 @@ public enum SoundEffect {
     private final boolean IS_BACKGROUND_MUSIC;
     private final File[] FILES;
 
+    private static Clip musicClip;
+
     SoundEffect(boolean isBackgroundMusic, String... files) {
         this.IS_BACKGROUND_MUSIC = isBackgroundMusic;
         this.FILES = new File[files.length];
@@ -48,7 +50,14 @@ public enum SoundEffect {
             audioClip.start();
         }
 
+        if (this.IS_BACKGROUND_MUSIC) {
+            SoundEffect.musicClip = audioClip;
+        }
 
         return audioClip;
+    }
+
+    public static void updateMusicVolume() {
+        ((FloatControl) SoundEffect.musicClip.getControl(FloatControl.Type.MASTER_GAIN)).setValue((float) (Math.log(SoundCategory.MUSIC.getVolume()) / Math.log(10.0) * 20.0));
     }
 }

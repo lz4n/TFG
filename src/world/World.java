@@ -1,6 +1,7 @@
 package world;
 
 import main.Main;
+import utils.Setting;
 import world.entity.Entity;
 import world.feature.*;
 import world.feature.building.Building;
@@ -26,11 +27,14 @@ public class World extends Ticking implements Serializable {
     /**
      * Duración de las fases del día, meses y años.
      */
-    public static final int SUNRISE_DURATION = 600,
-            DAY_DURATION = 4800,
-            NIGHT_DURATION = 3000,
-
-            TOTAL_DAY_DURATION = World.SUNRISE_DURATION +World.DAY_DURATION +World.NIGHT_DURATION +World.SUNRISE_DURATION,
+    public static final int
+            TOTAL_DAY_DURATION = 9000,
+            SUNRISE_START = World.hourToTick(7, 0),
+            SUNRISE_END = World.hourToTick(8, 30),
+            SUNRISE_DURATION = SUNRISE_END - SUNRISE_START,
+            SUNSET_START = World.hourToTick(21, 30),
+            SUNSET_END = World.hourToTick(22, 0),
+            sunsetDuration = SUNSET_END - SUNSET_START,
             MONTH_DURATION_IN_DAYS = 30,
             MAX_MONTH = 12;
     private static final float MIN_DAYLIGHT = .2f;
@@ -80,7 +84,7 @@ public class World extends Ticking implements Serializable {
     /**
      * Hora, dia, mes y año del mundo.
      */
-    private int dayTime = (int) (World.SUNRISE_DURATION *.45), day = LocalDateTime.now().getDayOfMonth(), month = LocalDateTime.now().getMonthValue(), year = LocalDateTime.now().getYear();
+    private int dayTime = World.SUNRISE_START, day = LocalDateTime.now().getDayOfMonth(), month = LocalDateTime.now().getMonthValue(), year = LocalDateTime.now().getYear();
 
     /**
      * Número de features y entidades totales del mundo.
@@ -395,14 +399,20 @@ public class World extends Ticking implements Serializable {
      * @return Intensidad de la luz del día.
      */
     public float getDayLight() {
-        if (this.getDayTime() < World.SUNRISE_DURATION) {
-            return World.MIN_DAYLIGHT + (1 - World.MIN_DAYLIGHT) * ((float) (this.getDayTime()) / World.SUNRISE_DURATION); //La intensidad aumenta durante el amanecer
-        } else if (this.getDayTime() < World.SUNRISE_DURATION  +World.DAY_DURATION) {
-            return 1f; //Máxima intensidad durante el día
-        } else if (this.getDayTime() < World.SUNRISE_DURATION +World.DAY_DURATION +World.SUNRISE_DURATION) {
-            return 1f - (1 - World.MIN_DAYLIGHT) * ((float) (this.getDayTime() - World.SUNRISE_DURATION -World.DAY_DURATION) / World.SUNRISE_DURATION); //La intensidad disminuye durante el anochecer
+
+        if ((0 < this.getDayTime() && this.getDayTime() < SUNRISE_START) || (SUNSET_END < this.getDayTime() && this.getDayTime() < World.TOTAL_DAY_DURATION)) {
+            return World.MIN_DAYLIGHT;
+        } else if (SUNRISE_START < this.getDayTime() && this.getDayTime() < SUNRISE_END) {
+            // Durante el amanecer, incrementa la luz gradualmente
+            return World.MIN_DAYLIGHT + (1 - World.MIN_DAYLIGHT) * ((float) (this.getDayTime() - SUNRISE_START) / SUNRISE_DURATION);
+        } else if (SUNRISE_END < this.getDayTime() && this.getDayTime() < SUNSET_START) {
+            // Durante el día, luz máxima
+            return 1;
+        } else if (SUNSET_START < this.getDayTime() && this.getDayTime() < SUNSET_END) {
+            // Durante el atardecer, disminuye la luz gradualmente
+            return 1f - (1 - World.MIN_DAYLIGHT) * ((float) (this.getDayTime() - SUNSET_START) / sunsetDuration);
         } else {
-            return World.MIN_DAYLIGHT; //Sin luz durante la noche
+            return -1;
         }
     }
 
@@ -530,7 +540,7 @@ public class World extends Ticking implements Serializable {
         }
 
         //Generamos nubes.
-        if (Main.RANDOM.nextFloat() > 0.98) {
+        if (Main.RANDOM.nextFloat() > Setting.CLOUDS.getValue()) {
             float cloudVelocity = Main.RANDOM.nextFloat(.04f, .06f);
             Location cloudLocation = new Location(0, Main.RANDOM.nextFloat(this.WORLD_SIZE));
             this.spawnParticle(new CloudParticle(cloudLocation.clone(), cloudVelocity, false));
@@ -539,5 +549,12 @@ public class World extends Ticking implements Serializable {
             cloudLocation.add(0, Main.RANDOM.nextFloat(2f, 5f) *-1);
             this.spawnParticle(new CloudParticle(cloudLocation, cloudVelocity, true));
         }
+    }
+
+    public static int hourToTick(int hour, int minute) {
+        return (int) (
+                (hour * World.TOTAL_DAY_DURATION / 24) +
+                        ((float) minute * World.TOTAL_DAY_DURATION) / (24 % World.TOTAL_DAY_DURATION * 60)
+        );
     }
 }

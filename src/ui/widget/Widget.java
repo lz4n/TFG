@@ -138,7 +138,7 @@ public abstract class Widget {
     /**
      * Llama al evento de clic.
      */
-    public void onClickEvent() {
+    public void onMouseClickEvent() {
         this.onClickEvent.widgetEvent();
     }
 

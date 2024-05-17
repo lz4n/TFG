@@ -28,7 +28,7 @@ public class Main {
     public static World world = new World("world", new Random().nextInt(100000000), 500);
 
     /**
-     * Velocidad de tick del juego, por defecto.
+     * Velocidad de tick del juego por defecto.
      */
     public static int tickSpeed = 1;
 

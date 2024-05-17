@@ -3,14 +3,8 @@ package utils.render.scene;
 import listener.MouseListener;
 import main.Main;
 import org.joml.Matrix4f;
-import org.joml.Vector2f;
-import org.lwjgl.system.windows.TOUCHINPUT;
-import ui.container.Container;
 import ui.container.Inventory;
-import ui.tooltip.Tooltip;
-import ui.widget.buttonWidget.FrameButtonWidget;
-import utils.BoundingBox;
-import utils.Logger;
+import utils.Setting;
 import utils.Time;
 import utils.render.GameFont;
 import utils.render.Window;
@@ -18,11 +12,8 @@ import utils.render.mesh.*;
 import org.lwjgl.opengl.*;
 import utils.render.Shader;
 import utils.render.texture.*;
-import world.World;
 import world.WorldGenerator;
-import world.entity.Entity;
 import world.feature.Feature;
-import world.location.Location;
 import world.particle.*;
 import world.terrain.Terrain;
 
@@ -87,12 +78,13 @@ public class WorldScene implements Scene {
         GL20.glEnable(GL20.GL_BLEND);
         GL20.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
+        float dayLight = Setting.DIURNAL_CYCLE.getValue() ? Main.world.getDayLight() : 1f;
 
         //Activamos el shader y subimos variables uniform al shader .glsl
         Shader.WORLD.use();
         Shader.WORLD.uploadMatrix4f("uProjection", Main.PLAYER.getCamera().getProjectionMatrix());
         Shader.WORLD.uploadMatrix4f("uView", Main.PLAYER.getCamera().getViewMatrix());
-        Shader.WORLD.uploadFloat("uDaylight", Main.world.getDayLight());
+        Shader.WORLD.uploadFloat("uDaylight", dayLight);
         Shader.WORLD.uploadFloat("uHappiness", Main.world.getHappiness());
         Shader.WORLD.uploadInt("uIsPaused", Main.PLAYER.isPaused() ? 1 : 0);
         for (int samplerId = 0; samplerId < Texture.SAMPLERS_COUNT; samplerId++) {
@@ -131,7 +123,7 @@ public class WorldScene implements Scene {
         Shader.ENTITY.use();
         Shader.ENTITY.uploadMatrix4f("uProjection", Main.PLAYER.getCamera().getProjectionMatrix());
         Shader.ENTITY.uploadMatrix4f("uView", Main.PLAYER.getCamera().getViewMatrix());
-        Shader.ENTITY.uploadFloat("uDaylight", Main.world.getDayLight());
+        Shader.ENTITY.uploadFloat("uDaylight", dayLight);
         Shader.ENTITY.uploadFloat("uHappiness", Main.world.getHappiness());
         Shader.ENTITY.uploadFloat("uRotationAngle", 0);
         Shader.ENTITY.uploadFloat("uScale", 1);
@@ -161,9 +153,13 @@ public class WorldScene implements Scene {
 
         //Generamos la pantalla de debug
         if (Main.isDebugging) {
+            Runtime runtime = Runtime.getRuntime();
+
             String debug = String.format("""
                             game:
                                 fps=%d
+                                memory used=%dMb (%.02f%%) (F10 to call G.C.)
+                                availableProcessors=%d
                                 tickSpeed=%d
                             
                             player:
@@ -185,6 +181,9 @@ public class WorldScene implements Scene {
                                 happiness=%.03f
                             """,
                     (int) (1/ Time.nanosecondsToSeconds(dTime)),
+                    (runtime.totalMemory() -runtime.freeMemory()) /1048576,
+                    ((float) runtime.freeMemory() /runtime.totalMemory()) *100,
+                    runtime.availableProcessors(),
                     Main.tickSpeed,
                     Main.PLAYER.isPaused(),
                     Main.PLAYER.isHidingUi(),
