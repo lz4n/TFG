@@ -53,9 +53,9 @@ public class SlotWidget extends Widget implements CustomDrawWidget {
     }
 
     @Override
-    public void onClickEvent() {
+    public void onMouseClickEvent() {
         this.setSelected(!this.isSelected());
-        super.onClickEvent();
+        super.onMouseClickEvent();
     }
 
     /**

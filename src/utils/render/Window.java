@@ -201,7 +201,7 @@ public class Window {
         }
 
         //Si la opción FULLSCREEN está en true lo ponemos en pantalla completa.
-        if (Setting.FULLSCREEN.getAsBoolean()) {
+        if (Setting.FULLSCREEN.getValue()) {
             Window.setFullScreen(true);
         }
 
@@ -344,7 +344,7 @@ public class Window {
      * Alterna la pantalla completa.
      */
     public static void toggleFullscreen() {
-        boolean fullScreen = !Setting.FULLSCREEN.getAsBoolean();
+        boolean fullScreen = !Setting.FULLSCREEN.getValue();
         setFullScreen(fullScreen);
         Setting.FULLSCREEN.setValue(fullScreen);
     }

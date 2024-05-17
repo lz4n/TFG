@@ -87,8 +87,8 @@ public abstract class AbstractButtonWidget extends Widget implements CustomDrawW
     }
 
     @Override
-    public void onClickEvent() {
-        super.onClickEvent();
+    public void onMouseClickEvent() {
+        super.onMouseClickEvent();
         this.clickTime = AbstractButtonWidget.CLICK_TIME;
     }
 }

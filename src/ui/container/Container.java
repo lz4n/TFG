@@ -64,7 +64,7 @@ public abstract class Container {
     public void onClickEvent(float mouseX, float mouseY) {
         new LinkedList<>(this.widgets).stream()
                 .filter(Widget::isHovered) //Si la bandera hovered está activa es que el ratón está sobre ese widget.
-                .forEach(Widget::onClickEvent);
+                .forEach(Widget::onMouseClickEvent);
     }
 
     /**

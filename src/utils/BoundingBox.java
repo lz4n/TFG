@@ -143,6 +143,34 @@ public class BoundingBox implements Cloneable {
         return new Vector4f(this.xMin, this.yMin, this.xMax, this.yMax);
     }
 
+    /**
+     * @return Valor mínimo del eje X.
+     */
+    public float getXMin() {
+        return xMin;
+    }
+
+    /**
+     * @return Valor mínimo del eje Y.
+     */
+    public float getYMin() {
+        return yMin;
+    }
+
+    /**
+     * @return Valor máximo del eje X.
+     */
+    public float getXMax() {
+        return xMax;
+    }
+
+    /**
+     * @return Valor máximo del eje Y.
+     */
+    public float getYMax() {
+        return yMax;
+    }
+
     @Override
     public BoundingBox clone() {
         try {

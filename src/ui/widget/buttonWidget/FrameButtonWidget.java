@@ -19,23 +19,23 @@ public class FrameButtonWidget extends AbstractButtonWidget implements OnResizeW
     /**
      * BoundingBox base del widget, cuando se instancia se duplica y se mueve a la posición del widget.
      */
-    private final static BoundingBox BASE_BOUNDING_BOX = new BoundingBox(84, 16);
+    protected final static BoundingBox BASE_BOUNDING_BOX = new BoundingBox(84, 16);
 
     /**
      * Tamaño del texto por pixel in-game.
      */
-    private final static int UNIT_TEXT_SIZE = 8;
+    private final static float UNIT_TEXT_SIZE = 6.5f;
 
     /**
      * Texto del botón.
      */
-    private final String TEXT;
+    protected final String TEXT;
 
     /**
      * Textura que contiene el texto del botón. Cada vez que se cambie el tamaño del botón, debe cambiar el tamaño del texto,
      * y se recalcula la textura.
      */
-    private Graphics2dTexture textTexture;
+    protected Graphics2dTexture textTexture;
 
     /**
      * @param posX Posición en el eje X.
@@ -63,6 +63,6 @@ public class FrameButtonWidget extends AbstractButtonWidget implements OnResizeW
         if (this.textTexture != null) {
             this.textTexture.remove();
         }
-        this.textTexture = GameFont.PIXEL.drawText(this.TEXT, Font.PLAIN, FrameButtonWidget.UNIT_TEXT_SIZE *(int) Container.pixelSizeInScreen);
+        this.textTexture = GameFont.PIXEL.drawText(this.TEXT, Font.PLAIN, (int) (FrameButtonWidget.UNIT_TEXT_SIZE  *Container.pixelSizeInScreen));
     }
 }

@@ -4,6 +4,8 @@ import listener.MouseListener;
 import main.Main;
 import org.joml.Vector2f;
 import org.lwjgl.glfw.GLFW;
+import ui.widget.buttonWidget.OptionsFrameButtonWidgets;
+import utils.Setting;
 import utils.sounds.SoundCategory;
 import utils.sounds.SoundEffect;
 import ui.container.Container;
@@ -131,6 +133,16 @@ public class Player extends Ticking {
      * Menú de configuración.
      */
     private final Frame CONFIG_MENU = new Frame("Config");
+
+    /**
+     * Menú de configuración de audio.
+     */
+    private final Frame AUDIO_MENU = new Frame("Audio");
+
+    /**
+     * Menú de configuración de video.
+     */
+    private final Frame VIDEO_MENU = new Frame("Video");
 
     /**
      * Mapa que almacena los slots correspondientes a cada item del inventario.
@@ -272,17 +284,35 @@ public class Player extends Ticking {
 
         this.INVENTORY.setCurrentTab(Player.GENERAL_TAB);
 
-        //** MENU DE JUEGO **//
-        FrameButtonWidget returnGameButton = new FrameButtonWidget(8, 24, "Volver");
+
+        this.createGameMenu();
+        this.createConfigMenu();
+        this.createVideoMenu();
+        this.createAudioMenu();
+
+        this.updateMoney(Main.world.getMoney());
+        this.updateIncomes(Main.world.getIncomes());
+        this.updatePopulation(Main.world.getPopulation());
+        this.updateHappiness(Main.world.getHappiness());
+    }
+
+    private void createGameMenu() {
+        this.GAME_MENU.setOnBackClickEvent(this::openInventory);
+
+        Frame.FrameLayoutBuilder layoutBuilder = new Frame.FrameLayoutBuilder(16);
+
+        FrameButtonWidget returnGameButton = new FrameButtonWidget(8, layoutBuilder.nextTo(), "Volver");
         returnGameButton.setOnClickEvent(this::openInventory);
         this.GAME_MENU.addWidget(returnGameButton);
-        this.GAME_MENU.addWidget(new FrameButtonWidget(8, 56, "Abrir mundo"));
 
-        FrameButtonWidget configButton = new FrameButtonWidget(8, 88, "Configuracion");
+        FrameButtonWidget openWorldButton = new FrameButtonWidget(8, layoutBuilder.nextTo(returnGameButton), "Abrir mundo");
+        this.GAME_MENU.addWidget(openWorldButton);
+
+        FrameButtonWidget configButton = new FrameButtonWidget(8, layoutBuilder.nextTo(openWorldButton), "Configuracion");
         configButton.setOnClickEvent(this::openConfig);
         this.GAME_MENU.addWidget(configButton);
 
-        FrameButtonWidget leaveGameButton = new FrameButtonWidget(8, 120, "Guardar y salir");
+        FrameButtonWidget leaveGameButton = new FrameButtonWidget(8, layoutBuilder.nextTo(configButton), "Guardar y salir");
         leaveGameButton.setOnClickEvent(() -> {
             File worldFile = new File(Main.installDirectory, "worlds/world.dat");
             worldFile.getParentFile().mkdirs();
@@ -295,19 +325,83 @@ public class Player extends Ticking {
             GLFW.glfwSetWindowShouldClose(Window.window, true);
         });
         this.GAME_MENU.addWidget(leaveGameButton);
+    }
 
-        //** MENU DE CONFIGURACIÓN **//
-        SliderWidget s = new SliderWidget(6, 24, "test slider");
-        this.CONFIG_MENU.addWidget(s);
-        for (int i = 1; i < 10; i++) {
-            FrameButtonWidget a = new FrameButtonWidget(6, 24 + 32*i, "test " + i);
-            this.CONFIG_MENU.addWidget(a);
-        }
+    private void createConfigMenu() {
+        this.CONFIG_MENU.setOnBackClickEvent(this::openMenu);
 
-        this.updateMoney(Main.world.getMoney());
-        this.updateIncomes(Main.world.getIncomes());
-        this.updatePopulation(Main.world.getPopulation());
-        this.updateHappiness(Main.world.getHappiness());
+        Frame.FrameLayoutBuilder layoutBuilder = new Frame.FrameLayoutBuilder(16);
+
+        FrameButtonWidget videoConfigButton = new FrameButtonWidget(8, layoutBuilder.nextTo(), "Video");
+        videoConfigButton.setOnClickEvent(this::openVideoConfig);
+        this.CONFIG_MENU.addWidget(videoConfigButton);
+
+        FrameButtonWidget audioConfigButton = new FrameButtonWidget(8, layoutBuilder.nextTo(videoConfigButton), "Audio");
+        audioConfigButton.setOnClickEvent(this::openAudioConfig);
+        this.CONFIG_MENU.addWidget(audioConfigButton);
+    }
+
+    private void createVideoMenu() {
+        this.VIDEO_MENU.setOnBackClickEvent(this::openConfig);
+
+        Frame.FrameLayoutBuilder layoutBuilder = new Frame.FrameLayoutBuilder(4);
+
+        FrameButtonWidget fullscreenButton = new FrameButtonWidget(8, layoutBuilder.nextTo(), "Pantalla\ncompleta");
+        fullscreenButton.setOnClickEvent(Window::toggleFullscreen);
+        this.VIDEO_MENU.addWidget(fullscreenButton);
+
+        FrameSeparatorWidget separatorWidget = new FrameSeparatorWidget(3, layoutBuilder.nextTo(fullscreenButton));
+        this.VIDEO_MENU.addWidget(separatorWidget);
+
+        OptionsFrameButtonWidgets<Boolean> diurnalCycleButton = new OptionsFrameButtonWidgets<>(8, layoutBuilder.nextTo(separatorWidget), "Ciclo día/noche", new LinkedHashMap<>() {{
+            put(Boolean.TRUE, "Si");
+            put(Boolean.FALSE, "No");
+        }}, Setting.DIURNAL_CYCLE.getValue());
+        diurnalCycleButton.setOnValueChangeEvent(Setting.DIURNAL_CYCLE::setValue);
+        this.VIDEO_MENU.addWidget(diurnalCycleButton);
+
+        OptionsFrameButtonWidgets<Float> cloudsButton = new OptionsFrameButtonWidgets<>(8, layoutBuilder.nextTo(diurnalCycleButton), "Nubes", new LinkedHashMap<>() {{
+            put(.87f, "Muchas");
+            put(.95f, "Moderado");
+            put(.98f, "Pocas");
+            put(1f, "No");
+        }}, Setting.CLOUDS.getValue());
+        cloudsButton.setOnValueChangeEvent(Setting.CLOUDS::setValue);
+        this.VIDEO_MENU.addWidget(cloudsButton);
+    }
+
+    private void createAudioMenu() {
+        this.AUDIO_MENU.setOnBackClickEvent(this::openConfig);
+
+        Frame.FrameLayoutBuilder layoutBuilder = new Frame.FrameLayoutBuilder(4);
+
+        SliderWidget volumeSlider = new SliderWidget(8, layoutBuilder.nextTo(), "Volumen general");
+        volumeSlider.setValue(Setting.GENERAL_VOLUME.getValue());
+        volumeSlider.setOnValueChangeEvent(value -> {
+            Setting.GENERAL_VOLUME.setValue(value);
+            SoundCategory.setGeneralVolume(value);
+
+            SoundEffect.updateMusicVolume();
+        });
+        this.AUDIO_MENU.addWidget(volumeSlider);
+
+        SliderWidget musicSlider = new SliderWidget(8, layoutBuilder.nextTo(volumeSlider), "Música");
+        musicSlider.setValue(Setting.MUSIC_VOLUME.getValue());
+        musicSlider.setOnValueChangeEvent(value -> {
+            Setting.MUSIC_VOLUME.setValue(value);
+            SoundCategory.MUSIC.setVolume(value);
+
+            SoundEffect.updateMusicVolume();
+        });
+        this.AUDIO_MENU.addWidget(musicSlider);
+
+        SliderWidget soundEffectsSlider = new SliderWidget(8, layoutBuilder.nextTo(musicSlider), "Efectos de sonido");
+        soundEffectsSlider.setValue(Setting.SOUND_EFFECTS_VOLUME.getValue());
+        soundEffectsSlider.setOnValueChangeEvent(value -> {
+            Setting.SOUND_EFFECTS_VOLUME.setValue(value);
+            SoundCategory.SOUND_EFFECTS.setVolume(value);
+        });
+        this.AUDIO_MENU.addWidget(soundEffectsSlider);
     }
 
     /**
@@ -410,7 +504,7 @@ public class Player extends Ticking {
      * Pasa a la siguiente velocidad, si llega al máximo pausa el juego.
      */
     public void toggleGameSpeed() {
-        this.gameSpeedButton.onClickEvent();
+        this.gameSpeedButton.onMouseClickEvent();
         if (Main.tickSpeed == 0) Main.tickSpeed = 1;
     }
 
@@ -420,10 +514,10 @@ public class Player extends Ticking {
     public void togglePauseGame() {
         if (Main.tickSpeed != 0) {
             this.previousGameSpeed = Main.tickSpeed;
-            this.gameSpeedButton.onClickEvent();
+            this.gameSpeedButton.onMouseClickEvent();
             Main.tickSpeed = 0;
         } else {
-            this.gameSpeedButton.onClickEvent();
+            this.gameSpeedButton.onMouseClickEvent();
             Main.tickSpeed = this.previousGameSpeed;
         }
     }
@@ -583,6 +677,25 @@ public class Player extends Ticking {
         this.isPaused = true;
         this.container.onResizeWindowEvent(Window.getWidth(), Window.getHeight());
     }
+
+    /**
+     * Cierra el contenedor anterior y abre el menú de configuración de video.
+     */
+    public void openVideoConfig() {
+        this.container = this.VIDEO_MENU;
+        this.isPaused = true;
+        this.container.onResizeWindowEvent(Window.getWidth(), Window.getHeight());
+    }
+
+    /**
+     * Cierra el contenedor anterior y abre el menú de configuración de audio.
+     */
+    public void openAudioConfig() {
+        this.container = this.AUDIO_MENU;
+        this.isPaused = true;
+        this.container.onResizeWindowEvent(Window.getWidth(), Window.getHeight());
+    }
+
 
     /**
      * Cierra el contenedor anterior y abre el inventario.

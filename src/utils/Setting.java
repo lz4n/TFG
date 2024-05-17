@@ -3,35 +3,58 @@ package utils;
 import main.Main;
 
 import java.io.*;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Properties;
 
 /**
  * Contiene la configuración general del juego.
  */
-public enum Setting {
+public class Setting<T> {
+    private static final List<Setting<?>> SETTING_LIST = new LinkedList<>();
+    private static final File PROPERTIES_FILE = new File(Main.installDirectory, "settings.txt");
+    private static final Properties PROPERTIES = new Properties();
+
     /**
      * Determina si el juego está en pantalla completa o no. Si está en "true" al iniciar el juego se pondrá en pantalla
      * completa automaticamente.
      */
-    FULLSCREEN("false");
+    public static final Setting<Boolean> FULLSCREEN = new Setting<>("FULLSCREEN", false);
 
     /**
-     * Archivo en el que se guarda la configuración, "settings.txt" dentro del directorio de juego.
+     * Determina si cuando sea por la noche se van a oscurecer los objetos en pantalla. No afecta al funcionamiento, es
+     * puramente visual.
      */
-    private static final File PROPERTIES_FILE = new File(Main.installDirectory, "settings.txt");
+    public static final Setting<Boolean> DIURNAL_CYCLE = new Setting<>("DIURNAL_CYCLE", true);
 
     /**
-     * Objeto Properties que almacena la configuración.
+     * Representa la probabilidad de que <b>NO</b> aparezca una nube en cada tick.
      */
-    private static final Properties PROPERTIES = new Properties();
+    public static final Setting<Float> CLOUDS = new Setting<>("CLOUDS", 0.98f);
 
     /**
-     * Valor por defecto de la opción de juego.
+     * Representa la probabilidad de que <b>NO</b> aparezca una nube en cada tick.
      */
-    private final String DEFAULT_VALUE;
+    public static final Setting<Float> GENERAL_VOLUME = new Setting<>("GENERAL_VOLUME", 1f);
 
-    Setting(String defaultValue) {
-        DEFAULT_VALUE = defaultValue;
+    /**
+     * Representa la probabilidad de que <b>NO</b> aparezca una nube en cada tick.
+     */
+    public static final Setting<Float> MUSIC_VOLUME = new Setting<>("MUSIC_VOLUME", 1f);
+
+    /**
+     * Representa la probabilidad de que <b>NO</b> aparezca una nube en cada tick.
+     */
+    public static final Setting<Float> SOUND_EFFECTS_VOLUME = new Setting<>("SOUND_EFFECTS_VOLUME", 1f);
+
+    private final String ID;
+    private T value;
+
+    private Setting(String name, T defaultValue) {
+        this.ID = name;
+        this.value = defaultValue;
+
+        Setting.SETTING_LIST.add(this);
     }
 
     /**
@@ -40,6 +63,29 @@ public enum Setting {
     public static void load() {
         try {
             Setting.PROPERTIES.load(new FileReader(PROPERTIES_FILE));
+
+            Setting.SETTING_LIST.forEach(setting -> {
+                Object value = null;
+
+                try {
+                    switch (setting.getValue()) {
+                        case Boolean boolValue -> {
+                            value = Boolean.parseBoolean(Setting.PROPERTIES.getProperty(setting.ID, boolValue.toString()));
+                        }
+                        case Float floatValue -> {
+                            value = Float.parseFloat(Setting.PROPERTIES.getProperty(setting.ID, floatValue.toString()));
+                        }
+                        default -> Logger.sendMessage("El tipo de datos de la opción %s no está soportado para lectura.", Logger.LogMessageType.WARNING);
+                    }
+                } catch (ClassCastException exception) {
+                    Logger.sendMessage("Error de casting al leer la opción %s: %s.", Logger.LogMessageType.WARNING, setting.ID, exception.getMessage());
+                }
+
+                if (value != null) {
+                    setting.setValue(value);
+                }
+            });
+
             Logger.sendMessage("Se ha leido con éxito el archivo de configuración.", Logger.LogMessageType.INFO);
         } catch (IOException exception) {
             Logger.sendMessage("Error leyendo el archivo de configuración: %s. Se va a intentar crear uno nuevo.", Logger.LogMessageType.WARNING, exception.getMessage());
@@ -56,18 +102,22 @@ public enum Setting {
      */
     public static void save() {
         try {
+            Setting.SETTING_LIST.forEach(setting -> {
+                Setting.PROPERTIES.setProperty(setting.ID, setting.getValue().toString());
+            });
+
             Setting.PROPERTIES.store(new FileWriter(Setting.PROPERTIES_FILE, false), null);
             Logger.sendMessage("Se ha guardado con éxito el archivo de configuración.", Logger.LogMessageType.INFO);
         } catch (IOException exception) {
-            Logger.sendMessage("Error escribiendo el archivo de configuración: %s", Logger.LogMessageType.WARNING, exception.getMessage());
+            Logger.sendMessage("Error escribiendo el archivo de configuración: %s.", Logger.LogMessageType.WARNING, exception.getMessage());
         }
     }
 
     /**
-     * @return Valor de la opción cómo un booleano.
+     * @return Valor de la opción.
      */
-    public boolean getAsBoolean() {
-        return Boolean.parseBoolean(Setting.PROPERTIES.getProperty(this.toString(), this.DEFAULT_VALUE));
+    public T getValue() {
+        return this.value;
     }
 
     /**
@@ -76,6 +126,10 @@ public enum Setting {
      * @see Setting#save()
      */
     public void setValue(Object value) {
-        Setting.PROPERTIES.setProperty(this.toString(), String.valueOf(value));
+        try {
+            this.value = (T) value;
+        } catch (ClassCastException exception) {
+            Logger.sendMessage("No se ha podido castear el valor %s de la opción %s: %s.", Logger.LogMessageType.WARNING, value, this.ID, exception.getMessage());
+        }
     }
 }

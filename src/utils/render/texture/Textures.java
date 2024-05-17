@@ -60,6 +60,7 @@ public final class Textures {
         UNSELECTED_LEFT_ARROW = new StaticTexture("assets/textures/ui/inventory/arrow/unselected_left_arrow.png"),
         HOVERED_LEFT_ARROW = new StaticTexture("assets/textures/ui/inventory/arrow/hovered_left_arrow.png"),
         SEPARATOR_WIDGET = new StaticTexture("assets/textures/ui/inventory/separator.png"),
+        FRAME_SEPARATOR_WIDGET = new StaticTexture("assets/textures/ui/inventory/frame_separator.png"),
         SELECTED_SLOT_WIDGET = new StaticTexture("assets/textures/ui/inventory/slot/selected_slot.png"),
         UNSELECTED_SLOT_WIDGET = new StaticTexture("assets/textures/ui/inventory/slot/unselected_slot.png"),
         HOVERED_SLOT_WIDGET = new StaticTexture("assets/textures/ui/inventory/slot/hovered_slot.png"),
@@ -103,6 +104,7 @@ public final class Textures {
         FRAME_SCROLL_BAR_RAIL = new StaticTexture("assets/textures/ui/inventory/frame/frame_scroll_bar_rail.png"),
         FRAME_SCROLL_BAR_SLIDER = new StaticTexture("assets/textures/ui/inventory/frame/frame_scroll_bar_slider.png"),
         HOVERED_FRAME_SCROLL_BAR_SLIDER = new StaticTexture("assets/textures/ui/inventory/frame/hovered_frame_scroll_bar_slider.png"),
-        CLICKED_FRAME_SCROLL_BAR_SLIDER = new StaticTexture("assets/textures/ui/inventory/frame/clicked_frame_scroll_bar_slider.png");
-
+        CLICKED_FRAME_SCROLL_BAR_SLIDER = new StaticTexture("assets/textures/ui/inventory/frame/clicked_frame_scroll_bar_slider.png"),
+        BACK_FRAME_BUTTON = new StaticTexture("assets/textures/ui/inventory/frame/back_button.png"),
+        HOVERED_BACK_FRAME_BUTTON = new StaticTexture("assets/textures/ui/inventory/frame/hovered_back_button.png");
 }

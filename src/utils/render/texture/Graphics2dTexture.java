@@ -1,8 +1,8 @@
 package utils.render.texture;
 
-import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.lwjgl.opengl.GL20;
+import utils.Logger;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -30,6 +30,8 @@ public class Graphics2dTexture extends Texture {
      * Identificador numérico de la textura.
      */
     private int textureId;
+
+    private boolean isRemoved = false;
 
     /**
      * @param width Ancho de los gráficos.
@@ -97,6 +99,7 @@ public class Graphics2dTexture extends Texture {
      */
     public void remove() {
         GL20.glDeleteTextures(this.textureId);
+        this.isRemoved = true;
     }
 
     @Override
@@ -108,5 +111,27 @@ public class Graphics2dTexture extends Texture {
     public void bind(int unit) {
         super.bind(unit);
         GL20.glBindTexture(GL20.GL_TEXTURE_2D, this.textureId);
+    }
+
+    /**
+     * Sobreescribimos el método finalize para que en caso de que por algún motivo no se haya eliminado la textura manualmente
+     * se elimine automáticamente cuando el objeto sea destruido por el recolector de basura.<br>
+     * Igualmente, sigue siendo preferible llamar a .remove() antes de la eliminación
+     *
+     * @see Graphics2dTexture#remove()
+     */
+    @Override
+    protected void finalize() throws Throwable {
+        System.out.println("ex");
+        try {
+            if (!isRemoved) {
+                this.remove();
+                Logger.sendMessage("Se está eliminado la textura %s a través del recolector de basura. Es preferible su eliminación manual.", Logger.LogMessageType.DEBUG, this);
+            }
+        } catch (Exception exception) {
+            Logger.sendMessage("Error eliminado la textura %s: %s.", Logger.LogMessageType.WARNING, this, exception.getMessage());
+        } finally {
+            super.finalize();
+        }
     }
 }
