@@ -3,6 +3,7 @@ package utils.render.scene;
 import listener.MouseListener;
 import main.Main;
 import org.joml.Matrix4f;
+import org.joml.Vector2d;
 import ui.container.Inventory;
 import utils.Setting;
 import utils.Time;
@@ -18,6 +19,7 @@ import world.particle.*;
 import world.terrain.Terrain;
 
 import java.awt.*;
+import java.util.List;
 
 /**
  * Escena encargada de renderizar el mundo.
@@ -147,14 +149,34 @@ public class WorldScene implements Scene {
             Texture.unbind();
         });
 
-        Shader.HUD.use();
-        Shader.HUD.uploadMatrix4f("uProjection", new Matrix4f().ortho(0, Window.getWidth(), Window.getHeight(), 0, -1, 1));
-        Shader.HUD.uploadMatrix4f("uView", new Matrix4f().identity());
-
         //Generamos la pantalla de debug
         if (Main.isDebugging) {
-            Runtime runtime = Runtime.getRuntime();
+            Shader.SHAPE.use();
+            Shader.SHAPE.uploadMatrix4f("uProjection", new Matrix4f().ortho(0, Window.getWidth(), Window.getHeight(), 0, -1, 1));
+            Shader.SHAPE.uploadMatrix4f("uView", new Matrix4f().identity());
+            Shader.SHAPE.upload4f("uColor", 1f, 0f, 0f, 0.5f);
 
+            Main.world.getEntities().forEach(entity -> {
+                List<Vector2d> entityPath = entity.getPath();
+
+                if (entityPath != null) {
+                    Shader.SHAPE.upload2f("uPosition", 0, 0);
+                    TooltipMesh mesh = new TooltipMesh();
+
+                    entityPath.forEach(vector -> {
+                        mesh.addVertex((float) vector.x, (float) vector.y, 1, 1, SPRITE_SIZE);
+                    });
+
+                    mesh.load();
+                    mesh.draw();
+                }
+            });
+
+            Shader.HUD.use();
+            Shader.HUD.uploadMatrix4f("uProjection", new Matrix4f().ortho(0, Window.getWidth(), Window.getHeight(), 0, -1, 1));
+            Shader.HUD.uploadMatrix4f("uView", new Matrix4f().identity());
+
+            Runtime runtime = Runtime.getRuntime();
             String debug = String.format("""
                             game:
                                 fps=%d
@@ -230,6 +252,10 @@ public class WorldScene implements Scene {
 
             Texture.unbind();
         }
+
+        Shader.HUD.use();
+        Shader.HUD.uploadMatrix4f("uProjection", new Matrix4f().ortho(0, Window.getWidth(), Window.getHeight(), 0, -1, 1));
+        Shader.HUD.uploadMatrix4f("uView", new Matrix4f().identity());
 
         Main.PLAYER.updateDateTime(Main.world.getFormattedDayTime(), String.format("%d-%d-%d", Main.world.getDay(), Main.world.getMonth(), Main.world.getYear()));
         if (!Main.PLAYER.isHidingUi() || !(Main.PLAYER.getContainer() instanceof Inventory)) {

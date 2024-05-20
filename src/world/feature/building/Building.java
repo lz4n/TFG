@@ -11,7 +11,9 @@ import java.sql.Array;
 import java.util.Arrays;
 
 public abstract class Building extends Feature {
+
     protected Duck[] inhabitants;
+
     public Building(Location location, Vector2i sizeInBlocks, FeatureType featureType, int variant) {
         super(location, sizeInBlocks, featureType, variant);
     }
@@ -37,5 +39,9 @@ public abstract class Building extends Feature {
                 return true;
         }
         return false;
+    }
+
+    public Duck[] getInhabitants() {
+        return this.inhabitants;
     }
 }

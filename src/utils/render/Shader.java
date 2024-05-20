@@ -39,7 +39,7 @@ public enum Shader {
     /**
      * Shader utilizado para renderizar la caja de las  tooltips.
      */
-    TOOLTIP("assets/shaders/tooltip", true);
+    SHAPE("assets/shaders/shape", true);
 
     /**
      * Indica si el shader puede instanciar texturas.

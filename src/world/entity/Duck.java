@@ -23,9 +23,9 @@ public class Duck extends Entity {
       {"15:20", "21:20", "05:00"},
       {"23:40", "06:30", "12:20"}*/
     private final static int[][] SCHEDULE = new int[][]{ //Hará referencia a los horarios de los patos. HORA ENTRADA TRABAJO || HORA SALIDA TRABAJO || HORA IRSE A DORMIR
-             {31875, 65625, 82500},
-             {57500, 80000, 18750},
-             {88750, 24375, 46250}
+             {World.hourToTick(8, 30), World.hourToTick(17, 30), World.hourToTick(22, 0)},
+             {World.hourToTick(15, 20), World.hourToTick(21,20), World.hourToTick(5, 0)},
+             {World.hourToTick(23, 40), World.hourToTick(6, 30), World.hourToTick(12, 20)}
     }; //Entre medias de las horas de irse a dormir, tendrán varias horas de ocio, aquí es donde comenzarán a hacer el Pathfinding aleatorio.
     private static int positionSchedule = Main.RANDOM.nextInt(SCHEDULE.length); //Hará referencia a la posición del array de horario. Dependiendo de cuál salga, será una posición fija y tendrá que seguir el horario.
     private House house;
@@ -60,7 +60,8 @@ public class Duck extends Entity {
     }
 
     public void scheduleActivities() { //Dependiendo del horario que tenga, cambiará el estado del pato y hará un Pathfinding diferente a un sitio diferente.
-        if (Main.world.getDayTime() == SCHEDULE[positionSchedule][0]) {
+        setState(ActivityType.IN_HOUSE);
+        /*if (Main.world.getDayTime() == SCHEDULE[positionSchedule][0]) {
             setState(ActivityType.WORK);
         }else if (Main.world.getDayTime() == SCHEDULE[positionSchedule][1]) {
             //Vamos a hacer un Mathrandom del 1 al 2, el 1 será para ir a un sitio de ocio, el 2 será para ir a deambular por el mundo.
@@ -70,29 +71,29 @@ public class Duck extends Entity {
                 setState(ActivityType.WALKING);
         }else if (Main.world.getDayTime() == SCHEDULE[positionSchedule][2]) {
             setState(ActivityType.IN_HOUSE);
-        }
+        }*/
     }
 
     public void doPathfinding() {
         ActivityType actualState = getState();
         switch (actualState) {
             case IN_HOUSE -> {
-                Pathfinding pf = new Pathfinding();
+                super.pf = new Pathfinding();
                 Location start = getLocation();
                 Location finish = house.getLocation();
-                pf.findPath(start, finish);
+                super.path = super.pf.findPath(start, finish);
             }
             case WORK -> {
-                /*Pathfinding pf = new Pathfinding();
+                /*super.pf = new Pathfinding();
                 Location start = getLocation();
                 Location finish = house.getLocation();
                 pf.findPath(start, finish);*/
             }
             case WALKING -> {//Le tenemos que pasar la posición actual del pato y que calcule x bloques más allá del pato.
-                Pathfinding pf = new Pathfinding();
+                super.pf = new Pathfinding();
                 Location start = getLocation();
                 Location finish = location.randomLocation(20);
-                pf.findPath(start, finish);
+                super.path = super.pf.findPath(start, finish);
             }
 
             //case IN_FREETIME ->;

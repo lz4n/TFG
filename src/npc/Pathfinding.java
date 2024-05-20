@@ -1,5 +1,6 @@
 package npc;
 
+import main.Main;
 import org.joml.Vector2d; //Es la clase Vector2d qué utilizaremos
 import world.World;
 import world.location.Location;
@@ -9,13 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Pathfinding {
-    private World world;
-
-    public Pathfinding() {
-    }
-    public Pathfinding(World world) { //Creamos el constructor Pathfinding donde le añadimos el mundo como atributo pues es la base que utilizaremos.
-        this.world = world;
-    }
 
     //Creamos un método que encuentre el path, dentro ocurrirá la magia: algortimo a star.
     public List<Vector2d> findPath(Location start, Location goal) { //La lista la utilizaremos para crear el path a través del algortimo star A.
@@ -52,53 +46,49 @@ public class Pathfinding {
         Su principal función es que el algortimo a star evite explorar el mismo nodo más de una vez.
         */
 
-        List<Node> openList = new ArrayList<Node>();
-        List<Node> closeList = new ArrayList<Node>();
+        List<Node> openList = new ArrayList<>();
+        List<Node> closeList = new ArrayList<>();
 
         //Tendremos que añadir el nodo de empiece sí o sí a la listaAbierta para que empiece la magia.
         openList.add(ndStart);
 
         //Comenzamos dentro de la lista abierta la búsqueda de los nodos.
         while (!openList.isEmpty()) {
+            System.out.println(openList.size());
+
             Node ndActual = Node.lowerCost(openList);
-            //Como ya lo tenemos, ahora, lo que hacemos es eliminar el nodo de la lista abierta.
             openList.remove(ndActual);
-            //Se lo añadimos a la cerrada para no volverlo a recorrer nunca más.
             closeList.add(ndActual);
 
-            //Si se llega al end, lo que hacemos es volver a reconstruir una nueva ruta y terminamos el programa, se tendrá que volver a repetir con los nuevos valores.
             if (ndActual.equals(ndEnd)) {
-                path = Node.recreatePath(ndActual); //Le pasamos el nodo actual donde se encuentra el NPC para recalcular la ruta desde allí.
+                path = Node.recreatePath(ndActual);
                 break;
             }
-            //Ahora, vamos a buscar los nodos candidatos, es decir, los vecinos que podrán ser seleccionados o no.
+
             List<Node> listNeighbors = getNeighbors(ndActual);
 
-            //Vamos a ver si el nodo vecino se encuentra en la closeList, si lo estuviese, tendríamos que ignorarlo por completo.
             for (Node key : listNeighbors) {
                 if (closeList.contains(key))
-                    continue; //Lo ignoramos simplemente.
-                //Ahora, tendremos que calcular el costo de la distancia recorrida hacia el nodo vecino:
+                    continue;
+
                 double costPosNeigh = ndActual.getPathWalk() + calculatePathWalk(ndActual, key);
 
-                //Si el vecino ahora no se encuentra en el openList o tiene un costo de distancia recorrida mucho menor, haremos:
                 if (!openList.contains(key) || costPosNeigh < key.getPathWalk()) {
-                    //Establecemos al nodo vecino como actual y actualizamos todos sus costes y parámetros.
                     key.setParent(ndActual);
                     key.setPathWalk(costPosNeigh);
                     key.setPathHeuristic(calculateHeuristic(key, ndEnd));
-                    key.setPathTotal(key.getPathWalk() + key.getPathHeuristic()); //Le sumamos el total :)
+                    key.setPathTotal(key.getPathWalk() + key.getPathHeuristic());
 
-                    //Por último, si el vecino no se encuentra el la lista abierta, lo tendremos que añadir manualmente.
-                    openList.add(key);
+                    if (!openList.contains(key)) {
+                        openList.add(key);
+                    }
                 }
-
             }
         }
         return path;
     }
 
-    public List<Node> getNeighbors(Node ndActual) {
+    private List<Node> getNeighbors(Node ndActual) {
         List<Node> listNeighbors = new ArrayList<Node>();
         int x = ndActual.getX();
         int y = ndActual.getY();
@@ -123,9 +113,9 @@ public class Pathfinding {
     }
 
 
-    public boolean isLocationValid(int xNeightbor, int yNeightbor) {
-        if (xNeightbor >= 0 && xNeightbor < world.getSize() && yNeightbor >= 0 && yNeightbor < world.getSize()) {
-            Terrain terrain = world.getTerrain(xNeightbor, yNeightbor);
+    private boolean isLocationValid(int xNeightbor, int yNeightbor) {
+        if (xNeightbor >= 0 && xNeightbor < Main.world.getSize() && yNeightbor >= 0 && yNeightbor < Main.world.getSize()) {
+            Terrain terrain = Main.world.getTerrain(xNeightbor, yNeightbor);
             return terrain != null && terrain.isPassable();
         }
         return false;

@@ -1,5 +1,7 @@
 package world.entity;
 
+import npc.Pathfinding;
+import org.joml.Vector2d;
 import org.joml.Vector2f;
 import utils.render.texture.Texture;
 import utils.render.texture.Textures;
@@ -7,6 +9,9 @@ import world.location.Location;
 import world.tick.Ticking;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -22,6 +27,8 @@ public abstract class Entity extends Ticking implements Serializable {
      * Posición donde se encuentra la entidad.
      */
     protected Location location;
+    protected List<Vector2d> path;
+    protected Pathfinding pf;
 
     /**
      * Instancia la entidad, pero no la genera. Hay que utilizar <code>World#spawnEntity(Entity)</code> para generar la
@@ -46,6 +53,14 @@ public abstract class Entity extends Ticking implements Serializable {
      */
     public Location getLocation() {
         return this.location.clone();
+    }
+
+    public List<Vector2d> getPath() {
+        if (path == null) {
+            return new ArrayList<>();
+        }
+
+        return new LinkedList<>(this.path);
     }
 
     /**

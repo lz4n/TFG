@@ -14,13 +14,13 @@ public class House extends Building implements Tickable {
     public House(Location location, int variant) {
         super(location, House.getHouseSize(variant +1), FeatureType.HOUSE, variant);
         switch (variant) {
-            case 1 -> this.inhabitants = new Duck[3];
-            case 2 -> this.inhabitants = new Duck[6];
-            case 3 -> this.inhabitants = new Duck[9];
-            case 4 -> this.inhabitants = new Duck[12];
-            case 5 -> this.inhabitants = new Duck[15];
-            case 6 -> this.inhabitants = new Duck[21];
-            case 7 -> this.inhabitants = new Duck[25];
+            case 0 -> this.inhabitants = new Duck[3];
+            case 1 -> this.inhabitants = new Duck[6];
+            case 2 -> this.inhabitants = new Duck[9];
+            case 3 -> this.inhabitants = new Duck[12];
+            case 4 -> this.inhabitants = new Duck[15];
+            case 5 -> this.inhabitants = new Duck[21];
+            case 6 -> this.inhabitants = new Duck[25];
         }
     }
 
