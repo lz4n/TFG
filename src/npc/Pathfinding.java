@@ -1,47 +1,73 @@
 package npc;
 
-import org.joml.Vector2d;
-import org.joml.Vector2f;
+
+import world.location.Location;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class Pathfinding {
+    private static final Pathfinding PATHFINDER = new Pathfinding();
 
-    public List<Node> findPath(Vector2f start, Vector2f goal) {
+    private Pathfinding() {
+
+    }
+
+    public static Pathfinding getPathfinder() {
+        return Pathfinding.PATHFINDER;
+    }
+
+    public List<Node> findPath(Location start, Location goal) {
         List<Node> path = new ArrayList<>();
 
-        int startX = (int) start.x;
-        int startY = (int) start.y;
-        int goalX = (int) goal.x;
-        int goalY = (int) goal.y;
-
-        Node ndStart = new Node(startX, startY);
-        Node ndEnd = new Node(goalX, goalY);
+        Node ndStart = new Node(start);
+        Node ndEnd = new Node(goal);
 
         List<Node> openList = new ArrayList<>();
         List<Node> closeList = new ArrayList<>();
 
         openList.add(ndStart);
 
+        var ref = new Object() {
+            Node ndActual;
+        };
+        List<Node> listNeighbors;
+        AtomicReference<Double> tentative_gScore = new AtomicReference<>((double) 0);
         while (!openList.isEmpty()) {
-            Node ndActual = openList.remove(0);
-            closeList.add(ndActual);
+            ref.ndActual = openList.remove(0);
+            closeList.add(ref.ndActual);
 
-            if (ndActual.equals(ndEnd)) {
-                path = recreatePath(ndActual);
+            if (ref.ndActual.equals(ndEnd)) {
+                path = recreatePath(ref.ndActual);
                 break;
             }
 
-            List<Node> listNeighbors = getNeighbors(ndActual);
+            getNeighbors(ref.ndActual).forEach(neighbor -> {
+                if (closeList.contains(neighbor))
+                    return;
 
-            for (Node neighbor : listNeighbors) {
+                tentative_gScore.set(ref.ndActual.getPathWalk() + calculatePathWalk(ref.ndActual, neighbor));
+
+                if (!openList.contains(neighbor) || tentative_gScore.get() < neighbor.getPathWalk()) {
+                    neighbor.setParent(ref.ndActual);
+                    neighbor.setPathWalk(tentative_gScore.get());
+                    neighbor.setPathHeuristic(calculateHeuristic(neighbor, ndEnd));
+                    neighbor.setPathTotal(neighbor.getPathWalk() + neighbor.getPathHeuristic());
+
+                    if (!openList.contains(neighbor)) {
+                        openList.add(neighbor);
+                    }
+                }
+            });
+
+            /*for (Node neighbor : listNeighbors) {
                 if (closeList.contains(neighbor))
                     continue;
 
-                double tentative_gScore = ndActual.getPathWalk() + calculatePathWalk(ndActual, neighbor);
+                double tentative_gScore = ref.ndActual.getPathWalk() + calculatePathWalk(ref.ndActual, neighbor);
 
                 if (!openList.contains(neighbor) || tentative_gScore < neighbor.getPathWalk()) {
-                    neighbor.setParent(ndActual);
+                    neighbor.setParent(ref.ndActual);
                     neighbor.setPathWalk(tentative_gScore);
                     neighbor.setPathHeuristic(calculateHeuristic(neighbor, ndEnd));
                     neighbor.setPathTotal(neighbor.getPathWalk() + neighbor.getPathHeuristic());
@@ -50,7 +76,7 @@ public class Pathfinding {
                         openList.add(neighbor);
                     }
                 }
-            }
+            }*/
 
             openList.sort(Comparator.comparingDouble(Node::getPathTotal));
         }
@@ -58,14 +84,15 @@ public class Pathfinding {
     }
 
     private List<Node> recreatePath(Node ndEnd) {
+
         List<Node> path = new ArrayList<>();
-        Node current = ndEnd;
-        while (current != null) {
-            path.add(current);
-            current = current.getParent();
+        while (ndEnd != null) {
+            path.add(ndEnd);
+            ndEnd = ndEnd.getParent();
         }
         Collections.reverse(path);
         return path;
+
     }
 
     private List<Node> getNeighbors(Node node) {
@@ -85,7 +112,7 @@ public class Pathfinding {
         return 1.0; // Ejemplo simple, en la práctica se debería calcular basado en la distancia real.
     }
 
-    private double calculateHeuristic(Node from, Node to) {
+    private float calculateHeuristic(Node from, Node to) {
         // Calcular la heurística (usualmente la distancia manhattan).
         return Math.abs(from.getX() - to.getX()) + Math.abs(from.getY() - to.getY());
     }

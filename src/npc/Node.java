@@ -7,6 +7,10 @@ public class Node extends Location {
     private double pathWalk, pathHeuristic, pathTotal;
     private Node parent;
 
+    public Node(Location location) {
+        this((int) location.getX(), (int) location.getY());
+    }
+
     public Node(int x, int y) {
         super(x, y);
         this.pathWalk = 0;

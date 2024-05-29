@@ -347,16 +347,15 @@ public class Window {
     }
 
     public static void createScreenshot() {
+        //Creamos un buffer para almecenar los bytes de la pantalla: ancho *alto *4 (canales de color, RGBA)
+        ByteBuffer screenBuffer = BufferUtils.createByteBuffer(Window.getWidth() *Window.getHeight() *4);
+
+        //Capturamos la pantalla y la guardamos en el buffer.
+        GL11.glReadBuffer(GL11.GL_FRONT);
+        GL11.glReadPixels(0, 0, Window.getWidth(), Window.getHeight(), GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, screenBuffer);
+
         //Crear la captura e invertir la imagen pixel a pixel lleva tiempo, así que lo ejecutamos en un servicio propio.
         Window.screenshotExecutor.submit(() -> {
-            //Creamos un buffer para almecenar los bytes de la pantalla: ancho *alto *4 (canales de color, RGBA)
-            ByteBuffer screenBuffer = BufferUtils.createByteBuffer(Window.getWidth() *Window.getHeight() *4);
-
-            //Capturamos la pantalla y la guardamos en el buffer.
-            GL11.glReadBuffer(GL11.GL_FRONT);
-            GL11.glReadPixels(0, 0, Window.getWidth(), Window.getHeight(), GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, screenBuffer);
-
-
             //Invertimos la imagen verticalmente (OpenGL almacena los píxeles de abajo hasta arriba).
             ByteBuffer flippedBuffer = BufferUtils.createByteBuffer(Window.getWidth() *Window.getHeight() *4);
             for (int y = 0; y < Window.getHeight(); y++) {
