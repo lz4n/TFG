@@ -141,6 +141,16 @@ public abstract class Texture {
         );
     }
 
+    public void draw(Shader shader, Location location, float size) {
+        location = location.clone().getInScreenCoords();
+        this.draw(shader,
+                location.getX(),
+                location.getY(),
+                this.textureSize.x() *size,
+                this.textureSize.y() *size
+        );
+    }
+
     /**
      * Genera una textura a partir de una imagen .png con 32bits de color.
      * @param path ruta a la textura.

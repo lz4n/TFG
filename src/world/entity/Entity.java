@@ -18,12 +18,13 @@ import java.util.List;
 
 //TODO: Sistema para detectar clic a las entidades.
 public abstract class Entity extends Ticking implements Serializable {
+    public static final float NO_FLIP = 0, FLIP_HORIZONTAL = 1, FLIP_VERTICAL = 2, FLIP_BOTH = 3;
 
     /**
      * Posición donde se encuentra la entidad.
      */
     protected Location location;
-
+    protected float flip = Entity.NO_FLIP;
     protected List<Node> pathfinding;
     protected int pathIndex = 0;
 
@@ -48,6 +49,12 @@ public abstract class Entity extends Ticking implements Serializable {
 
         Vector2f newPosition = this.getLocation().toVector2f().add(new Vector2f(direction).mul(0.05f));
         this.moveTo(newPosition);
+
+        if (direction.x() > 0) {
+            this.flip = Entity.FLIP_HORIZONTAL;
+        } else if (direction.x() < 0) {
+            this.flip = Entity.NO_FLIP;
+        }
 
         if (this.getLocation().toVector2f().distance(targetPosition) < 0.1f) {
             this.pathIndex++;
@@ -80,8 +87,8 @@ public abstract class Entity extends Ticking implements Serializable {
         return new ArrayList<>(this.pathfinding);
     }
 
-    public int getPathIndex() {
-        return this.pathIndex;
+    public float getFlip() {
+        return this.flip;
     }
 
     /**

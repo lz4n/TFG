@@ -41,7 +41,9 @@ public final class Textures {
         PORT = new AnimatedTexture("assets/textures/feature/building/job_site/port", 2, 30),
 
         /** ENTITIES **/
-        DUCK = new StaticTexture("assets/textures/entity/duck.png"),
+        DUCK = new AnimatedTexture("assets/textures/entity/duck", 2, 30),
+        DUCK_WALKING = new AnimatedTexture("assets/textures/entity/duck_walking", 2, 10),
+        DUCK_SQUAWKING = new AnimatedTexture("assets/textures/entity/duck_squawking", 2, 25),
 
         /** PARTICLES **/
         NEGATIVE_PARTICLE = new StaticTexture("assets/textures/particle/negative.png"),

@@ -136,7 +136,8 @@ public class WorldScene implements Scene {
         }
 
         Main.world.getEntities().forEach(entity -> {
-            entity.getTexture().draw(Shader.ENTITY, entity.getLocation());
+            Shader.ENTITY.uploadFloat("uFlip", entity.getFlip());
+            entity.getTexture().draw(Shader.ENTITY, entity.getLocation(), 0.8f);
             Texture.unbind();
         });
 

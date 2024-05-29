@@ -17,7 +17,7 @@ import java.util.List;
  * Entidad que representa un pato.
  */
 public class Duck extends Entity {
-
+    private static final int SQUAWKING_TIME = 50;
     /*{"8:30", "17:30", "22:00"},
       {"15:20", "21:20", "05:00"},
       {"23:40", "06:30", "12:20"}*/
@@ -29,6 +29,8 @@ public class Duck extends Entity {
 
     private House house;
     private ActivityType state;
+    private int squawkingTime = 0;
+    private Animation currentAnimation = Animation.IDLE;
 
     /**
      * @param location Posición donde se va a generar un pato.
@@ -42,21 +44,32 @@ public class Duck extends Entity {
 
     @Override
     public Texture getTexture() {
-        return Textures.DUCK;
+        return this.currentAnimation.TEXTURE;
     }
 
     //TODO: Ia de los patos.
     @Override
     public void onTick(long deltaTime) {
-        System.out.println(this.pathfinding);
-
         if (this.pathfinding == null) {
-            this.doPathfinding();
+            if (this.squawkingTime > 0) {
+                this.squawkingTime--;
+                this.currentAnimation = Animation.SQUAWKING;
+            } else {
+                if (Main.RANDOM.nextFloat() > 0.63) {
+                    if (Main.RANDOM.nextFloat() > 0.55) {
+                        this.currentAnimation = Animation.SQUAWKING;
+                        this.squawkingTime = Duck.SQUAWKING_TIME;
+                    } else {
+                        this.currentAnimation = Animation.IDLE;
+                    }
+                } else {
+                    this.currentAnimation = Animation.WALKING;
+                    this.doPathfinding();
+                }
+            }
         } else {
             if (this.nextPath()) {
                 this.pathfinding = null;
-
-                System.out.println("FIN");
             }
         }
     }
@@ -85,18 +98,15 @@ public class Duck extends Entity {
     }
 
     private void doPathfinding() {
-        if (Main.RANDOM.nextFloat() > 0.97) {
-            Vector2f start = super.getLocation().toVector2f();
-            Vector2f goal = this.house.getLocation().randomLocation(15).toVector2f();
+        Vector2f start = super.getLocation().toVector2f();
+        Vector2f goal = this.house.getLocation().randomLocation(15).toVector2f();
 
-            this.pathfinding = new Pathfinding().findPath(start, goal);
+        this.pathfinding = new Pathfinding().findPath(start, goal);
 
-            this.pathIndex = 0;
+        this.pathIndex = 0;
 
-            if (this.pathfinding == null || this.pathfinding.isEmpty()) {
-                Logger.sendMessage("Error calculando el pathfinding: Inicio: %s, Final: %s.", Logger.LogMessageType.FATAL, start, goal);
-
-            }
+        if (this.pathfinding == null || this.pathfinding.isEmpty()) {
+            Logger.sendMessage("Error calculando el pathfinding: Inicio: %s, Final: %s.", Logger.LogMessageType.FATAL, start, goal);
         }
     }
 
@@ -105,5 +115,17 @@ public class Duck extends Entity {
         WORK,
         WALKING,
         IN_FREETIME;
+    }
+
+    public enum Animation {
+        IDLE(Textures.DUCK),
+        WALKING(Textures.DUCK_WALKING),
+        SQUAWKING(Textures.DUCK_SQUAWKING);
+
+        private final Texture TEXTURE;
+
+        Animation(Texture texture) {
+            this.TEXTURE = texture;
+        }
     }
 }
