@@ -34,14 +34,10 @@ public class Port extends JobSite {
             return false;
         }
 
-        System.out.printf(thereMustBeWaterHere.toString() + "FLIP: %f\n", super.getFlip());
-
         Location thereMustBeTerrainHere = thereMustBeWaterHere.clone();
         thereMustBeTerrainHere.add(0, 1);
         if (thereMustBeTerrainHere.getTerrain().getType().isBuildable()) {
             return true;
-        } else {
-            System.out.println(thereMustBeTerrainHere.toString() + thereMustBeTerrainHere.getTerrain().getType() + "1");
         }
 
         thereMustBeTerrainHere = super.getLocation();

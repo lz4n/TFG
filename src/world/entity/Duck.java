@@ -3,22 +3,21 @@ package world.entity;
 import main.Main;
 import npc.Node;
 import npc.Pathfinding;
-import org.joml.Vector2d;
 import org.joml.Vector2f;
+import utils.Logger;
 import utils.render.texture.Texture;
 import utils.render.texture.Textures;
 import world.World;
 import world.feature.building.House;
 import world.location.Location;
 
-import java.lang.reflect.Array;
-import java.nio.file.Path;
+import java.util.List;
 
 /**
  * Entidad que representa un pato.
  */
 public class Duck extends Entity {
-    private ActivityType state;
+
     /*{"8:30", "17:30", "22:00"},
       {"15:20", "21:20", "05:00"},
       {"23:40", "06:30", "12:20"}*/
@@ -26,16 +25,19 @@ public class Duck extends Entity {
              {World.hourToTick(8, 30), World.hourToTick(17, 30), World.hourToTick(22, 0)},
              {World.hourToTick(15, 20), World.hourToTick(21,20), World.hourToTick(5, 0)},
              {World.hourToTick(23, 40), World.hourToTick(6, 30), World.hourToTick(12, 20)}
-    }; //Entre medias de las horas de irse a dormir, tendrán varias horas de ocio, aquí es donde comenzarán a hacer el Pathfinding aleatorio.
-    private static int positionSchedule = Main.RANDOM.nextInt(SCHEDULE.length); //Hará referencia a la posición del array de horario. Dependiendo de cuál salga, será una posición fija y tendrá que seguir el horario.
+    };
+
     private House house;
-    //private Work work;
+    private ActivityType state;
+
     /**
      * @param location Posición donde se va a generar un pato.
      */
     public Duck(Location location, House house) {
         super(location);
         this.house = house;
+
+        this.scheduleActivities();
     }
 
     @Override
@@ -46,8 +48,16 @@ public class Duck extends Entity {
     //TODO: Ia de los patos.
     @Override
     public void onTick(long deltaTime) {
-        if (Main.RANDOM.nextFloat() >= 0.7) {
-            this.move(new Vector2f(Main.RANDOM.nextFloat() -0.5f, Main.RANDOM.nextFloat() -0.5f));
+        System.out.println(this.pathfinding);
+
+        if (this.pathfinding == null) {
+            this.doPathfinding();
+        } else {
+            if (this.nextPath()) {
+                this.pathfinding = null;
+
+                System.out.println("FIN");
+            }
         }
     }
 
@@ -60,7 +70,7 @@ public class Duck extends Entity {
     }
 
     public void scheduleActivities() { //Dependiendo del horario que tenga, cambiará el estado del pato y hará un Pathfinding diferente a un sitio diferente.
-        setState(ActivityType.IN_HOUSE);
+        this.setState(ActivityType.IN_FREETIME);
         /*if (Main.world.getDayTime() == SCHEDULE[positionSchedule][0]) {
             setState(ActivityType.WORK);
         }else if (Main.world.getDayTime() == SCHEDULE[positionSchedule][1]) {
@@ -74,29 +84,19 @@ public class Duck extends Entity {
         }*/
     }
 
-    public void doPathfinding() {
-        ActivityType actualState = getState();
-        switch (actualState) {
-            case IN_HOUSE -> {
-                super.pf = new Pathfinding();
-                Location start = getLocation();
-                Location finish = house.getLocation();
-                super.path = super.pf.findPath(start, finish);
-            }
-            case WORK -> {
-                /*super.pf = new Pathfinding();
-                Location start = getLocation();
-                Location finish = house.getLocation();
-                pf.findPath(start, finish);*/
-            }
-            case WALKING -> {//Le tenemos que pasar la posición actual del pato y que calcule x bloques más allá del pato.
-                super.pf = new Pathfinding();
-                Location start = getLocation();
-                Location finish = location.randomLocation(20);
-                super.path = super.pf.findPath(start, finish);
-            }
+    private void doPathfinding() {
+        if (Main.RANDOM.nextFloat() > 0.97) {
+            Vector2f start = super.getLocation().toVector2f();
+            Vector2f goal = this.house.getLocation().randomLocation(15).toVector2f();
 
-            //case IN_FREETIME ->;
+            this.pathfinding = new Pathfinding().findPath(start, goal);
+
+            this.pathIndex = 0;
+
+            if (this.pathfinding == null || this.pathfinding.isEmpty()) {
+                Logger.sendMessage("Error calculando el pathfinding: Inicio: %s, Final: %s.", Logger.LogMessageType.FATAL, start, goal);
+
+            }
         }
     }
 

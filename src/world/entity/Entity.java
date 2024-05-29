@@ -1,18 +1,14 @@
 package world.entity;
 
-import npc.Pathfinding;
-import org.joml.Vector2d;
+import npc.Node;
 import org.joml.Vector2f;
 import utils.render.texture.Texture;
-import utils.render.texture.Textures;
 import world.location.Location;
 import world.tick.Ticking;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Random;
 
 /**
  * Las entidades son elementos móviles del juego con los que el jugador puede interactuar (en jugador no puede interactuar
@@ -27,8 +23,9 @@ public abstract class Entity extends Ticking implements Serializable {
      * Posición donde se encuentra la entidad.
      */
     protected Location location;
-    protected List<Vector2d> path;
-    protected Pathfinding pf;
+
+    protected List<Node> pathfinding;
+    protected int pathIndex = 0;
 
     /**
      * Instancia la entidad, pero no la genera. Hay que utilizar <code>World#spawnEntity(Entity)</code> para generar la
@@ -40,12 +37,32 @@ public abstract class Entity extends Ticking implements Serializable {
         this.location = location;
     }
 
+    public boolean nextPath() {
+        if (this.pathfinding == null) return false;
+        if (this.pathIndex >= this.pathfinding.size()) return true;
+
+
+        Vector2f targetPosition = this.pathfinding.get(this.pathIndex).toVector2f();
+
+        Vector2f direction = new Vector2f(targetPosition).sub(this.getLocation().toVector2f()).normalize();
+
+        Vector2f newPosition = this.getLocation().toVector2f().add(new Vector2f(direction).mul(0.05f));
+        this.moveTo(newPosition);
+
+        if (this.getLocation().toVector2f().distance(targetPosition) < 0.1f) {
+            this.pathIndex++;
+        }
+
+        return false;
+    }
+
     /**
      * Mueve la entidad.
      * @param movement Vector bidimensional de flotantes que indica cúantas unidades in-game se va a mover en cada eje.
      */
-    public void move(Vector2f movement) {
-        this.location.add(movement.x(), movement.y());
+    public void moveTo(Vector2f destination) {
+        this.location.setX(destination.x());
+        this.location.setY(destination.y());
     }
 
     /**
@@ -55,12 +72,16 @@ public abstract class Entity extends Ticking implements Serializable {
         return this.location.clone();
     }
 
-    public List<Vector2d> getPath() {
-        if (path == null) {
-            return new ArrayList<>();
+    public List<Node> getPathfinding() {
+        if (this.pathfinding == null) {
+            return null;
         }
 
-        return new LinkedList<>(this.path);
+        return new ArrayList<>(this.pathfinding);
+    }
+
+    public int getPathIndex() {
+        return this.pathIndex;
     }
 
     /**

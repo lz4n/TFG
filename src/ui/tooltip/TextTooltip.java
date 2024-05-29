@@ -20,8 +20,6 @@ public class TextTooltip extends Tooltip {
         textPosY += 10;
         textPosY += textTexture.getSize().y();
 
-        System.out.println(textPosY);
-
         return this;
     }
 

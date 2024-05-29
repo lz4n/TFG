@@ -2,6 +2,7 @@ package utils.render.scene;
 
 import listener.MouseListener;
 import main.Main;
+import npc.Node;
 import org.joml.Matrix4f;
 import org.joml.Vector2d;
 import ui.container.Inventory;
@@ -152,19 +153,19 @@ public class WorldScene implements Scene {
         //Generamos la pantalla de debug
         if (Main.isDebugging) {
             Shader.SHAPE.use();
-            Shader.SHAPE.uploadMatrix4f("uProjection", new Matrix4f().ortho(0, Window.getWidth(), Window.getHeight(), 0, -1, 1));
-            Shader.SHAPE.uploadMatrix4f("uView", new Matrix4f().identity());
-            Shader.SHAPE.upload4f("uColor", 1f, 0f, 0f, 0.5f);
+            Shader.SHAPE.uploadMatrix4f("uProjection", Main.PLAYER.getCamera().getProjectionMatrix());
+            Shader.SHAPE.uploadMatrix4f("uView", Main.PLAYER.getCamera().getViewMatrix());
+            Shader.SHAPE.upload4f("uColor", 1f, 0f, 0f, 0.7f);
 
             Main.world.getEntities().forEach(entity -> {
-                List<Vector2d> entityPath = entity.getPath();
+                List<Node> entityPath = entity.getPathfinding();
 
                 if (entityPath != null) {
                     Shader.SHAPE.upload2f("uPosition", 0, 0);
                     TooltipMesh mesh = new TooltipMesh();
 
                     entityPath.forEach(vector -> {
-                        mesh.addVertex((float) vector.x, (float) vector.y, 1, 1, SPRITE_SIZE);
+                        mesh.addVertex((float) vector.getX(), (float) vector.getY() -1, 1, 1, SPRITE_SIZE);
                     });
 
                     mesh.load();
