@@ -26,6 +26,7 @@ import utils.render.texture.AnimatedTexture;
 import utils.render.texture.CacheTexture;
 import utils.render.texture.Texture;
 import utils.render.texture.Textures;
+import world.entity.Duck;
 import world.tick.Ticking;
 
 import javax.imageio.ImageIO;
@@ -244,10 +245,6 @@ public class Window {
                 if (KeyBind.MOVE_RIGHT.isPressed()) {
                     Main.PLAYER.getCamera().moveCamera(new Vector2f((KeyListener.isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT) ? 2 : 1) * 10 * (float) Main.PLAYER.getCamera().getZoom(), 0));
                 }
-
-                /*if (KeyBind.DEBUG_SPAWN_ENTITY.isPressed()) {
-                    Main.world.spawnEntity(new Duck(MouseListener.getInGameLocation()));
-                }*/
 
                 if (currentScene instanceof WorldScene && Main.PLAYER.getContainer() instanceof Inventory inventory) {
                     if (KeyListener.isKeyPressed(GLFW.GLFW_KEY_RIGHT)) {

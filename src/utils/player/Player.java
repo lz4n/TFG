@@ -30,7 +30,10 @@ import utils.render.Window;
 import utils.render.texture.Colors;
 import utils.render.texture.Texture;
 import utils.render.texture.Textures;
+import world.World;
+import world.entity.Duck;
 import world.feature.Feature;
+import world.feature.building.House;
 import world.location.Location;
 import world.particle.BulldozerParticle;
 import world.particle.CursorParticle;
@@ -719,6 +722,14 @@ public class Player extends Ticking {
                         Main.RANDOM.nextFloat(0, selectedFeature.getSize().y())
                 )));
             }
+
+            if (selectedFeature instanceof House house) {
+                for (Duck duck: house.getInhabitants()) {
+                    Main.world.removeEntity(duck);
+                }
+
+                Main.world.addPopulation(house.getInhabitants().length *-1);
+            }
         }
     }
 
@@ -734,6 +745,16 @@ public class Player extends Ticking {
                                 Main.RANDOM.nextFloat(0, selectedFeature.getSize().x()),
                                 Main.RANDOM.nextFloat(0, selectedFeature.getSize().y())
                         )));
+                    }
+
+                    if (selectedFeature instanceof House house) {
+                        for (int index = 0; index < house.getInhabitants().length; index++) {
+                            Duck duck = new Duck(house.getLocation(), house);
+                            house.getInhabitants()[index] = duck;
+
+                            Main.world.spawnEntity(duck);
+                        }
+                        Main.world.addPopulation(house.getInhabitants().length);
                     }
 
                     featureItem.getFeatureType().getSoundEffect().play(SoundCategory.SOUND_EFFECTS);

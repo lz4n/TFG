@@ -122,7 +122,6 @@ public class Graphics2dTexture extends Texture {
      */
     @Override
     protected void finalize() throws Throwable {
-        System.out.println("ex");
         try {
             if (!isRemoved) {
                 this.remove();

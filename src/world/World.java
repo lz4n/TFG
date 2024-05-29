@@ -322,6 +322,15 @@ public class World extends Ticking implements Serializable {
     }
 
     /**
+     * Elimina una entidad.
+     * @param entity Entidad que se quiere eliminar.
+     */
+    public void removeEntity(Entity entity) {
+        this.ENTITITES_LIST.remove(entity);
+        this.entitiesCount--;
+    }
+
+    /**
      * Genera una partícula.
      * @param particle Partícula que se quiere generar.
      */

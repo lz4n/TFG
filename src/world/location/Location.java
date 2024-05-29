@@ -124,13 +124,6 @@ public class Location implements Cloneable, Serializable {
     }
 
     /**
-     * @return Convierte la posición a un vector 2i
-     */
-    public Vector2i toVector2i() {
-        return new Vector2i((int) this.getX(), (int) this.getY());
-    }
-
-    /**
      * @return Terreno en dicha posición, <code>null</code> si está fuera del mundo.
      * @see Terrain
      */
@@ -147,10 +140,15 @@ public class Location implements Cloneable, Serializable {
     }
 
     public Location randomLocation(int radius) {
-        return this.clone()
-                .add(Main.RANDOM.nextInt(radius));
+        Location randomLocation;
 
+        do {
+            randomLocation = this.clone().add(
+                    Main.RANDOM.nextInt(radius *2) -radius,
+                    Main.RANDOM.nextInt(radius *2) -radius);
+        } while (randomLocation.isOutOfTheWorld());
 
+        return randomLocation;
     }
 
     @Override
