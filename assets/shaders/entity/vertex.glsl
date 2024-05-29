@@ -15,6 +15,8 @@ Posición y tamaño (en los ejes x e y) de la entidad a instanciar. El tamaño p
 uniform vec2 uPosition;
 uniform vec2 uSize = vec2(1, 1);
 
+uniform float uFlip = 0;
+
 /**
 Matrices de proyección y vista de la cámara.
 */
@@ -38,5 +40,14 @@ void main() {
 
     //Transforma la posición del vértice usando las matrices de proyección y modelo-vista
     vec4 transformedPosition = uProjection * uView * vec4(position.x* uSize.x +uPosition.x, position.y* -uSize.y +uPosition.y, 0.0, 1.0);
+
+    if (int(uFlip) == 1) {
+        // Flip horizontal: reflejamos la textura horizontalmente
+        vec2 flippedTexCoord = vec2(1.0 - position.x, position.y);
+
+        // Enviamos las coordenadas de textura al fragment shader
+        fragmentUVCoords = flippedTexCoord;
+    }
+
     gl_Position = transformedPosition;
 }
