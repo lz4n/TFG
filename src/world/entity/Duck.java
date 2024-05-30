@@ -11,6 +11,7 @@ import world.World;
 import world.feature.building.House;
 import world.location.Location;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -98,16 +99,11 @@ public class Duck extends Entity {
     }
 
     private void doPathfinding() {
-        Vector2f start = super.getLocation().toVector2f();
-        Vector2f goal = this.house.getLocation().randomLocation(15).toVector2f();
-
-        this.pathfinding = new Pathfinding().findPath(start, goal);
+        this.pathfinding = Pathfinding.getPathfinder().findPath(
+                super.getLocation(),
+                this.house.getLocation().randomLocation(15));
 
         this.pathIndex = 0;
-
-        if (this.pathfinding == null || this.pathfinding.isEmpty()) {
-            Logger.sendMessage("Error calculando el pathfinding: Inicio: %s, Final: %s.", Logger.LogMessageType.FATAL, start, goal);
-        }
     }
 
     public enum ActivityType {

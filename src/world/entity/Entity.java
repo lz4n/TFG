@@ -25,7 +25,7 @@ public abstract class Entity extends Ticking implements Serializable {
      */
     protected Location location;
     protected float flip = Entity.NO_FLIP;
-    protected List<Node> pathfinding;
+    protected List<Location> pathfinding;
     protected int pathIndex = 0;
 
     /**
@@ -65,7 +65,6 @@ public abstract class Entity extends Ticking implements Serializable {
 
     /**
      * Mueve la entidad.
-     * @param movement Vector bidimensional de flotantes que indica cúantas unidades in-game se va a mover en cada eje.
      */
     public void moveTo(Vector2f destination) {
         this.location.setX(destination.x());
@@ -79,7 +78,7 @@ public abstract class Entity extends Ticking implements Serializable {
         return this.location.clone();
     }
 
-    public List<Node> getPathfinding() {
+    public List<Location> getPathfinding() {
         if (this.pathfinding == null) {
             return null;
         }

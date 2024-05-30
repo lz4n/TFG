@@ -805,6 +805,7 @@ public class Player extends Ticking {
             });
 
             terrainTypesToUpdate.forEach(Terrain.TerrainType::updateMesh);
+            System.gc();
 
             SoundEffect.WORLD_EFFECT_PLACE_TERRAIN.play(SoundCategory.SOUND_EFFECTS);
         }
