@@ -7,8 +7,7 @@ import world.location.Location;
 import world.tick.Ticking;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Las entidades son elementos móviles del juego con los que el jugador puede interactuar (en jugador no puede interactuar
@@ -78,12 +77,16 @@ public abstract class Entity extends Ticking implements Serializable {
         return this.location.clone();
     }
 
-    public List<Location> getPathfinding() {
+    public ListIterator<Location> getPathfinding() {
         if (this.pathfinding == null) {
-            return null;
+            return Collections.emptyListIterator();
         }
 
-        return new ArrayList<>(this.pathfinding);
+        return this.pathfinding.listIterator();
+    }
+
+    public int getPathIndex() {
+        return this.pathIndex;
     }
 
     public float getFlip() {

@@ -18,6 +18,9 @@ import world.worldBuilder.WorldBuilder;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 /**
  * Representa el mundo de juego.
@@ -463,11 +466,19 @@ public class World extends Ticking implements Serializable {
         return new LinkedList<>(Arrays.asList(this.FEATURES));
     }
 
+    public Stream<Feature> getFeatures(Predicate<Feature> predicate) {
+        return Arrays.stream(this.FEATURES).filter(predicate);
+    }
+
     /**
      * @return Lista con todas las entidades.
      */
     public LinkedList<Entity> getEntities() {
         return new LinkedList<>(this.ENTITITES_LIST);
+    }
+
+    public void forEachEntity(Consumer<Entity> consumer) {
+        this.ENTITITES_LIST.forEach(consumer);
     }
 
     /**

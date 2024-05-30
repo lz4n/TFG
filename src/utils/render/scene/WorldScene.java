@@ -15,13 +15,16 @@ import org.lwjgl.opengl.*;
 import utils.render.Shader;
 import utils.render.texture.*;
 import world.WorldGenerator;
+import world.entity.Entity;
 import world.feature.Feature;
 import world.location.Location;
 import world.particle.*;
 import world.terrain.Terrain;
 
 import java.awt.*;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 
 /**
  * Escena encargada de renderizar el mundo.
@@ -34,7 +37,12 @@ public class WorldScene implements Scene {
      */
     public static final int SPRITE_SIZE = 16;
 
+    private static final int DEBUGGING_REFRESH_DELAY = 5;
+
     private final WorldMesh WORLD_BORDER_MESH = new WorldMesh(1, 2, 2);
+
+    private int debuggingRefreshDelay = 30;
+    private Graphics2dTexture debugScreen;
 
     @Override
     public void init() {
@@ -156,104 +164,58 @@ public class WorldScene implements Scene {
 
         //Generamos la pantalla de debug
         if (Main.isDebugging) {
+
+            if (this.debuggingRefreshDelay++ >= WorldScene.DEBUGGING_REFRESH_DELAY) {
+                this.debuggingRefreshDelay = 0;
+                if (this.debugScreen != null) {
+                    this.debugScreen.remove();
+                }
+                this.debugScreen = generateDebugScreen(dTime);
+            }
+
             Shader.SHAPE.use();
             Shader.SHAPE.uploadMatrix4f("uProjection", Main.PLAYER.getCamera().getProjectionMatrix());
             Shader.SHAPE.uploadMatrix4f("uView", Main.PLAYER.getCamera().getViewMatrix());
-            Shader.SHAPE.upload4f("uColor", 1f, 0f, 0f, 0.7f);
+            Shader.SHAPE.upload2f("uPosition", 0, 0);
 
-            Main.world.getEntities().forEach(entity -> {
-                List<Location> entityPath = entity.getPathfinding();
 
-                if (entityPath != null) {
-                    Shader.SHAPE.upload2f("uPosition", 0, 0);
-                    TooltipMesh mesh = new TooltipMesh();
+            TooltipMesh entityPathMesh = new TooltipMesh(), walkedEntityPathMesh = new TooltipMesh(), destinationEntityPathMesh = new TooltipMesh();
+            ListIterator<Location> entityPath;
+            Location pathLocation;
 
-                    entityPath.forEach(vector -> {
-                        mesh.addVertex((float) vector.getX(), (float) vector.getY() -1, 1, 1, SPRITE_SIZE);
-                    });
+            for (Entity entity: Main.world.getEntities()) {
+                entityPath = entity.getPathfinding();
 
-                    mesh.load();
-                    mesh.draw();
+                while (entityPath.hasNext()) {
+                    pathLocation = entityPath.next();
+
+                    if (entityPath.previousIndex() >= entity.getPathIndex()) {
+                        if (entityPath.hasNext()) {
+                            entityPathMesh.addVertex(pathLocation.getX() +.2f, pathLocation.getY() -.8f, .6f, .6f, SPRITE_SIZE);
+                        } else {
+                            destinationEntityPathMesh.addVertex(pathLocation.getX() +.1f, pathLocation.getY() -.9f, .8f, .8f, SPRITE_SIZE);
+                        }
+                    } else {
+                        walkedEntityPathMesh.addVertex(pathLocation.getX() +.3f, pathLocation.getY() -.7f, .4f, .4f, SPRITE_SIZE);
+                    }
                 }
-            });
+            }
+
+            Shader.SHAPE.upload4f("uColor", 1f, 0f, 0f, 0.5f);
+            entityPathMesh.load();
+            entityPathMesh.draw();
+            Shader.SHAPE.upload4f("uColor", 0f, 1f, 0f, 0.5f);
+            walkedEntityPathMesh.load();
+            walkedEntityPathMesh.draw();
+            Shader.SHAPE.upload4f("uColor", 0f, 0f, 1f, 0.7f);
+            destinationEntityPathMesh.load();
+            destinationEntityPathMesh.draw();
 
             Shader.HUD.use();
             Shader.HUD.uploadMatrix4f("uProjection", new Matrix4f().ortho(0, Window.getWidth(), Window.getHeight(), 0, -1, 1));
             Shader.HUD.uploadMatrix4f("uView", new Matrix4f().identity());
 
-            Runtime runtime = Runtime.getRuntime();
-            String debug = String.format("""
-                            game:
-                                fps=%d
-                                memory used=%dMb (%.02f%%) (F10 to call G.C.)
-                                availableProcessors=%d
-                                tickSpeed=%d
-                            
-                            player:
-                                isPaused=%s
-                                isHidingUI=%s
-                                isUsingBulldozer=%s
-                                isMouseOnInventory=%s
-                                selection:
-                                    x=%.2f, y=%.2f
-                                    %scamera:
-                                    x=%.2f, y=%.2f
-                                    zoom=%s
-                            
-                            world:
-                                seed=%d
-                                dayTime=%d (%s) (dayLight=%.03f), day=%d, month=%d, years=%d
-                                features = %d, entities = %d, particles = %d
-                                
-                                happiness=%.03f
-                            """,
-                    (int) (1/ Time.nanosecondsToSeconds(dTime)),
-                    (runtime.totalMemory() -runtime.freeMemory()) /1048576,
-                    ((float) runtime.freeMemory() /runtime.totalMemory()) *100,
-                    runtime.availableProcessors(),
-                    Main.tickSpeed,
-                    Main.PLAYER.isPaused(),
-                    Main.PLAYER.isHidingUi(),
-                    Main.PLAYER.isUsingBulldozer(),
-                    Main.PLAYER.isMouseOnInventory(),
-                    MouseListener.getInGameLocation().getX(),
-                    MouseListener.getInGameLocation().getY(),
-                    MouseListener.getInGameLocation().isOutOfTheWorld() ? "    OutOfTheWorld" : String.format("""
-                                            terrain: %s type=%s
-                                                    %s
-                                                    biome=%s
-                                                    wordBuilder: c=%.4f,w=%.4f,r=%.4f
-                                            """,
-                            MouseListener.getInGameLocation().getTerrain(),
-                            MouseListener.getInGameLocation().getTerrain().getType(),
-                            MouseListener.getInGameLocation().getFeature() == null ? "feature: null" : String.format("feature: %s type=%s,variant=%d",
-                                    MouseListener.getInGameLocation().getFeature(),
-                                    MouseListener.getInGameLocation().getFeature().getFeatureType(),
-                                    MouseListener.getInGameLocation().getFeature().getVariant()),
-                            MouseListener.getInGameLocation().getTerrain().getBiome(),
-                            MouseListener.getInGameLocation().getTerrain().getContinentalityNoise(),
-                            MouseListener.getInGameLocation().getTerrain().getWeirdnessNoise(),
-                            MouseListener.getInGameLocation().getTerrain().getRiversNoise()),
-                    Main.PLAYER.getCamera().getCameraPosition().x(),
-                    Main.PLAYER.getCamera().getCameraPosition().y(),
-                    Main.PLAYER.getCamera().getZoom(),
-                    Main.world.getSeed(),
-                    Main.world.getDayTime(),
-                    Main.world.getFormattedDayTime(),
-                    Main.world.getDayLight(),
-                    Main.world.getDay(),
-                    Main.world.getMonth(),
-                    Main.world.getYear(),
-                    Main.world.getFeaturesCount(),
-                    Main.world.getEntitiesCount(),
-                    Main.world.getParticlesList().size(),
-                    Main.world.getHappiness()
-            );
-
-            Graphics2dTexture debugScreen = GameFont.DEBUG.drawText(debug, Font.PLAIN, 12);
-
-            debugScreen.draw(Shader.HUD, 5f, 5f, debugScreen.getSize().x(), debugScreen.getSize().y());
-            debugScreen.remove();
+            debugScreen.draw(Shader.HUD, 5f, 5f, this.debugScreen.getSize().x(), debugScreen.getSize().y());
 
             Texture.unbind();
         }
@@ -285,6 +247,80 @@ public class WorldScene implements Scene {
         }
 
         Shader.detach();
+    }
+
+    private static Graphics2dTexture generateDebugScreen(long dTime) {
+        Runtime runtime = Runtime.getRuntime();
+        String debug = String.format("""
+                        game:
+                            fps=%d
+                            memory used=%dMb (%.02f%%) (F10 to call G.C.)
+                            availableProcessors=%d
+                            tickSpeed=%d
+                        
+                        player:
+                            isPaused=%s
+                            isHidingUI=%s
+                            isUsingBulldozer=%s
+                            isMouseOnInventory=%s
+                            selection:
+                                x=%.2f, y=%.2f
+                                %scamera:
+                                x=%.2f, y=%.2f
+                                zoom=%s
+                        
+                        world:
+                            seed=%d
+                            dayTime=%d (%s) (dayLight=%.03f), day=%d, month=%d, years=%d
+                            features = %d, entities = %d, particles = %d
+                            
+                            happiness=%.03f
+                        """,
+                (int) (1/ Time.nanosecondsToSeconds(dTime)),
+                (runtime.totalMemory() -runtime.freeMemory()) /1048576,
+                ((float) runtime.freeMemory() /runtime.totalMemory()) *100,
+                runtime.availableProcessors(),
+                Main.tickSpeed,
+                Main.PLAYER.isPaused(),
+                Main.PLAYER.isHidingUi(),
+                Main.PLAYER.isUsingBulldozer(),
+                Main.PLAYER.isMouseOnInventory(),
+                MouseListener.getInGameLocation().getX(),
+                MouseListener.getInGameLocation().getY(),
+                MouseListener.getInGameLocation().isOutOfTheWorld() ? "    OutOfTheWorld" : String.format("""
+                                        terrain: %s type=%s
+                                                %s
+                                                biome=%s
+                                                wordBuilder: c=%.4f,w=%.4f,r=%.4f
+                                        """,
+                        MouseListener.getInGameLocation().getTerrain(),
+                        MouseListener.getInGameLocation().getTerrain().getType(),
+                        MouseListener.getInGameLocation().getFeature() == null ? "feature: null" : String.format("feature: %s type=%s,variant=%d",
+                                MouseListener.getInGameLocation().getFeature(),
+                                MouseListener.getInGameLocation().getFeature().getFeatureType(),
+                                MouseListener.getInGameLocation().getFeature().getVariant()),
+                        MouseListener.getInGameLocation().getTerrain().getBiome(),
+                        MouseListener.getInGameLocation().getTerrain().getContinentalityNoise(),
+                        MouseListener.getInGameLocation().getTerrain().getWeirdnessNoise(),
+                        MouseListener.getInGameLocation().getTerrain().getRiversNoise()),
+                Main.PLAYER.getCamera().getCameraPosition().x(),
+                Main.PLAYER.getCamera().getCameraPosition().y(),
+                Main.PLAYER.getCamera().getZoom(),
+                Main.world.getSeed(),
+                Main.world.getDayTime(),
+                Main.world.getFormattedDayTime(),
+                Main.world.getDayLight(),
+                Main.world.getDay(),
+                Main.world.getMonth(),
+                Main.world.getYear(),
+                Main.world.getFeaturesCount(),
+                Main.world.getEntitiesCount(),
+                Main.world.getParticlesList().size(),
+                Main.world.getHappiness()
+        );
+
+        Graphics2dTexture debugScreen = GameFont.DEBUG.drawText(debug, Font.PLAIN, 12);
+        return debugScreen;
     }
 
     @Override

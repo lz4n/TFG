@@ -103,6 +103,8 @@ public class Duck extends Entity {
                 super.getLocation(),
                 this.house.getLocation().randomLocation(15));
 
+        System.gc();
+
         this.pathIndex = 0;
     }
 
