@@ -91,7 +91,7 @@ public abstract class Texture {
             this.bind();
             ARBVertexArrayObject.glBindVertexArray(SingleObjectMesh.SINGLE_OBJECT_MESH.getVaoId());
             GL20.glEnableVertexAttribArray(0);
-            GL20.glDrawElements(GL20.GL_TRIANGLES, SingleObjectMesh.SINGLE_OBJECT_MESH.getElementArray().length, GL11.GL_UNSIGNED_INT, 0);
+            GL20.glDrawElements(GL20.GL_TRIANGLES, SingleObjectMesh.SINGLE_OBJECT_MESH.getElementCount(), GL11.GL_UNSIGNED_INT, 0);
             GL20.glDisableVertexAttribArray(0);
             ARBVertexArrayObject.glBindVertexArray(0);
         } else {
@@ -163,9 +163,6 @@ public abstract class Texture {
 
         //Generamos la textura
         GL20.glBindTexture(GL20.GL_TEXTURE_2D, textureId);
-
-        //Repetimos la textura en todas direcciones
-        //List.of(GL20.GL_TEXTURE_WRAP_S, GL20.GL_TEXTURE_WRAP_T).forEach(textureRepeatDirection -> GL20.glTexParameteri(GL20.GL_TEXTURE_2D, textureRepeatDirection, GL20.GL_CLAMP_TO_EDGE));
 
         //Cuando hagamos la textura más grande o más pequeña se pixele.
         GL20.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_MIN_FILTER, GL20.GL_NEAREST);

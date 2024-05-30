@@ -16,6 +16,7 @@ import utils.render.Shader;
 import utils.render.texture.*;
 import world.WorldGenerator;
 import world.feature.Feature;
+import world.location.Location;
 import world.particle.*;
 import world.terrain.Terrain;
 
@@ -54,6 +55,8 @@ public class WorldScene implements Scene {
 
         this.WORLD_BORDER_MESH.addVertex(-1, -1, Main.world.getSize() +2,  Main.world.getSize() +2);
         this.WORLD_BORDER_MESH.load();
+
+        System.gc();
     }
 
     /**
@@ -159,7 +162,7 @@ public class WorldScene implements Scene {
             Shader.SHAPE.upload4f("uColor", 1f, 0f, 0f, 0.7f);
 
             Main.world.getEntities().forEach(entity -> {
-                List<Node> entityPath = entity.getPathfinding();
+                List<Location> entityPath = entity.getPathfinding();
 
                 if (entityPath != null) {
                     Shader.SHAPE.upload2f("uPosition", 0, 0);

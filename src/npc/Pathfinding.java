@@ -17,8 +17,8 @@ public class Pathfinding {
         return Pathfinding.PATHFINDER;
     }
 
-    public List<Node> findPath(Location start, Location goal) {
-        List<Node> path = new ArrayList<>();
+    public List<Location> findPath(Location start, Location goal) {
+        List<Location> path = new ArrayList<>();
 
         Node ndStart = new Node(start);
         Node ndEnd = new Node(goal);
@@ -31,10 +31,10 @@ public class Pathfinding {
         var ref = new Object() {
             Node ndActual;
         };
-        List<Node> listNeighbors;
+
         AtomicReference<Double> tentative_gScore = new AtomicReference<>((double) 0);
         while (!openList.isEmpty()) {
-            ref.ndActual = openList.remove(0);
+            ref.ndActual = openList.removeFirst();
             closeList.add(ref.ndActual);
 
             if (ref.ndActual.equals(ndEnd)) {
@@ -60,32 +60,14 @@ public class Pathfinding {
                 }
             });
 
-            /*for (Node neighbor : listNeighbors) {
-                if (closeList.contains(neighbor))
-                    continue;
-
-                double tentative_gScore = ref.ndActual.getPathWalk() + calculatePathWalk(ref.ndActual, neighbor);
-
-                if (!openList.contains(neighbor) || tentative_gScore < neighbor.getPathWalk()) {
-                    neighbor.setParent(ref.ndActual);
-                    neighbor.setPathWalk(tentative_gScore);
-                    neighbor.setPathHeuristic(calculateHeuristic(neighbor, ndEnd));
-                    neighbor.setPathTotal(neighbor.getPathWalk() + neighbor.getPathHeuristic());
-
-                    if (!openList.contains(neighbor)) {
-                        openList.add(neighbor);
-                    }
-                }
-            }*/
-
             openList.sort(Comparator.comparingDouble(Node::getPathTotal));
         }
         return path;
     }
 
-    private List<Node> recreatePath(Node ndEnd) {
+    private List<Location> recreatePath(Node ndEnd) {
 
-        List<Node> path = new ArrayList<>();
+        List<Location> path = new ArrayList<>();
         while (ndEnd != null) {
             path.add(ndEnd);
             ndEnd = ndEnd.getParent();

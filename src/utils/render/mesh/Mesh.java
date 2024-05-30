@@ -69,8 +69,8 @@ public abstract class Mesh {
 
 
         //Creamos el buffer de vértices
-        vertexBuffer = BufferUtils.createFloatBuffer(this.getVertexArray().length);
-        vertexBuffer.put(this.getVertexArray()).flip();
+        vertexBuffer = BufferUtils.createFloatBuffer(this.vertexArray.length);
+        vertexBuffer.put(this.vertexArray).flip();
 
         //Creamos la VBO y la subimos al buffer
         vboId = GL20.glGenBuffers();
@@ -78,8 +78,8 @@ public abstract class Mesh {
         GL15C.glBufferData(GL20.GL_ARRAY_BUFFER, vertexBuffer, GL20.GL_STATIC_DRAW);
 
         //Creamos los índices
-        elementBuffer = BufferUtils.createIntBuffer(this.getElementArray().length);
-        elementBuffer.put(this.getElementArray()).flip();
+        elementBuffer = BufferUtils.createIntBuffer(this.elementArray.length);
+        elementBuffer.put(this.elementArray).flip();
 
         eboId = GL20.glGenBuffers();
         GL15C.glBindBuffer(GL20.GL_ELEMENT_ARRAY_BUFFER, eboId);
@@ -106,18 +106,8 @@ public abstract class Mesh {
         ARBVertexArrayObject.glBindVertexArray(0);
     }
 
-    /**
-     * @return Una copia del array de vértices.
-     */
-    public float[] getVertexArray() {
-        return Arrays.copyOf(this.vertexArray, this.vertexArray.length);
-    }
-
-    /**
-     * @return Una copia del array de elementos.
-     */
-    public int[] getElementArray() {
-        return Arrays.copyOf(this.elementArray, this.elementArray.length);
+    public int getElementCount() {
+        return this.elementArray.length;
     }
 
     /**
