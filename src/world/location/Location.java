@@ -1,12 +1,18 @@
 package world.location;
 
+import listener.MouseListener;
 import main.Main;
 import org.joml.Vector2f;
+import org.joml.Vector2fc;
 import org.joml.Vector2i;
+import ui.container.Container;
+import utils.render.Camera;
+import utils.render.Window;
 import utils.render.scene.WorldScene;
 import world.feature.Feature;
 import world.terrain.Terrain;
 
+import java.io.Console;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -86,6 +92,11 @@ public class Location implements Cloneable, Serializable {
     public Location add(float amount) {
         return this.add(amount, amount);
     }
+
+    public Location add(Vector2fc amount) {
+        return this.add(amount.x(), amount.y());
+    }
+
 
     /**
      * Multiplica los componentes por un valor.

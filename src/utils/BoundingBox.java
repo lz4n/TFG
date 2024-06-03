@@ -75,6 +75,19 @@ public class BoundingBox implements Cloneable {
     }
 
     /**
+     * Divide los componentes por un valor.
+     * @param factor Valor por el cuál se quiere multiplicar.
+     * @return <code>this</code>.
+     */
+    public BoundingBox divide(float factor) {
+        this.xMin /= factor;
+        this.xMax /= factor;
+        this.yMin /= factor;
+        this.yMax /= factor;
+        return this;
+    }
+
+    /**
      * Detecta si la BoundigBox está en contacto con otra.
      * @param boundingBox BoundigBox que queremos saber si está en contacto con la nuestra.
      * @return Si están en contacto o no.

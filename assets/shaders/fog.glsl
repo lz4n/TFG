@@ -17,6 +17,8 @@ uniform int uIsPaused = 0; //Establece si el juego está en pausa. Si está en p
 uniform float uHappiness; //Índice de felicidad. Según sea la felicidad se desaturará más o menos la imagen.
 uniform float uRotationAngle = 0; //Rotación del objeto.
 uniform float uScale = 1; //Escala del objeto.
+uniform float uTime;
+uniform int uIsSelected = 0; //Si el objeto está seleccionado o no.
 
 /**
 Array de samplers de texturas.
@@ -54,12 +56,18 @@ vec4 calculateColor(sampler2D textureSampler, vec2 uvCoords) {
     //Aplicamos la escala.
     uvCoords /= uScale;
 
-    //Si el fragmento es trasparente no se aplica la nievla.
     vec4 fragmentColor = texture(textureSampler, uvCoords);
+
+    //Si el fragmento es trasparente no se aplica la nievla.
     if (fragmentColor.a == 0) {
         return fragmentColor;
     }
+
     vec3 color = vec3(mix(fragmentColor.rgb, vec3(36 /255.0, 22 /255.0, 33 /255.0), fogFactor));
+
+    if (uIsSelected == 1) {
+        color = vec3(mix(color, vec3(1, 1, 1), abs(sin(uTime)) *0.5));
+    }
 
     //Aplicamos la desaturación en funcion de la felicidad.
     vec3 grayScale = vec3(dot(color.rgb, vec3(0.2126, 0.7152, 0.0722)));

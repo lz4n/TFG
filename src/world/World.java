@@ -495,7 +495,7 @@ public class World extends Ticking implements Serializable {
     /**
      * @return Lista con todas las entidades.
      */
-    public LinkedList<Duck> getEntities() {
+    public LinkedList<Duck> getDucks() {
         return new LinkedList<>(this.DUCKS_LIST);
     }
 

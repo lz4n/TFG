@@ -3,6 +3,12 @@ package world.entity;
 import main.Main;
 import npc.Pathfinding;
 import org.joml.Vector2f;
+import ui.tooltip.TextTooltip;
+import ui.tooltip.Tooltip;
+import utils.BoundingBox;
+import utils.render.GameFont;
+import utils.render.scene.WorldScene;
+import utils.render.texture.Colors;
 import utils.render.texture.Texture;
 import utils.render.texture.Textures;
 import world.World;
@@ -12,8 +18,10 @@ import world.feature.building.jobSite.JobSite;
 import world.location.Location;
 import world.tick.Ticking;
 
+import java.awt.*;
 import java.io.Serializable;
 import java.util.*;
+import java.util.List;
 
 /**
  * Las entidades son elementos móviles del juego con los que el jugador puede interactuar (en jugador no puede interactuar
@@ -37,15 +45,19 @@ public class Duck extends Ticking implements Serializable {
     /**
      * Posición donde se encuentra la entidad.
      */
-    protected Location location;
-    protected float flip = Duck.NO_FLIP;
-    protected List<Location> pathfinding;
-    protected int pathIndex = 0;
-    protected House house;
+    private Location location;
+    private float flip = Duck.NO_FLIP;
+    private List<Location> pathfinding;
+    private int pathIndex = 0;
+    private House house;
     private JobSite jobSite = null;
     private ActivityType state;
     private int squawkingTime = 0;
     private Animation currentAnimation = Animation.IDLE;
+    private transient boolean isSelected = false;
+    private BoundingBox boundingBox = new BoundingBox(-2, -2, 18, 18).divide(WorldScene.SPRITE_SIZE);
+    private TextTooltip tooltip = null;
+
 
     /**
      * Instancia la entidad, pero no la genera. Hay que utilizar <code>World#spawnEntity(Entity)</code> para generar la
@@ -56,6 +68,8 @@ public class Duck extends Ticking implements Serializable {
     public Duck(Location location, House house) {
         this.location = location;
         this.house = house;
+
+        this.boundingBox.move(location.getX(), location.getY());
     }
 
     public boolean nextPath() {
@@ -67,8 +81,7 @@ public class Duck extends Ticking implements Serializable {
 
         Vector2f direction = new Vector2f(targetPosition).sub(this.getLocation().toVector2f()).normalize();
 
-        Vector2f newPosition = this.getLocation().toVector2f().add(new Vector2f(direction).mul(0.05f));
-        this.moveTo(newPosition);
+        this.moveTo(this.getLocation().add(new Vector2f(direction).mul(0.05f)));
 
         if (direction.x() > 0) {
             this.flip = Duck.FLIP_HORIZONTAL;
@@ -86,9 +99,11 @@ public class Duck extends Ticking implements Serializable {
     /**
      * Mueve la entidad.
      */
-    public void moveTo(Vector2f destination) {
-        this.location.setX(destination.x());
-        this.location.setY(destination.y());
+    public void moveTo(Location destination) {
+        float movementX = destination.getX() - this.location.getX(), movementY = destination.getY() - this.location.getY();
+
+        this.location.add(movementX, movementY);
+        this.boundingBox.move(movementX, movementY);
     }
 
     /**
@@ -137,6 +152,8 @@ public class Duck extends Ticking implements Serializable {
 
         this.jobSite.removeWorker(this);
         this.jobSite = null;
+
+        this.findJob();
 
         Main.world.updateUnemployment();
     }
@@ -228,6 +245,38 @@ public class Duck extends Ticking implements Serializable {
         this.pathIndex = 0;
     }
 
+    private void updateTooltip() {
+        this.tooltip = new TextTooltip();
+
+        this.tooltip.addLine("cuack", GameFont.PIXEL_CONTENT, Font.PLAIN, TextTooltip.CONTENT_TEXT_SIZE);
+    }
+
+    private void onSelected() {
+        this.updateTooltip();
+    }
+
+    private void onUnselected() {
+        this.tooltip = null;
+    }
+
+    public boolean isSelected() {
+        return this.isSelected;
+    }
+
+    public void setSelected(boolean selected) {
+        if (!this.isSelected && selected) {
+            this.onSelected();
+        } else if (this.isSelected && !selected) {
+            this.onUnselected();
+        }
+
+        this.isSelected = selected;
+    }
+
+    public BoundingBox getBoundingBox() {
+        return this.boundingBox.clone();
+    }
+
     public boolean isUnemployed() {
         return this.jobSite == null;
     }
@@ -236,7 +285,11 @@ public class Duck extends Ticking implements Serializable {
         return this.jobSite;
     }
 
-    public enum ActivityType {
+    public Tooltip getTooltip() {
+        return this.tooltip;
+    }
+
+    private enum ActivityType {
         IN_HOUSE,
         WORK,
         WALKING,

@@ -3,6 +3,8 @@ package utils.render.scene;
 import listener.MouseListener;
 import main.Main;
 import org.joml.Matrix4f;
+import org.joml.Vector2f;
+import org.lwjgl.glfw.GLFW;
 import ui.container.Inventory;
 import utils.Setting;
 import utils.Time;
@@ -137,17 +139,22 @@ public class WorldScene implements Scene {
         Shader.ENTITY.uploadFloat("uHappiness", Main.world.getHappiness());
         Shader.ENTITY.uploadFloat("uRotationAngle", 0);
         Shader.ENTITY.uploadFloat("uScale", 1);
+        Shader.ENTITY.uploadFloat("uTime", (float) GLFW.glfwGetTime());
         Shader.ENTITY.uploadInt("uIsPaused", Main.PLAYER.isPaused() ? 1: 0);
+
         for (int samplerId = 0; samplerId < Texture.SAMPLERS_COUNT; samplerId++) {
             Shader.ENTITY.uploadInt("textureSamplers[" + samplerId + "]", samplerId);
         }
 
-        Main.world.getEntities().forEach(duck -> {
+        Main.world.getDucks().forEach(duck -> {
             Shader.ENTITY.uploadFloat("uFlip", duck.getFlip());
+            Shader.ENTITY.uploadInt("uIsSelected", duck.isSelected() ? 1 : 0);
             duck.getTexture().draw(Shader.ENTITY, duck.getLocation(), 0.8f);
             Texture.unbind();
         });
 
+
+        Shader.ENTITY.uploadInt("uIsSelected", 0);
         Main.world.getParticlesList().forEach(particle -> {
             Shader.ENTITY.uploadFloat("uRotationAngle", particle.getRotation());
             Shader.ENTITY.uploadFloat("uScale", particle.getScale());
@@ -179,7 +186,7 @@ public class WorldScene implements Scene {
             ListIterator<Location> entityPath;
             Location pathLocation;
 
-            for (Duck duck : Main.world.getEntities()) {
+            for (Duck duck : Main.world.getDucks()) {
                 entityPath = duck.getPathfinding();
 
                 while (entityPath.hasNext()) {
@@ -240,6 +247,14 @@ public class WorldScene implements Scene {
 
         if (Main.PLAYER.getTooltip() != null) {
             Main.PLAYER.getTooltip().show();
+        }
+
+        for (Duck duck : Main.world.getDucks()) {
+            if (duck.isSelected() && duck.getTooltip() != null) {
+                duck.getTooltip().show(new Location(Window.getWidth() -duck.getLocation().getX(), Window.getHeight() -duck.getLocation().getY()));
+                System.out.println(new Location(Window.getWidth() -duck.getLocation().getX(), Window.getHeight() -duck.getLocation().getY()));
+                break;
+            }
         }
 
         Shader.detach();

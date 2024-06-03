@@ -1,5 +1,7 @@
 package world.worldBuilder;
 
+import org.abrun.fastNoise.NoiseGenerator;
+
 /**
  * Se encarga de generar los mapas de ruido del mundo.
  */

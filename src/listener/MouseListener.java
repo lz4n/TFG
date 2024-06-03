@@ -7,6 +7,7 @@ import ui.container.Frame;
 import utils.KeyBind;
 import utils.render.Window;
 import utils.render.scene.WorldScene;
+import world.entity.Duck;
 import world.location.Location;
 
 /**
@@ -109,6 +110,18 @@ public class MouseListener {
           if (Main.PLAYER.getTerrainSelection() != null) {
               Main.PLAYER.placeSelectedItem();
               Main.PLAYER.removeTerrainSelection();
+          }
+
+          Main.world.getDucks().forEach(duck -> duck.setSelected(false));
+
+          for (Duck duck: Main.world.getDucks()) {
+              System.out.println(duck.getBoundingBox());
+              System.out.println(MouseListener.getInGameLocation());
+              if (duck.getBoundingBox().containsLocation(MouseListener.getInGameLocation())) {
+                  duck.setSelected(true);
+
+                  break;
+              }
           }
       }
     }
