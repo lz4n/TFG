@@ -7,17 +7,19 @@ import world.feature.Feature;
 import world.location.Location;
 import world.terrain.Terrain;
 
-import java.sql.Array;
-import java.util.Arrays;
-
 public abstract class Building extends Feature {
-
-    protected Duck[] inhabitants;
 
     public Building(Location location, Vector2i sizeInBlocks, FeatureType featureType, int variant) {
         super(location, sizeInBlocks, featureType, variant);
     }
 
+    public void onAdd() {
+
+    }
+
+    public void onRemove() {
+
+    }
 
     @Override
     public boolean checkSpecificConditions() {
@@ -31,17 +33,5 @@ public abstract class Building extends Feature {
             }
         }
         return true;
-    }
-
-    public boolean isHabitable() {
-        for (Duck key : this.inhabitants) {
-            if (key == null)
-                return true;
-        }
-        return false;
-    }
-
-    public Duck[] getInhabitants() {
-        return this.inhabitants;
     }
 }

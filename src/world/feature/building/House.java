@@ -3,7 +3,6 @@ package world.feature.building;
 import main.Main;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
-import utils.render.scene.Scene;
 import utils.render.scene.WorldScene;
 import world.entity.Duck;
 import world.location.Location;
@@ -11,6 +10,8 @@ import world.particle.SmokeParticle;
 import world.tick.Tickable;
 
 public class House extends Building implements Tickable {
+    protected Duck[] inhabitants;
+
     public House(Location location, int variant) {
         super(location, House.getHouseSize(variant +1), FeatureType.HOUSE, variant);
         switch (variant) {
@@ -32,12 +33,33 @@ public class House extends Building implements Tickable {
         };
     }
 
+    @Override
+    public void onAdd() {
+        for (int index = 0; index < this.inhabitants.length; index++) {
+            Duck duck = new Duck(this.getLocation(), this);
+            this.inhabitants[index] = duck;
 
+            Main.world.addDuck(duck);
+        }
+        Main.world.addPopulation(this.inhabitants.length);
+    }
+
+    @Override
+    public void onRemove() {
+        super.onRemove();
+
+        for (Duck duck: this.inhabitants) {
+            duck.removeJobSite();
+            Main.world.removeDuck(duck);
+        }
+
+        Main.world.addPopulation(this.inhabitants.length *-1);
+    }
 
     @Override
     public void onTick(long deltaTime) {
         if (this.getVariant() +1 >= 3 && this.getVariant() +1 <= 5 && Main.RANDOM.nextFloat() > 0.97) {
-            Main.world.spawnParticle(new SmokeParticle(this.getLocation().add(0.4f, 0.8f)));
+            Main.world.addParticle(new SmokeParticle(this.getLocation().add(0.4f, 0.8f)));
         }
     }
 

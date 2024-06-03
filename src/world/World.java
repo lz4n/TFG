@@ -2,7 +2,7 @@ package world;
 
 import main.Main;
 import utils.Setting;
-import world.entity.Entity;
+import world.entity.Duck;
 import world.feature.*;
 import world.feature.building.Building;
 import world.feature.building.jobSite.Port;
@@ -19,8 +19,6 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 /**
  * Representa el mundo de juego.
@@ -42,7 +40,7 @@ public class World extends Ticking implements Serializable {
             MAX_MONTH = 12;
     private static final float MIN_DAYLIGHT = .2f;
 
-    private static final int INITIAL_MONEY = 10000;
+    private static final int INITIAL_MONEY = 10000000;
 
     /**
      * Nombre del mundo.
@@ -74,10 +72,12 @@ public class World extends Ticking implements Serializable {
      */
     private final Feature[] FEATURES;
 
+    private List<Building> BUILDINGS = new ArrayList<>();
+
     /**
      * Lista con todas las entidades.
      */
-    private final List<Entity> ENTITITES_LIST = new LinkedList<>();
+    private final List<Duck> DUCKS_LIST = new LinkedList<>();
 
     /**
      * Lista con todas las partículas.
@@ -92,12 +92,12 @@ public class World extends Ticking implements Serializable {
     /**
      * Número de features y entidades totales del mundo.
      */
-    private int featuresCount, entitiesCount;
+    private int featuresCount, ducksCount;
 
     /**
      * Índice de felicidad del mundo.
      */
-    private float happiness = 1;
+    private float happiness = 1, unemployment = 1;
 
     private int money = World.INITIAL_MONEY, incomes = 50, population = 0;
 
@@ -272,6 +272,13 @@ public class World extends Ticking implements Serializable {
                 new Ticking(tickable, false);
             }
 
+            if (feature instanceof Building building) {
+                this.BUILDINGS.add(building);
+                building.onAdd();
+
+                this.DUCKS_LIST.forEach(Duck::findJob);
+            }
+
             this.featuresCount++;
             return feature;
         } catch (ArrayIndexOutOfBoundsException ignore) {
@@ -310,6 +317,11 @@ public class World extends Ticking implements Serializable {
                 Ticking.removeTicking(tickable);
             }
 
+            if (feature instanceof Building building) {
+                building.onRemove();
+                this.BUILDINGS.remove(building);
+            }
+
             this.featuresCount--;
         } catch (ArrayIndexOutOfBoundsException ignore) {
         }
@@ -317,27 +329,37 @@ public class World extends Ticking implements Serializable {
 
     /**
      * Genera una entidad.
-     * @param entity Entidad que se quiere generar.
+     * @param duck Entidad que se quiere generar.
      */
-    public void spawnEntity(Entity entity) {
-        this.ENTITITES_LIST.add(entity);
-        this.entitiesCount++;
+    public void addDuck(Duck duck) {
+        this.spawnDuck(duck);
+        duck.onAdd();
+        this.ducksCount++;
+    }
+
+    public void spawnDuck(Duck duck) {
+        this.DUCKS_LIST.add(duck);
+    }
+
+    public void despawnDuck(Duck duck) {
+        this.DUCKS_LIST.remove(duck);
     }
 
     /**
      * Elimina una entidad.
-     * @param entity Entidad que se quiere eliminar.
+     * @param duck Entidad que se quiere eliminar.
      */
-    public void removeEntity(Entity entity) {
-        this.ENTITITES_LIST.remove(entity);
-        this.entitiesCount--;
+    public void removeDuck(Duck duck) {
+        this.despawnDuck(duck);
+        duck.onRemove();
+        this.ducksCount--;
     }
 
     /**
      * Genera una partícula.
      * @param particle Partícula que se quiere generar.
      */
-    public void spawnParticle(Particle particle) {
+    public void addParticle(Particle particle) {
         if (this.particlesList != null) {
             this.particlesList.add(particle);
         }
@@ -402,8 +424,8 @@ public class World extends Ticking implements Serializable {
     /**
      * @return Número total de entidades.
      */
-    public int getEntitiesCount() {
-        return this.entitiesCount;
+    public int getDucksCount() {
+        return this.ducksCount;
     }
 
     /**
@@ -466,19 +488,19 @@ public class World extends Ticking implements Serializable {
         return new LinkedList<>(Arrays.asList(this.FEATURES));
     }
 
-    public Stream<Feature> getFeatures(Predicate<Feature> predicate) {
-        return Arrays.stream(this.FEATURES).filter(predicate);
+    public List<Building> getBuildings() {
+        return new ArrayList<>(this.BUILDINGS);
     }
 
     /**
      * @return Lista con todas las entidades.
      */
-    public LinkedList<Entity> getEntities() {
-        return new LinkedList<>(this.ENTITITES_LIST);
+    public LinkedList<Duck> getEntities() {
+        return new LinkedList<>(this.DUCKS_LIST);
     }
 
-    public void forEachEntity(Consumer<Entity> consumer) {
-        this.ENTITITES_LIST.forEach(consumer);
+    public void forEachEntity(Consumer<Duck> consumer) {
+        this.DUCKS_LIST.forEach(consumer);
     }
 
     /**
@@ -528,10 +550,20 @@ public class World extends Ticking implements Serializable {
         return this.happiness;
     }
 
+    public float getUnemployment() {
+        return this.unemployment;
+    }
+
     public void addHappiness(float aomunt) {
         this.happiness = Math.clamp(this.happiness +aomunt, 0, 1);
 
         Main.PLAYER.updateHappiness(this.happiness);
+    }
+
+    public void updateUnemployment() {
+        this.unemployment = this.DUCKS_LIST.stream().filter(Duck::isUnemployed).count() / (float) this.ducksCount;
+
+        Main.PLAYER.updateUnemployment(this.unemployment);
     }
 
     @Override
@@ -563,11 +595,11 @@ public class World extends Ticking implements Serializable {
         if (Main.RANDOM.nextFloat() > Setting.CLOUDS.getValue()) {
             float cloudVelocity = Main.RANDOM.nextFloat(.04f, .06f);
             Location cloudLocation = new Location(0, Main.RANDOM.nextFloat(this.WORLD_SIZE));
-            this.spawnParticle(new CloudParticle(cloudLocation.clone(), cloudVelocity, false));
+            this.addParticle(new CloudParticle(cloudLocation.clone(), cloudVelocity, false));
 
             //Generamos la sombra.
             cloudLocation.add(0, Main.RANDOM.nextFloat(2f, 5f) *-1);
-            this.spawnParticle(new CloudParticle(cloudLocation, cloudVelocity, true));
+            this.addParticle(new CloudParticle(cloudLocation, cloudVelocity, true));
         }
     }
 

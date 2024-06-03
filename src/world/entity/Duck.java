@@ -1,51 +1,157 @@
 package world.entity;
 
 import main.Main;
-import npc.Node;
 import npc.Pathfinding;
 import org.joml.Vector2f;
-import utils.Logger;
 import utils.render.texture.Texture;
 import utils.render.texture.Textures;
 import world.World;
+import world.feature.building.Building;
 import world.feature.building.House;
+import world.feature.building.jobSite.JobSite;
 import world.location.Location;
+import world.tick.Ticking;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.Serializable;
+import java.util.*;
 
 /**
- * Entidad que representa un pato.
+ * Las entidades son elementos móviles del juego con los que el jugador puede interactuar (en jugador no puede interactuar
+ * con las partículas).
+ * @see world.particle.Particle
  */
-public class Duck extends Entity {
+
+//TODO: Sistema para detectar clic a las entidades.
+public class Duck extends Ticking implements Serializable {
+    public static final float NO_FLIP = 0, FLIP_HORIZONTAL = 1, FLIP_VERTICAL = 2, FLIP_BOTH = 3;
     private static final int SQUAWKING_TIME = 50;
     /*{"8:30", "17:30", "22:00"},
-      {"15:20", "21:20", "05:00"},
-      {"23:40", "06:30", "12:20"}*/
+          {"15:20", "21:20", "05:00"},
+          {"23:40", "06:30", "12:20"}*/
     private final static int[][] SCHEDULE = new int[][]{ //Hará referencia a los horarios de los patos. HORA ENTRADA TRABAJO || HORA SALIDA TRABAJO || HORA IRSE A DORMIR
              {World.hourToTick(8, 30), World.hourToTick(17, 30), World.hourToTick(22, 0)},
              {World.hourToTick(15, 20), World.hourToTick(21,20), World.hourToTick(5, 0)},
              {World.hourToTick(23, 40), World.hourToTick(6, 30), World.hourToTick(12, 20)}
     };
 
-    private House house;
+    /**
+     * Posición donde se encuentra la entidad.
+     */
+    protected Location location;
+    protected float flip = Duck.NO_FLIP;
+    protected List<Location> pathfinding;
+    protected int pathIndex = 0;
+    protected House house;
+    private JobSite jobSite = null;
     private ActivityType state;
     private int squawkingTime = 0;
     private Animation currentAnimation = Animation.IDLE;
 
     /**
-     * @param location Posición donde se va a generar un pato.
+     * Instancia la entidad, pero no la genera. Hay que utilizar <code>World#spawnEntity(Entity)</code> para generar la
+     * entidad en el mundo.
+     * @param location Posición donde se va a generar la entidad.
+     * @see world.World#addDuck(Duck)
      */
     public Duck(Location location, House house) {
-        super(location);
+        this.location = location;
         this.house = house;
-
-        this.scheduleActivities();
     }
 
-    @Override
+    public boolean nextPath() {
+        if (this.pathfinding == null) return false;
+        if (this.pathIndex >= this.pathfinding.size()) return true;
+
+
+        Vector2f targetPosition = this.pathfinding.get(this.pathIndex).toVector2f();
+
+        Vector2f direction = new Vector2f(targetPosition).sub(this.getLocation().toVector2f()).normalize();
+
+        Vector2f newPosition = this.getLocation().toVector2f().add(new Vector2f(direction).mul(0.05f));
+        this.moveTo(newPosition);
+
+        if (direction.x() > 0) {
+            this.flip = Duck.FLIP_HORIZONTAL;
+        } else if (direction.x() < 0) {
+            this.flip = Duck.NO_FLIP;
+        }
+
+        if (this.getLocation().toVector2f().distance(targetPosition) < 0.1f) {
+            this.pathIndex++;
+        }
+
+        return false;
+    }
+
+    /**
+     * Mueve la entidad.
+     */
+    public void moveTo(Vector2f destination) {
+        this.location.setX(destination.x());
+        this.location.setY(destination.y());
+    }
+
+    /**
+     * @return Posición actual de la entidad.
+     */
+    public Location getLocation() {
+        return this.location.clone();
+    }
+
+    public ListIterator<Location> getPathfinding() {
+        if (this.pathfinding == null) {
+            return Collections.emptyListIterator();
+        }
+
+        return this.pathfinding.listIterator();
+    }
+
+    public int getPathIndex() {
+        return this.pathIndex;
+    }
+
+    public float getFlip() {
+        return this.flip;
+    }
+
+    public boolean setJobSite(JobSite jobSite) {
+        if (jobSite.addWorker(this)) {
+            if (this.jobSite != null) {
+                this.jobSite.removeWorker(this);
+            }
+
+            this.jobSite = jobSite;
+
+            Main.world.updateUnemployment();
+
+            return true;
+        }
+
+        return false;
+    }
+
+    public void removeJobSite() {
+        if (this.jobSite == null) {
+            return;
+        }
+
+        this.jobSite.removeWorker(this);
+        this.jobSite = null;
+
+        Main.world.updateUnemployment();
+    }
+
     public Texture getTexture() {
         return this.currentAnimation.TEXTURE;
+    }
+
+    public void onRemove() {
+        this.removeJobSite();
+    }
+
+    public void onAdd() {
+        this.findJob();
+        this.scheduleActivities();
     }
 
     //TODO: Ia de los patos.
@@ -56,7 +162,7 @@ public class Duck extends Entity {
                 this.squawkingTime--;
                 this.currentAnimation = Animation.SQUAWKING;
             } else {
-                if (Main.RANDOM.nextFloat() > 0.63) {
+                if (Main.RANDOM.nextFloat() > 0.93) {
                     if (Main.RANDOM.nextFloat() > 0.55) {
                         this.currentAnimation = Animation.SQUAWKING;
                         this.squawkingTime = Duck.SQUAWKING_TIME;
@@ -73,6 +179,20 @@ public class Duck extends Entity {
                 this.pathfinding = null;
             }
         }
+    }
+
+    public void findJob() {
+        if (!this.isUnemployed()) {
+            return;
+        }
+
+        for (Building building : Main.world.getBuildings()) {
+            if (building instanceof JobSite jobSite && this.setJobSite(jobSite)) {
+                break;
+            }
+        }
+
+        this.scheduleActivities();
     }
 
     public void setState(ActivityType state) {
@@ -100,12 +220,20 @@ public class Duck extends Entity {
 
     private void doPathfinding() {
         this.pathfinding = Pathfinding.getPathfinder().findPath(
-                super.getLocation(),
+                getLocation(),
                 this.house.getLocation().randomLocation(15));
 
         System.gc();
 
         this.pathIndex = 0;
+    }
+
+    public boolean isUnemployed() {
+        return this.jobSite == null;
+    }
+
+    public JobSite getJobSite() {
+        return this.jobSite;
     }
 
     public enum ActivityType {

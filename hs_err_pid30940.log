@@ -593,8 +593,8 @@ Event: 2.120 Thread 0x0000024fce8c0cb0 DEOPT PACKING pc=0x0000024fe09fc1b0 sp=0x
 Event: 2.120 Thread 0x0000024fce8c0cb0 DEOPT UNPACKING pc=0x0000024fe04346a2 sp=0x0000009c722ff210 mode 2
 
 Classes loaded (20 events):
-Event: 2.120 Loading class world/entity/Entity
-Event: 2.120 Loading class world/entity/Entity done
+Event: 2.120 Loading class world/duck/Entity
+Event: 2.120 Loading class world/duck/Entity done
 Event: 2.120 Loading class world/particle/Particle
 Event: 2.120 Loading class world/particle/Particle done
 Event: 2.120 Loading class world/particle/Particle

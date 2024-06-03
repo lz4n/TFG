@@ -30,7 +30,6 @@ import utils.render.Window;
 import utils.render.texture.Colors;
 import utils.render.texture.Texture;
 import utils.render.texture.Textures;
-import world.World;
 import world.entity.Duck;
 import world.feature.Feature;
 import world.feature.building.House;
@@ -120,7 +119,8 @@ public class Player extends Ticking {
     private final SmallTextBox MONEY_TEXT_BOX = new SmallTextBox(50, 4),
         INCOMES_TEXT_BOX = new SmallTextBox(50, 14),
         POPULATION_TEXT_BOX = new SmallTextBox(50, 24),
-        HAPPINESS_TEXT_BOX = new SmallTextBox(50, 34);
+        HAPPINESS_TEXT_BOX = new SmallTextBox(50, 34),
+        UNEMPLOYMENT_TEXT_BOX = new SmallTextBox(90, 4);
 
     /**
      * Inventario del jugador.
@@ -275,8 +275,9 @@ public class Player extends Ticking {
         this.POPULATION_TEXT_BOX.setTooltip(new TextTooltip().addLine("Habitantes totales de la ciudad", GameFont.PIXEL_CONTENT, Font.PLAIN, TextTooltip.CONTENT_TEXT_SIZE));
         this.INVENTORY.addWidgetToAllTabs(this.HAPPINESS_TEXT_BOX);
         this.HAPPINESS_TEXT_BOX.setTooltip(new TextTooltip().addLine("Felicidad media de todos los patos", GameFont.PIXEL_CONTENT, Font.PLAIN, TextTooltip.CONTENT_TEXT_SIZE));
+        this.INVENTORY.addWidgetToAllTabs(this.UNEMPLOYMENT_TEXT_BOX);
+        this.UNEMPLOYMENT_TEXT_BOX.setTooltip(new TextTooltip().addLine("Índice de paro de la ciudad", GameFont.PIXEL_CONTENT, Font.PLAIN, TextTooltip.CONTENT_TEXT_SIZE));
 
-        this.INVENTORY.addWidgetToAllTabs(new SmallTextBox(90, 4));
         this.INVENTORY.addWidgetToAllTabs(new SmallTextBox(90, 14));
         this.INVENTORY.addWidgetToAllTabs(new SmallTextBox(90, 24));
         this.INVENTORY.addWidgetToAllTabs(new SmallTextBox(90, 34));
@@ -297,6 +298,7 @@ public class Player extends Ticking {
         this.updateIncomes(Main.world.getIncomes());
         this.updatePopulation(Main.world.getPopulation());
         this.updateHappiness(Main.world.getHappiness());
+        this.updateUnemployment(Main.world.getUnemployment());
     }
 
     private void createGameMenu() {
@@ -613,6 +615,24 @@ public class Player extends Ticking {
         );
     }
 
+    public void updateUnemployment(float unemployment) {
+        Color color = Colors.GREEN;
+
+        if (unemployment > .5f) {
+            color = Colors.ORANGE;
+
+            if (unemployment > .75f) {
+                color = Colors.RED;
+            }
+        }
+
+        this.UNEMPLOYMENT_TEXT_BOX.setText(
+                (int) (unemployment *100) + "%",
+                Font.PLAIN,
+                color
+        );
+    }
+
     /**
      * @return Contenedor que está utilizando el jugador, el menú o el inventario.
      */
@@ -717,18 +737,10 @@ public class Player extends Ticking {
         if (selectedFeature != null) {
             Main.world.removeFeature(selectedFeature);
             for (int particles = 0; particles < selectedFeature.getSize().x() * selectedFeature.getSize().y() * 5; particles++) {
-                Main.world.spawnParticle(new BulldozerParticle(MouseListener.getInGameLocation().truncate().add(-0.5f, -0.5f).add(
+                Main.world.addParticle(new BulldozerParticle(MouseListener.getInGameLocation().truncate().add(-0.5f, -0.5f).add(
                         Main.RANDOM.nextFloat(0, selectedFeature.getSize().x()),
                         Main.RANDOM.nextFloat(0, selectedFeature.getSize().y())
                 )));
-            }
-
-            if (selectedFeature instanceof House house) {
-                for (Duck duck: house.getInhabitants()) {
-                    Main.world.removeEntity(duck);
-                }
-
-                Main.world.addPopulation(house.getInhabitants().length *-1);
             }
         }
     }
@@ -741,25 +753,15 @@ public class Player extends Ticking {
                     Main.world.addFeature(selectedFeature);
                     Main.world.addMoney(-featureItem.getPrice());
                     for (int particles = 0; particles < selectedFeature.getSize().x() * selectedFeature.getSize().y() * 5; particles++) {
-                        Main.world.spawnParticle(new PositiveParticle(MouseListener.getInGameLocation().truncate().add(-0.5f, -0.5f).add(
+                        Main.world.addParticle(new PositiveParticle(MouseListener.getInGameLocation().truncate().add(-0.5f, -0.5f).add(
                                 Main.RANDOM.nextFloat(0, selectedFeature.getSize().x()),
                                 Main.RANDOM.nextFloat(0, selectedFeature.getSize().y())
                         )));
                     }
 
-                    if (selectedFeature instanceof House house) {
-                        for (int index = 0; index < house.getInhabitants().length; index++) {
-                            Duck duck = new Duck(house.getLocation(), house);
-                            house.getInhabitants()[index] = duck;
-
-                            Main.world.spawnEntity(duck);
-                        }
-                        Main.world.addPopulation(house.getInhabitants().length);
-                    }
-
                     featureItem.getFeatureType().getSoundEffect().play(SoundCategory.SOUND_EFFECTS);
                 } else {
-                    Main.world.spawnParticle(new NegativeParticle(MouseListener.getInGameLocation().add(-.5f, .5f)));
+                    Main.world.addParticle(new NegativeParticle(MouseListener.getInGameLocation().add(-.5f, .5f)));
                 }
             }
         }
@@ -788,7 +790,7 @@ public class Player extends Ticking {
                     if (feature != null && !feature.checkSpecificConditions()) {
                         Main.world.removeFeature(feature);
                         for (int particles = 0; particles < feature.getSize().x() * feature.getSize().y() * 5; particles++) {
-                            Main.world.spawnParticle(new BulldozerParticle(location.clone().add(-0.5f, -0.5f).add(
+                            Main.world.addParticle(new BulldozerParticle(location.clone().add(-0.5f, -0.5f).add(
                                     Main.RANDOM.nextFloat(0, feature.getSize().x()),
                                     Main.RANDOM.nextFloat(0, feature.getSize().y())
                             )));
@@ -796,7 +798,7 @@ public class Player extends Ticking {
                     }
 
                     for (int particles = 0; particles < 5; particles++) {
-                        Main.world.spawnParticle(new PositiveParticle(location.clone().add(-0.5f, -0.5f).add(
+                        Main.world.addParticle(new PositiveParticle(location.clone().add(-0.5f, -0.5f).add(
                                 Main.RANDOM.nextFloat(0, 1),
                                 Main.RANDOM.nextFloat(0, 1)
                         )));
@@ -847,7 +849,7 @@ public class Player extends Ticking {
     @Override
     public void onTick(long deltaTime) {
         if (this.isSelectingTerrain()) {
-            this.getTerrainSelection().forEach(location -> Main.world.spawnParticle(new CursorParticle(location)));
+            this.getTerrainSelection().forEach(location -> Main.world.addParticle(new CursorParticle(location)));
         }
     }
 }

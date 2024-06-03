@@ -26,7 +26,6 @@ import utils.render.texture.AnimatedTexture;
 import utils.render.texture.CacheTexture;
 import utils.render.texture.Texture;
 import utils.render.texture.Textures;
-import world.entity.Duck;
 import world.tick.Ticking;
 
 import javax.imageio.ImageIO;

@@ -3,7 +3,6 @@ package world.particle;
 import main.Main;
 import utils.render.texture.Texture;
 import world.location.Location;
-import world.tick.ForceTicking;
 import world.tick.Ticking;
 
 /**
@@ -31,7 +30,7 @@ public abstract class Particle extends Ticking {
     /**
      * Crea una partícula, pero no la genera en el mundo. Para generar una partícula en el mundo es necesario utilizar
      * <code>spawnParticle(Particle)</code>.
-     * @see world.World#spawnParticle(Particle)
+     * @see world.World#addParticle(Particle)
      * @param location
      */
     public Particle(Location location) {

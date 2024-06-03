@@ -1,13 +1,11 @@
 package world.feature.building.jobSite;
 
-import main.Main;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
-import utils.Logger;
 import utils.render.scene.WorldScene;
+import world.entity.Duck;
 import world.feature.Feature;
 import world.location.Location;
-import world.particle.SmokeParticle;
 import world.terrain.Terrain;
 
 public class Port extends JobSite {
@@ -22,6 +20,8 @@ public class Port extends JobSite {
         if (super.getLocation().add(0, -1).getTerrain().getType().equals(Terrain.TerrainType.WATER)) {
             location.add(0, -1);
         }
+
+        super.workers = new Duck[50];
     }
 
     @Override

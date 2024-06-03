@@ -2,9 +2,7 @@ package utils.render.scene;
 
 import listener.MouseListener;
 import main.Main;
-import npc.Node;
 import org.joml.Matrix4f;
-import org.joml.Vector2d;
 import ui.container.Inventory;
 import utils.Setting;
 import utils.Time;
@@ -15,15 +13,13 @@ import org.lwjgl.opengl.*;
 import utils.render.Shader;
 import utils.render.texture.*;
 import world.WorldGenerator;
-import world.entity.Entity;
+import world.entity.Duck;
 import world.feature.Feature;
 import world.location.Location;
 import world.particle.*;
 import world.terrain.Terrain;
 
 import java.awt.*;
-import java.util.Iterator;
-import java.util.List;
 import java.util.ListIterator;
 
 /**
@@ -146,9 +142,9 @@ public class WorldScene implements Scene {
             Shader.ENTITY.uploadInt("textureSamplers[" + samplerId + "]", samplerId);
         }
 
-        Main.world.getEntities().forEach(entity -> {
-            Shader.ENTITY.uploadFloat("uFlip", entity.getFlip());
-            entity.getTexture().draw(Shader.ENTITY, entity.getLocation(), 0.8f);
+        Main.world.getEntities().forEach(duck -> {
+            Shader.ENTITY.uploadFloat("uFlip", duck.getFlip());
+            duck.getTexture().draw(Shader.ENTITY, duck.getLocation(), 0.8f);
             Texture.unbind();
         });
 
@@ -183,13 +179,13 @@ public class WorldScene implements Scene {
             ListIterator<Location> entityPath;
             Location pathLocation;
 
-            for (Entity entity: Main.world.getEntities()) {
-                entityPath = entity.getPathfinding();
+            for (Duck duck : Main.world.getEntities()) {
+                entityPath = duck.getPathfinding();
 
                 while (entityPath.hasNext()) {
                     pathLocation = entityPath.next();
 
-                    if (entityPath.previousIndex() >= entity.getPathIndex()) {
+                    if (entityPath.previousIndex() >= duck.getPathIndex()) {
                         if (entityPath.hasNext()) {
                             entityPathMesh.addVertex(pathLocation.getX() +.2f, pathLocation.getY() -.8f, .6f, .6f, SPRITE_SIZE);
                         } else {
@@ -235,10 +231,10 @@ public class WorldScene implements Scene {
             Feature selectedFeature;
             if ((selectedFeature = MouseListener.getInGameLocation().getFeature()) != null && !Main.PLAYER.isSelectingTerrain()) {
                 for (int x = 1; x <= selectedFeature.getSize().x(); x++) for (int y = 1; y <= selectedFeature.getSize().y(); y++) {
-                    Main.world.spawnParticle(new CursorParticle(selectedFeature.getLocation().add(x -1, y -1)));
+                    Main.world.addParticle(new CursorParticle(selectedFeature.getLocation().add(x -1, y -1)));
                 }
             } else {
-                Main.world.spawnParticle(new CursorParticle(MouseListener.getInGameLocation()));
+                Main.world.addParticle(new CursorParticle(MouseListener.getInGameLocation()));
             }
         }
 
@@ -272,9 +268,10 @@ public class WorldScene implements Scene {
                         world:
                             seed=%d
                             dayTime=%d (%s) (dayLight=%.03f), day=%d, month=%d, years=%d
-                            features = %d, entities = %d, particles = %d
+                            features = %d, ducks = %d, particles = %d
                             
                             happiness=%.03f
+                            unemployment=%.03f
                         """,
                 (int) (1/ Time.nanosecondsToSeconds(dTime)),
                 (runtime.totalMemory() -runtime.freeMemory()) /1048576,
@@ -314,9 +311,10 @@ public class WorldScene implements Scene {
                 Main.world.getMonth(),
                 Main.world.getYear(),
                 Main.world.getFeaturesCount(),
-                Main.world.getEntitiesCount(),
+                Main.world.getDucksCount(),
                 Main.world.getParticlesList().size(),
-                Main.world.getHappiness()
+                Main.world.getHappiness(),
+                Main.world.getUnemployment()
         );
 
         Graphics2dTexture debugScreen = GameFont.DEBUG.drawText(debug, Font.PLAIN, 12);
