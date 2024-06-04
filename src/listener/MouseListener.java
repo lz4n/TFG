@@ -115,8 +115,6 @@ public class MouseListener {
           Main.world.getDucks().forEach(duck -> duck.setSelected(false));
 
           for (Duck duck: Main.world.getDucks()) {
-              System.out.println(duck.getBoundingBox());
-              System.out.println(MouseListener.getInGameLocation());
               if (duck.getBoundingBox().containsLocation(MouseListener.getInGameLocation())) {
                   duck.setSelected(true);
 

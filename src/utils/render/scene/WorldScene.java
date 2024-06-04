@@ -196,6 +196,7 @@ public class WorldScene implements Scene {
                         if (entityPath.hasNext()) {
                             entityPathMesh.addVertex(pathLocation.getX() +.2f, pathLocation.getY() -.8f, .6f, .6f, SPRITE_SIZE);
                         } else {
+                            System.out.println("f" +pathLocation);
                             destinationEntityPathMesh.addVertex(pathLocation.getX() +.1f, pathLocation.getY() -.9f, .8f, .8f, SPRITE_SIZE);
                         }
                     } else {
@@ -252,7 +253,6 @@ public class WorldScene implements Scene {
         for (Duck duck : Main.world.getDucks()) {
             if (duck.isSelected() && duck.getTooltip() != null) {
                 duck.getTooltip().show(new Location(Window.getWidth() -duck.getLocation().getX(), Window.getHeight() -duck.getLocation().getY()));
-                System.out.println(new Location(Window.getWidth() -duck.getLocation().getX(), Window.getHeight() -duck.getLocation().getY()));
                 break;
             }
         }

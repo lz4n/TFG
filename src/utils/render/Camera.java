@@ -15,7 +15,7 @@ import java.lang.Math;
  * @author Izan
  */
 public class Camera {
-    private static final float MIN_ZOOM = .5f, MAX_ZOOM = 2f;
+    private static final float MIN_ZOOM = 0f, MAX_ZOOM = 2f;
 
     /**
      * Contantes para la amplitud de la camara.
@@ -133,7 +133,7 @@ public class Camera {
         Matrix4f inverseTransform = projectionMatrix.mul(viewMatrix, new Matrix4f()).invert();
         Vector4f cursorView = inverseTransform.transform(cursorClip, new Vector4f());
         cursorView.div(cursorView.w);
-        return new Location(cursorView.x() / WorldScene.SPRITE_SIZE, cursorView.y() / WorldScene.SPRITE_SIZE);
+        return new Location(cursorView.x() / WorldScene.SPRITE_SIZE, (cursorView.y() / WorldScene.SPRITE_SIZE) +1);
     }
 
     private void setZoom(float zoom) {
