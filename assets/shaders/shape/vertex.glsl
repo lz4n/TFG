@@ -15,20 +15,11 @@ Matrices de proyección y vista de la cámara.
 uniform mat4 uProjection;
 uniform mat4 uView;
 
-uniform int uUseCameraParameters = 0;
 /**
 */
 uniform vec2 uPosition;
 
 void main() {
     //Transforma la posición del vértice usando las matrices de proyección y modelo-vista
-    vec4 transformedPosition;
-
-    if (uUseCameraParameters == 0) {
-        transformedPosition = uProjection * uView * vec4(position.x +uPosition.x, position.y +uPosition.y, 0.0, 1.0);
-    } else {
-        transformedPosition = uProjection * uView * vec4(position.x +uPosition.x, position.y +uPosition.y, 1.0, 1.0);
-    }
-
-    gl_Position = transformedPosition;
+    gl_Position = uProjection * uView * vec4(position.x +uPosition.x, position.y +uPosition.y, 0.0, 1.0);
 }

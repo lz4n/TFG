@@ -1,8 +1,8 @@
 package listener;
 
+import listener.events.click.ClickEvent;
 import main.Main;
 import org.joml.Matrix4f;
-import org.joml.Vector2f;
 import org.joml.Vector4f;
 import org.lwjgl.glfw.GLFW;
 import ui.container.Frame;
@@ -90,40 +90,14 @@ public class MouseListener {
      * @param mods Modificador de teclado, por ejemplo <code>ctrl</code>, <code>alt</code>, <code>sifht</code>.
      */
     public static void mouseButtonCallback(long window, int button, int action, int mods) {
-      if (action == GLFW.GLFW_PRESS) {
-          MouseListener.setIsMouseButtonPressed(button, true);
-          Window.currentScene.click((float) MouseListener.posX, (float) MouseListener.posY);
-          Main.PLAYER.getContainer().onDragEvent((float) posX, (float) posY);
+      new ClickEvent().event(new Location((float) posX, (float) posY), button, action, mods);
 
-          if (!Main.PLAYER.isMouseOnInventory() && !Main.PLAYER.isPaused()) {
-              //Colocar/Destruir features cuando se hace click sobre ellas.
-              if (KeyBind.INTERACT.isPressed()) {
-                  if (Main.PLAYER.isUsingBulldozer()) {
-                      Main.PLAYER.destroySelectedFeature();
-                  } else {
-                      Main.PLAYER.placeSelectedItem();
-                  }
-              }
-          }
-      } else if (action == GLFW.GLFW_RELEASE) {
-          MouseListener.setIsMouseButtonPressed(button, false);
-          MouseListener.isDragging = false;
-
-          if (Main.PLAYER.getTerrainSelection() != null) {
-              Main.PLAYER.placeSelectedItem();
-              Main.PLAYER.removeTerrainSelection();
-          }
-
-          Main.world.getDucks().forEach(duck -> duck.setSelected(false));
-
-          for (Duck duck: Main.world.getDucks()) {
-              if (duck.getBoundingBox().containsLocation(MouseListener.getInGameLocation())) {
-                  duck.setSelected(true);
-
-                  break;
-              }
-          }
-      }
+        if (action == GLFW.GLFW_PRESS) {
+            MouseListener.setIsMouseButtonPressed(button, true);
+        } else if (action == GLFW.GLFW_RELEASE) {
+            MouseListener.setIsMouseButtonPressed(button, false);
+            MouseListener.isDragging = false;
+        }
     }
 
     /**
