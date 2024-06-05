@@ -114,28 +114,6 @@ public class Camera {
         return this.viewMatrix;
     }
 
-    /**
-     * Convierte las coordenadas de pantalla en coordenadas in-game, según la posición y zoom de la cámara-
-     * @param mousePosition Posición del ratón en la pantalla.
-     * @return Posición del ratón in-game.
-     *
-     * @see MouseListener#getInGameLocation()
-     */
-    public Location getInGameLocationMousePosition(Vector2f mousePosition) {
-        //Calculamos las coordenadas normalizadas del cursor en pantalla (de -1 a 1)
-        float normalizedX = (2.0f * mousePosition.x() / Window.getWidth()) - 1.0f;
-        float normalizedY = 1.0f - (2.0f * (mousePosition.y()) / Window.getHeight());
-
-        //Vector 4D con las coordenadas normalizadas y profundidad entre -1 y 1
-        Vector4f cursorClip = new Vector4f(normalizedX, normalizedY, -1.0f, 1.0f);
-
-        //Calculamos las coordenadas in-game
-        Matrix4f inverseTransform = projectionMatrix.mul(viewMatrix, new Matrix4f()).invert();
-        Vector4f cursorView = inverseTransform.transform(cursorClip, new Vector4f());
-        cursorView.div(cursorView.w);
-        return new Location(cursorView.x() / WorldScene.SPRITE_SIZE, (cursorView.y() / WorldScene.SPRITE_SIZE) +1);
-    }
-
     private void setZoom(float zoom) {
         this.moveCamera(new Vector2f(0, 0));
 

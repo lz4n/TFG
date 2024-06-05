@@ -3,7 +3,6 @@ package utils.render.scene;
 import listener.MouseListener;
 import main.Main;
 import org.joml.Matrix4f;
-import org.joml.Vector2f;
 import org.lwjgl.glfw.GLFW;
 import ui.container.Inventory;
 import utils.Setting;
@@ -20,6 +19,7 @@ import world.feature.Feature;
 import world.location.Location;
 import world.particle.*;
 import world.terrain.Terrain;
+import world.worldBuilder.Biome;
 
 import java.awt.*;
 import java.util.ListIterator;
@@ -45,6 +45,8 @@ public class WorldScene implements Scene {
     @Override
     public void init() {
         new WorldGenerator().run();
+
+        Main.world.setTerrain(0, 0, new Terrain(Terrain.TerrainType.STONE_TILE, Biome.BEACH, 0, 0, 0));
 
         for (Terrain.TerrainType terrainType: Terrain.TerrainType.values()) {
             terrainType.getMesh().adjust();
@@ -158,9 +160,12 @@ public class WorldScene implements Scene {
         Main.world.getParticlesList().forEach(particle -> {
             Shader.ENTITY.uploadFloat("uRotationAngle", particle.getRotation());
             Shader.ENTITY.uploadFloat("uScale", particle.getScale());
+            if (particle instanceof CursorParticle) {
+                System.out.println(particle.getLocation());
+            }
             particle.getTexture().draw(
                     Shader.ENTITY,
-                    particle.getLocation().add(0, 1)
+                    particle.getLocation()
             );
             Texture.unbind();
         });
@@ -186,17 +191,16 @@ public class WorldScene implements Scene {
             ListIterator<Location> entityPath;
             Location pathLocation;
 
-            for (Duck duck : Main.world.getDucks()) {
+            for (Duck duck : Main.world.getDucks().stream().filter(Duck::isSelected).toList()) {
                 entityPath = duck.getPathfinding();
 
                 while (entityPath.hasNext()) {
-                    pathLocation = entityPath.next();
+                    pathLocation = entityPath.next().clone().add(0, 1);
 
                     if (entityPath.previousIndex() >= duck.getPathIndex()) {
                         if (entityPath.hasNext()) {
                             entityPathMesh.addVertex(pathLocation.getX() +.2f, pathLocation.getY() -.8f, .6f, .6f, SPRITE_SIZE);
                         } else {
-                            System.out.println("f" +pathLocation);
                             destinationEntityPathMesh.addVertex(pathLocation.getX() +.1f, pathLocation.getY() -.9f, .8f, .8f, SPRITE_SIZE);
                         }
                     } else {
@@ -228,6 +232,13 @@ public class WorldScene implements Scene {
         Shader.HUD.uploadMatrix4f("uProjection", new Matrix4f().ortho(0, Window.getWidth(), Window.getHeight(), 0, -1, 1));
         Shader.HUD.uploadMatrix4f("uView", new Matrix4f().identity());
 
+        for (Duck duck : Main.world.getDucks()) {
+            if (duck.isSelected() && duck.getTooltip() != null) {
+                duck.getTooltip().showAtWorld(duck.getLocation().add(duck.getBoundingBox().getSize()));
+                break;
+            }
+        }
+
         Main.PLAYER.updateDateTime(Main.world.getFormattedDayTime(), String.format("%d-%d-%d", Main.world.getDay(), Main.world.getMonth(), Main.world.getYear()));
         if (!Main.PLAYER.isHidingUi() || !(Main.PLAYER.getContainer() instanceof Inventory)) {
             Main.PLAYER.getContainer().onHoverEvent();
@@ -247,14 +258,7 @@ public class WorldScene implements Scene {
         }
 
         if (Main.PLAYER.getTooltip() != null) {
-            Main.PLAYER.getTooltip().show();
-        }
-
-        for (Duck duck : Main.world.getDucks()) {
-            if (duck.isSelected() && duck.getTooltip() != null) {
-                duck.getTooltip().show(new Location(Window.getWidth() -duck.getLocation().getX(), Window.getHeight() -duck.getLocation().getY()));
-                break;
-            }
+            Main.PLAYER.getTooltip().showAtMouse();
         }
 
         Shader.detach();

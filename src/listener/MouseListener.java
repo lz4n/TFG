@@ -1,7 +1,9 @@
 package listener;
 
 import main.Main;
+import org.joml.Matrix4f;
 import org.joml.Vector2f;
+import org.joml.Vector4f;
 import org.lwjgl.glfw.GLFW;
 import ui.container.Frame;
 import utils.KeyBind;
@@ -41,7 +43,7 @@ public class MouseListener {
      */
     public static void updateInGameLocation() {
         if (Window.currentScene instanceof WorldScene && Main.PLAYER != null) {
-            MouseListener.inGameLocation = Main.PLAYER.getCamera().getInGameLocationMousePosition(new Vector2f((float) MouseListener.posX, (float) MouseListener.posY));
+            MouseListener.UpdateInGameLocationMousePosition();
         }
     }
 
@@ -157,6 +159,21 @@ public class MouseListener {
         if (button < MouseListener.isMouseButtonPressed.length) {
             MouseListener.isMouseButtonPressed[button] = isPressed;
         }
+    }
+
+    public static void UpdateInGameLocationMousePosition() {
+        //Calculamos las coordenadas normalizadas del cursor en pantalla (de -1 a 1)
+        float normalizedX = (2.0f * (float) MouseListener.posX / Window.getWidth()) - 1.0f;
+        float normalizedY = 1.0f - (2.0f * (float) MouseListener.posY / Window.getHeight());
+
+        //Vector 4D con las coordenadas normalizadas y profundidad entre -1 y 1
+        Vector4f cursorClip = new Vector4f(normalizedX, normalizedY, -1.0f, 1.0f);
+
+        //Calculamos las coordenadas in-game
+        Matrix4f inverseTransform = Main.PLAYER.getCamera().getProjectionMatrix().mul(Main.PLAYER.getCamera().getViewMatrix(), new Matrix4f()).invert();
+        Vector4f cursorView = inverseTransform.transform(cursorClip, new Vector4f());
+        cursorView.div(cursorView.w);
+        MouseListener.inGameLocation = new Location(cursorView.x() / WorldScene.SPRITE_SIZE, (cursorView.y() / WorldScene.SPRITE_SIZE));
     }
 
     public static boolean isMouseButtonPressed(int button) {
