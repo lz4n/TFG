@@ -1328,3 +1328,9 @@
 {"ts":1717629607985,"action":"FILE_CLOSED","file":"/src/listener/events/click/ClickEvent.java","tags":{"FILE_LINE_OF_CODE":"35"}}
 {"ts":1717629607985,"action":"FILE_OPENED","file":"/src/listener/events/release/ReleaseEvent.java","tags":{"FILE_LINE_OF_CODE":"5"}}
 {"ts":1717629622639,"action":"IDE_DEACTIVATED"}
+{"ts":1717629652012,"action":"IDE_ACTIVATED"}
+{"ts":1717629664920,"action":"FILE_CLOSED","file":"/src/listener/events/release/ReleaseEvent.java","tags":{"FILE_LINE_OF_CODE":"5"}}
+{"ts":1717629664920,"action":"FILE_OPENED","file":"/src/listener/events/click/ClickEvent.java","tags":{"FILE_LINE_OF_CODE":"35"}}
+{"ts":1717629676165,"action":"FILE_CLOSED","file":"/src/listener/events/click/ClickEvent.java","tags":{"FILE_LINE_OF_CODE":"35"}}
+{"ts":1717629676165,"action":"FILE_OPENED","file":"/src/listener/MouseListener.java","tags":{"FILE_LINE_OF_CODE":"180"}}
+{"ts":1717629736232,"action":"IDE_DEACTIVATED"}

@@ -90,9 +90,9 @@ public class MouseListener {
      * @param mods Modificador de teclado, por ejemplo <code>ctrl</code>, <code>alt</code>, <code>sifht</code>.
      */
     public static void mouseButtonCallback(long window, int button, int action, int mods) {
-      new ClickEvent().event(new Location((float) posX, (float) posY), button, action, mods);
-
         if (action == GLFW.GLFW_PRESS) {
+            new ClickEvent().event(new Location((float) posX, (float) posY), button, action, mods);
+
             MouseListener.setIsMouseButtonPressed(button, true);
         } else if (action == GLFW.GLFW_RELEASE) {
             MouseListener.setIsMouseButtonPressed(button, false);

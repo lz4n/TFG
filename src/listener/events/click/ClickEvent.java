@@ -9,7 +9,7 @@ import world.entity.Duck;
 import world.location.Location;
 
 public class ClickEvent {
-    public boolean event(Location screenLocation, int button, int action, int mods) {
+    public void event(Location screenLocation, int button, int action, int mods) {
         if (action == GLFW.GLFW_PRESS) {
             if (!Main.PLAYER.isMouseOnInventory() && !Main.PLAYER.isPaused()) {
                 new ClickUIEvent();
