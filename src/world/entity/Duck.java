@@ -16,6 +16,8 @@ import world.feature.building.Building;
 import world.feature.building.House;
 import world.feature.building.jobSite.JobSite;
 import world.location.Location;
+import world.particle.SplashParticle;
+import world.terrain.Terrain;
 import world.tick.Ticking;
 
 import java.awt.*;
@@ -51,8 +53,9 @@ public class Duck extends Ticking implements Serializable {
     private int pathIndex = 0;
     private House house;
     private JobSite jobSite = null;
-    private ActivityType state;
+    private ActivityType state = ActivityType.IN_HOUSE;
     private int squawkingTime = 0;
+    private int scheduleIndex;
     private Animation currentAnimation = Animation.IDLE;
     private transient boolean isSelected = false;
     private BoundingBox boundingBox = new BoundingBox(-2, -2, 18, 18).divide(WorldScene.SPRITE_SIZE);
@@ -69,6 +72,8 @@ public class Duck extends Ticking implements Serializable {
         this.location = location;
         this.house = house;
 
+        this.scheduleIndex = Main.RANDOM.nextInt(Duck.SCHEDULE.length);
+
         this.boundingBox.move(location.getX(), location.getY());
     }
 
@@ -79,9 +84,12 @@ public class Duck extends Ticking implements Serializable {
 
         Vector2f targetPosition = this.pathfinding.get(this.pathIndex).toVector2f();
 
-        Vector2f direction = new Vector2f(targetPosition).sub(this.getLocation().toVector2f()).normalize();
+        Vector2f direction = new Vector2f(targetPosition).sub(this.location.toVector2f()).normalize();
 
-        this.moveTo(this.getLocation().add(new Vector2f(direction).mul(0.05f)));
+        this.moveTo(
+                this.getLocation()
+                        .add(new Vector2f(direction).mul(Main.RANDOM.nextFloat(.02f, .07f) +(this.getLocation().getTerrain().getType().equals(Terrain.TerrainType.WATER) ? .02f : 0)))
+        );
 
         if (direction.x() > 0) {
             this.flip = Duck.FLIP_HORIZONTAL;
@@ -159,6 +167,10 @@ public class Duck extends Ticking implements Serializable {
     }
 
     public Texture getTexture() {
+        if (this.getLocation().getTerrain().getType().equals(Terrain.TerrainType.WATER)) {
+            return Textures.DUCK_SWIMMING;
+        }
+
         return this.currentAnimation.TEXTURE;
     }
 
@@ -168,7 +180,6 @@ public class Duck extends Ticking implements Serializable {
 
     public void onAdd() {
         this.findJob();
-        this.scheduleActivities();
     }
 
     //TODO: Ia de los patos.
@@ -179,7 +190,7 @@ public class Duck extends Ticking implements Serializable {
                 this.squawkingTime--;
                 this.currentAnimation = Animation.SQUAWKING;
             } else {
-                if (Main.RANDOM.nextFloat() > 0.93) {
+                if (Main.RANDOM.nextFloat() > 0.3) {
                     if (Main.RANDOM.nextFloat() > 0.55) {
                         this.currentAnimation = Animation.SQUAWKING;
                         this.squawkingTime = Duck.SQUAWKING_TIME;
@@ -196,6 +207,12 @@ public class Duck extends Ticking implements Serializable {
                 this.pathfinding = null;
             }
         }
+
+        if (this.location.getTerrain().getType().equals(Terrain.TerrainType.WATER) && Main.RANDOM.nextFloat() > 0.8) {
+            Main.world.addParticle(
+                    new SplashParticle(this.getLocation().add(Main.RANDOM.nextFloat(this.boundingBox.getWidth() /2f), -.4f))
+            );
+        }
     }
 
     public void findJob() {
@@ -204,41 +221,57 @@ public class Duck extends Ticking implements Serializable {
         }
 
         for (Building building : Main.world.getBuildings()) {
-            if (building instanceof JobSite jobSite && this.setJobSite(jobSite)) {
+            if (building.getLocation().getDistance(this.getLocation()) < 100 && building instanceof JobSite jobSite && this.setJobSite(jobSite)) {
                 break;
             }
         }
-
-        this.scheduleActivities();
     }
 
-    public void setState(ActivityType state) {
-        this.state = state;
-    }
+    private void setState() {
+        System.out.println(Arrays.deepToString(Duck.SCHEDULE));
 
-    public ActivityType getState() {
-        return state;
-    }
+        if (Main.world.getDayTime() >= Duck.SCHEDULE[this.scheduleIndex][0] && Main.world.getDayTime() < Duck.SCHEDULE[this.scheduleIndex][1]) {
+            if (this.jobSite == null) {
+                this.state = ActivityType.IN_FREETIME;
+            } else {
+                this.state = ActivityType.WORK;
+            }
+            return;
+        }
 
-    public void scheduleActivities() { //Dependiendo del horario que tenga, cambiará el estado del pato y hará un Pathfinding diferente a un sitio diferente.
-        this.setState(ActivityType.IN_FREETIME);
-        /*if (Main.world.getDayTime() == SCHEDULE[positionSchedule][0]) {
-            setState(ActivityType.WORK);
-        }else if (Main.world.getDayTime() == SCHEDULE[positionSchedule][1]) {
-            //Vamos a hacer un Mathrandom del 1 al 2, el 1 será para ir a un sitio de ocio, el 2 será para ir a deambular por el mundo.
-            if (Main.RANDOM.nextInt(1, 3) == 1)
-                setState(ActivityType.IN_FREETIME);
-            else
-                setState(ActivityType.WALKING);
-        }else if (Main.world.getDayTime() == SCHEDULE[positionSchedule][2]) {
-            setState(ActivityType.IN_HOUSE);
-        }*/
+        if (Main.world.getDayTime() >= Duck.SCHEDULE[this.scheduleIndex][1] && Main.world.getDayTime() < Duck.SCHEDULE[this.scheduleIndex][2]) {
+            this.state = ActivityType.IN_FREETIME;
+            return;
+        }
+
+        if (Main.world.getDayTime() >= Duck.SCHEDULE[this.scheduleIndex][2]) {
+            this.state = ActivityType.IN_HOUSE;
+        }
+
+        System.out.println(this.state);
     }
 
     private void doPathfinding() {
+        this.setState();
+        this.updateTooltip();
+
+        Location destination = this.location;
+
+        switch (this.state) {
+            case WORK -> {
+                destination = this.jobSite.getLocation();
+            }
+            case IN_HOUSE -> {
+                destination = this.house.getLocation();
+            }
+            case IN_FREETIME -> {
+                destination = this.location.randomLocation(15);
+            }
+        }
+
         this.pathfinding = Pathfinding.getPathfinder().findPath(
                 getLocation(),
-                this.house.getLocation().randomLocation(15));
+                destination);
 
         System.gc();
 
@@ -248,7 +281,8 @@ public class Duck extends Ticking implements Serializable {
     private void updateTooltip() {
         this.tooltip = new TextTooltip();
 
-        this.tooltip.addLine("cuack", GameFont.PIXEL_CONTENT, Font.PLAIN, TextTooltip.CONTENT_TEXT_SIZE);
+        this.tooltip.addLine(this.state.toString(), GameFont.PIXEL_CONTENT, Font.PLAIN, TextTooltip.CONTENT_TEXT_SIZE);
+        this.tooltip.addLine("Horario: " +this.scheduleIndex, GameFont.PIXEL_CONTENT, Font.PLAIN, TextTooltip.CONTENT_TEXT_SIZE);
     }
 
     private void onSelected() {
@@ -292,7 +326,6 @@ public class Duck extends Ticking implements Serializable {
     private enum ActivityType {
         IN_HOUSE,
         WORK,
-        WALKING,
         IN_FREETIME;
     }
 

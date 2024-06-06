@@ -6,6 +6,6 @@ import world.terrain.Terrain;
 
 public class ClickTerrainEvent {
     public boolean ClickEvent(Location location, int button, int action, int mods, Terrain terrain) {
-
+        return false;
     }
 }

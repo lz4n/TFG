@@ -5,6 +5,6 @@ import world.location.Location;
 
 public class ClickDuckEvent {
     public boolean ClickEvent(Location location, int button, int action, int mods, Duck duck) {
-
+        return false;
     }
 }

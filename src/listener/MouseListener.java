@@ -1,8 +1,8 @@
 package listener;
 
-import listener.events.click.ClickEvent;
 import main.Main;
 import org.joml.Matrix4f;
+import org.joml.Vector2f;
 import org.joml.Vector4f;
 import org.lwjgl.glfw.GLFW;
 import ui.container.Frame;
@@ -41,10 +41,19 @@ public class MouseListener {
     /**
      * Actualiza la posición del ratón dentro del juego y actualiza el selector.
      */
-    public static void updateInGameLocation() {
-        if (Window.currentScene instanceof WorldScene && Main.PLAYER != null) {
-            MouseListener.UpdateInGameLocationMousePosition();
-        }
+    public static void updateInGameLocationMousePosition() {
+        //Calculamos las coordenadas normalizadas del cursor en pantalla (de -1 a 1)
+        float normalizedX = (2.0f * (float) MouseListener.posX / Window.getWidth()) - 1.0f;
+        float normalizedY = 1.0f - (2.0f * (float) MouseListener.posY / Window.getHeight());
+
+        //Vector 4D con las coordenadas normalizadas y profundidad entre -1 y 1
+        Vector4f cursorClip = new Vector4f(normalizedX, normalizedY, -1.0f, 1.0f);
+
+        //Calculamos las coordenadas in-game
+        Matrix4f inverseTransform = Main.PLAYER.getCamera().getProjectionMatrix().mul(Main.PLAYER.getCamera().getViewMatrix(), new Matrix4f()).invert();
+        Vector4f cursorView = inverseTransform.transform(cursorClip, new Vector4f());
+        cursorView.div(cursorView.w());
+        MouseListener.inGameLocation = new Location(cursorView.x() / WorldScene.SPRITE_SIZE, (cursorView.y() / WorldScene.SPRITE_SIZE));
     }
 
     /**
@@ -60,7 +69,7 @@ public class MouseListener {
         MouseListener.posX = posX;
         MouseListener.posY = posY;
 
-        MouseListener.updateInGameLocation();
+        MouseListener.updateInGameLocationMousePosition();
 
         MouseListener.isDragging = MouseListener.isMouseButtonPressed[0] || MouseListener.isMouseButtonPressed[1] || MouseListener.isMouseButtonPressed[2];
         if (MouseListener.isDragging) {
@@ -91,12 +100,32 @@ public class MouseListener {
      */
     public static void mouseButtonCallback(long window, int button, int action, int mods) {
         if (action == GLFW.GLFW_PRESS) {
-            new ClickEvent().event(new Location((float) posX, (float) posY), button, action, mods);
-
             MouseListener.setIsMouseButtonPressed(button, true);
+            Window.currentScene.click((float) MouseListener.posX, (float) MouseListener.posY);
+            Main.PLAYER.getContainer().onDragEvent((float) posX, (float) posY);
+
+            if (!Main.PLAYER.isMouseOnInventory() && !Main.PLAYER.isPaused()) {
+                //Colocar/Destruir features cuando se hace click sobre ellas.
+                if (KeyBind.INTERACT.isPressed()) {
+                    if (Main.PLAYER.isUsingBulldozer()) {
+                        Main.PLAYER.destroySelectedFeature();
+                    } else {
+                        Main.PLAYER.placeSelectedItem();
+                    }
+                }
+            }
         } else if (action == GLFW.GLFW_RELEASE) {
             MouseListener.setIsMouseButtonPressed(button, false);
             MouseListener.isDragging = false;
+
+            if (Main.PLAYER.getTerrainSelection() != null) {
+                Main.PLAYER.placeSelectedItem();
+                Main.PLAYER.removeTerrainSelection();
+            }
+
+            for (Duck duck: Main.world.getDucks()) {
+                duck.setSelected(duck.getBoundingBox().containsLocation(MouseListener.getInGameLocation()));
+            }
         }
     }
 
@@ -133,21 +162,6 @@ public class MouseListener {
         if (button < MouseListener.isMouseButtonPressed.length) {
             MouseListener.isMouseButtonPressed[button] = isPressed;
         }
-    }
-
-    public static void UpdateInGameLocationMousePosition() {
-        //Calculamos las coordenadas normalizadas del cursor en pantalla (de -1 a 1)
-        float normalizedX = (2.0f * (float) MouseListener.posX / Window.getWidth()) - 1.0f;
-        float normalizedY = 1.0f - (2.0f * (float) MouseListener.posY / Window.getHeight());
-
-        //Vector 4D con las coordenadas normalizadas y profundidad entre -1 y 1
-        Vector4f cursorClip = new Vector4f(normalizedX, normalizedY, -1.0f, 1.0f);
-
-        //Calculamos las coordenadas in-game
-        Matrix4f inverseTransform = Main.PLAYER.getCamera().getProjectionMatrix().mul(Main.PLAYER.getCamera().getViewMatrix(), new Matrix4f()).invert();
-        Vector4f cursorView = inverseTransform.transform(cursorClip, new Vector4f());
-        cursorView.div(cursorView.w);
-        MouseListener.inGameLocation = new Location(cursorView.x() / WorldScene.SPRITE_SIZE, (cursorView.y() / WorldScene.SPRITE_SIZE));
     }
 
     public static boolean isMouseButtonPressed(int button) {

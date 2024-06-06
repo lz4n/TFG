@@ -86,7 +86,7 @@ public class Pathfinding {
 
     private float calculatePathWalk(Node from, Node to) {
         // Calcular el costo de moverse de un nodo a otro.
-        return 1f; // Ejemplo simple, en la práctica se debería calcular basado en la distancia real.
+        return to.getPathCost(); // Ejemplo simple, en la práctica se debería calcular basado en la distancia real.
     }
 
     private float calculateHeuristic(Node from, Node to) {

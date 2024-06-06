@@ -29,7 +29,7 @@ public class World extends Ticking implements Serializable {
      * Duración de las fases del día, meses y años.
      */
     public static final int
-            TOTAL_DAY_DURATION = 3000,
+            TOTAL_DAY_DURATION = 6000,
             SUNRISE_START = World.hourToTick(7, 0),
             SUNRISE_END = World.hourToTick(8, 30),
             SUNRISE_DURATION = SUNRISE_END - SUNRISE_START,

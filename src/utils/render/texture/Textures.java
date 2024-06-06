@@ -44,6 +44,7 @@ public final class Textures {
         DUCK = new AnimatedTexture("assets/textures/entity/duck", 2, 30),
         DUCK_WALKING = new AnimatedTexture("assets/textures/entity/duck_walking", 2, 10),
         DUCK_SQUAWKING = new AnimatedTexture("assets/textures/entity/duck_squawking", 2, 25),
+        DUCK_SWIMMING = new StaticTexture("assets/textures/entity/duck_swimming.png"),
 
         /** PARTICLES **/
         NEGATIVE_PARTICLE = new StaticTexture("assets/textures/particle/negative.png"),
@@ -52,6 +53,7 @@ public final class Textures {
         CLOUD_PARTICLE = new StaticTexture("assets/textures/particle/cloud/cloud_1.png"),
         CLOUD_SHADOW_PARTICLE = new StaticTexture("assets/textures/particle/cloud/cloud_shadow_1.png"),
         SMOKE_PARTICLE = new StaticTexture("assets/textures/particle/smoke.png"),
+        SPLASH_PARTICLE = new StaticTexture("assets/textures/particle/splash.png"),
 
         /** USER INTERFACE **/
         CONTAINER = new StaticTexture("assets/textures/ui/inventory/container.png"),

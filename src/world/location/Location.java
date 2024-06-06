@@ -119,6 +119,19 @@ public class Location implements Cloneable, Serializable {
     }
 
     /**
+     * Determina si el terreno es transitable para el pathfinding.
+     *
+     * @return true si el terreno es transitable, false si no lo es.
+     */
+    public int getPathCost() {
+        if (this.isOutOfTheWorld()) {
+            return 5;
+        }
+
+        return this.getTerrain().getPathCost() + (this.getFeature() != null ? 5 : 0);
+    }
+
+    /**
      * Convierte las coordenadas in-game a coordenadas de pantalla.
      * @return Posición con las coordenadas de pantalla.
      */

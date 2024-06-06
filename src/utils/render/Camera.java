@@ -72,7 +72,7 @@ public class Camera {
         cameraPosition.x = Math.clamp(newPosition.x(), leftBound, rightBound);
         cameraPosition.y = Math.clamp(newPosition.y(), bottomBound, topBound);
 
-        MouseListener.updateInGameLocation();
+        MouseListener.updateInGameLocationMousePosition();
     }
 
     /**
@@ -94,7 +94,6 @@ public class Camera {
     public void updateProjection() {
         this.projectionMatrix.identity(); //Usamos Matrix4f#identity() para establecer los valores de la matriz como si fuera una matriz unidad.
         this.projectionMatrix.ortho(0f, WorldScene.SPRITE_SIZE * this.zoom * Camera.RIGHT_ORTHO_CONST, 0f, WorldScene.SPRITE_SIZE * this.zoom * Camera.TOP_ORTHO_CONST, 0f, 100f); //No vamos a poder ver más cerca de 0 unidades (no píxeles) ni más lejos de 100 unidades.
-        MouseListener.updateInGameLocation();
     }
 
     /**
