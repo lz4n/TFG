@@ -175,7 +175,7 @@ public class Player extends Ticking {
     /**
      * Widget que indica que se está utilizando el bulldozer.
      */
-    private ScreenIndicatorWidget bulldozerIndicator = new ScreenIndicatorWidget(20, 340, Textures.BULLDOZER_ICON);
+    private ScreenIndicatorWidget bulldozerIndicator;
 
     /**
      * Banderas del jugador, indican si está ocultando la interfaz, si está utilizando el bulldozer, si tiene el ratón
@@ -250,10 +250,6 @@ public class Player extends Ticking {
                 case 5 -> Main.tickSpeed = 0;
                 default -> Main.tickSpeed = 1;
             };
-        });
-
-        this.bulldozerIndicator.setOnClickEvent(() -> {
-            this.isUsingBulldozer = false;
         });
 
         this.INVENTORY.addTab(Player.GENERAL_TAB);
@@ -533,7 +529,13 @@ public class Player extends Ticking {
     public void toggleBulldozer() {
         if (!this.isUsingBulldozer) {
             this.selectedItem = null;
+
+            this.bulldozerIndicator = new ScreenIndicatorWidget(20, 340, Textures.BULLDOZER_ICON);
+            this.bulldozerIndicator.setOnClickEvent(() -> {
+                this.isUsingBulldozer = false;
+            });
             this.INVENTORY.addWidgetToAllTabs(this.bulldozerIndicator);
+
             this.MENU_ITEMS_BY_SLOT.values().stream().filter(SlotWidget::isSelected).forEach(slotWidget -> slotWidget.setSelected(false));
         } else {
             this.INVENTORY.removeWidget(this.bulldozerIndicator);

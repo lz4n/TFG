@@ -104,8 +104,8 @@ public class Terrain implements Serializable {
      */
     public enum TerrainType implements Serializable {
         WATER(Textures.WATER, false, 1, false, false),
-        STONE_TILE(Textures.STONE_TILE, true, 0, false, false),
-        PATH(Textures.PATH, true, 0,true, true),
+        STONE_TILE(Textures.STONE_TILE, true, -1, false, false),
+        PATH(Textures.PATH, true, -1,true, true),
         SAND(Textures.SAND, true, 1,true, true),
         GRAVEL(Textures.GRAVEL, true, 2,true, true),
         GRASS(Textures.GRASS, true, 2,true, true),

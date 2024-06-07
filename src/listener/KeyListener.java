@@ -51,9 +51,6 @@ public class KeyListener {
                         case KeyBind.TOGGLE_PAUSE:
                             Main.PLAYER.togglePauseGame();
                             break;
-                        case KeyBind.TOGGLE_BULLDOZER:
-                            Main.PLAYER.toggleBulldozer();
-                            break;
                         case KeyBind.TOGGLE_GAME_MENU:
                             Main.PLAYER.openMenu();
                             break;
