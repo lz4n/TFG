@@ -39,19 +39,14 @@ import world.particle.CursorParticle;
 import world.particle.NegativeParticle;
 import world.particle.PositiveParticle;
 import world.terrain.Terrain;
-import world.tick.ForceTicking;
-import world.tick.Ticking;
 
 import java.awt.*;
 import java.io.*;
 import java.util.*;
 import java.util.List;
 
-/**
- * Representa a un jugador.
- */
-@ForceTicking
-public class Player extends Ticking {
+
+public class Player {
 
     /**
      * Pestañas que tiene el inventario del jugador.
@@ -848,8 +843,7 @@ public class Player extends Ticking {
         this.terrainSelection = null;
     }
 
-    @Override
-    public void onTick(long deltaTime) {
+    public void onTick() {
         if (this.isSelectingTerrain()) {
             this.getTerrainSelection().forEach(location -> Main.world.addParticle(new CursorParticle(location)));
         }

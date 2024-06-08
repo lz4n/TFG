@@ -26,7 +26,6 @@ import utils.render.texture.AnimatedTexture;
 import utils.render.texture.CacheTexture;
 import utils.render.texture.Texture;
 import utils.render.texture.Textures;
-import world.tick.Ticking;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -218,13 +217,9 @@ public class Window {
             GLFW.glfwSwapBuffers(window);
 
             if (dTime >= 0) {
-                for (int tick = 0; tick < Main.tickSpeed; tick++) {
-                    AnimatedTexture.animate();
-                    if (!Main.PLAYER.isPaused()) {
-                        Ticking.tick(dTime);
-                    }
-                }
-                Ticking.tickForced(dTime);
+                AnimatedTexture.animate();
+                Main.world.onTick(Main.PLAYER.isPaused());
+                Main.PLAYER.onTick();
                 Window.currentScene.update(dTime);
             }
 

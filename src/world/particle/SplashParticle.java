@@ -21,8 +21,8 @@ public class SplashParticle extends AbstractPhysicsParticle {
     }
 
     @Override
-    public void onTick(long deltaTime) {
-        super.onTick(deltaTime);
+    public void onTick() {
+        super.onTick();
     }
 
     @Override

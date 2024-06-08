@@ -3,13 +3,12 @@ package world.particle;
 import main.Main;
 import utils.render.texture.Texture;
 import world.location.Location;
-import world.tick.Ticking;
 
 /**
  * Pequeño sprite dinámico que se utiliza para dar efectos visuales. El jugador no puede interactuar con las partículas.
  * Si una partícula está fuera del mundo se elimina.
  */
-public abstract class Particle extends Ticking {
+public abstract class Particle {
 
     /**
      * Posición de la partícula.
@@ -37,8 +36,7 @@ public abstract class Particle extends Ticking {
         this.location = location;
     }
 
-    @Override
-    public void onTick(long deltaTime) {
+    public void onTick() {
         //Aumentamos el lifetime y eliminamos la partícula si supera el tiempo máximo.
         if (this.lifeTime++ > this.getMaxLifeTime()) {
             Main.world.removeParticle(this);

@@ -10,8 +10,6 @@ import world.location.Location;
 import world.particle.CloudParticle;
 import world.particle.Particle;
 import world.terrain.Terrain;
-import world.tick.Tickable;
-import world.tick.Ticking;
 import world.worldBuilder.Biome;
 import world.worldBuilder.WorldBuilder;
 
@@ -23,7 +21,7 @@ import java.util.function.Consumer;
 /**
  * Representa el mundo de juego.
  */
-public class World extends Ticking implements Serializable {
+public class World implements Serializable {
 
     /**
      * Duración de las fases del día, meses y años.
@@ -268,10 +266,6 @@ public class World extends Ticking implements Serializable {
                 featureType.getMesh().addVertex(feature.getLocation().getX(), feature.getLocation().getY(), feature.getSize().x(), feature.getSize().y(), feature.getVariant());
             }
 
-            if (feature instanceof Tickable tickable) {
-                new Ticking(tickable, false);
-            }
-
             if (feature instanceof Building building) {
                 this.BUILDINGS.add(building);
                 building.onAdd();
@@ -312,10 +306,6 @@ public class World extends Ticking implements Serializable {
 
             //Actualizamos el mesh.
             feature.getFeatureType().updateMesh();
-
-            if (feature instanceof Tickable tickable) {
-                Ticking.removeTicking(tickable);
-            }
 
             if (feature instanceof Building building) {
                 building.onRemove();
@@ -368,11 +358,9 @@ public class World extends Ticking implements Serializable {
     /**
      * Elimina una partícula y la elimina de ticking.
      * @param particle Partícula que se quiere eliminar.
-     * @see Ticking
      */
     public void removeParticle(Particle particle) {
         this.particlesList.remove(particle);
-        particle.removeTicking();
     }
 
     /**
@@ -566,40 +554,45 @@ public class World extends Ticking implements Serializable {
         Main.PLAYER.updateUnemployment(this.unemployment);
     }
 
-    @Override
-    public void onTick(long deltaTime) {
+    public void onTick(boolean paused) {
+        new LinkedList<>(this.particlesList).forEach(Particle::onTick);
 
-        this.dayTime++;
-        if (this.dayTime >= World.TOTAL_DAY_DURATION) { //Si ha pasado un día
-            //TODO Mecánica de felicidad, que sea random cada dia es temporal.
-            this.addHappiness((Main.RANDOM.nextFloat() /10) * (Main.RANDOM.nextBoolean()?-1:-1));
-            this.dayTime = 0;
+        if (!paused || Main.tickSpeed != 0) {
+            this.BUILDINGS.forEach(Feature::onTick);
+            this.DUCKS_LIST.forEach(Duck::onTick);
 
-            //Aumentamos el mes y año si hace falta..
-            this.day++;
+            this.dayTime += Main.tickSpeed;
+            if (this.dayTime >= World.TOTAL_DAY_DURATION) { //Si ha pasado un día
+                //TODO Mecánica de felicidad, que sea random cada dia es temporal.
+                this.addHappiness((Main.RANDOM.nextFloat() / 10) * (Main.RANDOM.nextBoolean() ? -1 : -1));
+                this.dayTime = 0;
 
-            this.addMoney(this.getIncomes());
+                //Aumentamos el mes y año si hace falta..
+                this.day++;
 
-            if (this.day >= World.MONTH_DURATION_IN_DAYS) {
-                this.month++;
-                this.day = 0;
+                this.addMoney(this.getIncomes());
 
-                if (this.month > World.MAX_MONTH) {
-                    this.year++;
-                    this.month = 0;
+                if (this.day >= World.MONTH_DURATION_IN_DAYS) {
+                    this.month++;
+                    this.day = 0;
+
+                    if (this.month > World.MAX_MONTH) {
+                        this.year++;
+                        this.month = 0;
+                    }
                 }
             }
-        }
 
-        //Generamos nubes.
-        if (Main.RANDOM.nextFloat() > Setting.CLOUDS.getValue()) {
-            float cloudVelocity = Main.RANDOM.nextFloat(.04f, .06f);
-            Location cloudLocation = new Location(0, Main.RANDOM.nextFloat(this.WORLD_SIZE));
-            this.addParticle(new CloudParticle(cloudLocation.clone(), cloudVelocity, false));
+            //Generamos nubes.
+            if (Main.RANDOM.nextFloat() > Setting.CLOUDS.getValue()) {
+                float cloudVelocity = Main.RANDOM.nextFloat(.04f, .06f);
+                Location cloudLocation = new Location(0, Main.RANDOM.nextFloat(this.WORLD_SIZE));
+                this.addParticle(new CloudParticle(cloudLocation.clone(), cloudVelocity, false));
 
-            //Generamos la sombra.
-            cloudLocation.add(0, Main.RANDOM.nextFloat(2f, 5f) *-1);
-            this.addParticle(new CloudParticle(cloudLocation, cloudVelocity, true));
+                //Generamos la sombra.
+                cloudLocation.add(0, Main.RANDOM.nextFloat(2f, 5f) * -1);
+                this.addParticle(new CloudParticle(cloudLocation, cloudVelocity, true));
+            }
         }
     }
 

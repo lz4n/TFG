@@ -152,6 +152,8 @@ public abstract class Feature implements Comparable<Feature>, Serializable {
         return compareY;
     }
 
+    public void onTick() {}
+
     /**
      * Tipo de feature. El tipo de feature determina las posibles variantes y contiene el <code>Mesh</code> encargado de
      * renderizar las features de ese tipo.

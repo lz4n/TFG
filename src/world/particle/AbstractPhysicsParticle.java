@@ -43,8 +43,8 @@ public abstract class AbstractPhysicsParticle extends Particle {
     }
 
     @Override
-    public void onTick(long deltaTime) {
-        super.onTick(deltaTime);
+    public void onTick() {
+        super.onTick();
 
         //Movemos la partícula según su velocidad.
         super.location.add(this.motion.x(), this.motion.y());
@@ -55,7 +55,7 @@ public abstract class AbstractPhysicsParticle extends Particle {
         //Calculamos la gravedad
         if (this.motion.y() <= this.maxGravity) { //Si la partícula no ha alcanzado la velocidad máxima.
             this.motion.set(this.motion.x(), this.maxGravity);
-        } else { //Si la partícula ha alcanzaado la velocidad máxima.
+        } else { //Si la partícula ha alcanzado la velocidad máxima.
             this.motion.sub(0, this.gravityVelocity);
         }
     }

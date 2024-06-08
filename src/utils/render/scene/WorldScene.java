@@ -79,10 +79,7 @@ public class WorldScene implements Scene {
         }
     }
 
-    /**
-     * Dibuja todos los elementos en pantalla.
-     */
-    @Override
+
     public void update(long dTime) {
         //Borramos los contenidos de la ventana y establecemos el color del fondo.
         GL20.glClearColor(38f / 255, 85f / 255, 144f /255, 0f);

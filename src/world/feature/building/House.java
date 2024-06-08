@@ -7,9 +7,8 @@ import utils.render.scene.WorldScene;
 import world.entity.Duck;
 import world.location.Location;
 import world.particle.SmokeParticle;
-import world.tick.Tickable;
 
-public class House extends Building implements Tickable {
+public class House extends Building {
     protected Duck[] inhabitants;
 
     public House(Location location, int variant) {
@@ -57,7 +56,7 @@ public class House extends Building implements Tickable {
     }
 
     @Override
-    public void onTick(long deltaTime) {
+    public void onTick() {
         if (this.getVariant() +1 >= 3 && this.getVariant() +1 <= 5 && Main.RANDOM.nextFloat() > 0.97) {
             Main.world.addParticle(new SmokeParticle(this.getLocation().add(0.4f, 0.8f)));
         }

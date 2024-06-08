@@ -3,12 +3,8 @@ package world.particle;
 import utils.render.texture.Texture;
 import utils.render.texture.Textures;
 import world.location.Location;
-import world.tick.ForceTicking;
 
-/**
- * Partícula utilizada para enviar al usuario un input negativo.
- */
-@ForceTicking
+
 public class NegativeParticle extends Particle {
 
     /**
@@ -21,8 +17,8 @@ public class NegativeParticle extends Particle {
     }
 
     @Override
-    public void onTick(long deltaTime) {
-        super.onTick(deltaTime);
+    public void onTick() {
+        super.onTick();
 
         //Vamos aumentando la escala en cada tick.
         if (super.scale < 1) {

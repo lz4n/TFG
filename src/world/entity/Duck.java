@@ -18,7 +18,6 @@ import world.feature.building.jobSite.JobSite;
 import world.location.Location;
 import world.particle.SplashParticle;
 import world.terrain.Terrain;
-import world.tick.Ticking;
 
 import java.awt.*;
 import java.io.Serializable;
@@ -32,7 +31,7 @@ import java.util.List;
  */
 
 //TODO: Sistema para detectar clic a las entidades.
-public class Duck extends Ticking implements Serializable {
+public class Duck implements Serializable {
     public static final float NO_FLIP = 0, FLIP_HORIZONTAL = 1, FLIP_VERTICAL = 2, FLIP_BOTH = 3;
     private static final int SQUAWKING_TIME = 50;
     /*{"8:30", "17:30", "22:00"},
@@ -88,7 +87,7 @@ public class Duck extends Ticking implements Serializable {
 
         this.moveTo(
                 this.getLocation()
-                        .add(new Vector2f(direction).mul(Main.RANDOM.nextFloat(.02f, .07f) +(this.getLocation().getTerrain().getType().equals(Terrain.TerrainType.WATER) ? .02f : 0)))
+                        .add(new Vector2f(direction).mul(Main.RANDOM.nextFloat(.02f, .07f) +(this.getLocation().getTerrain().getType().equals(Terrain.TerrainType.WATER) ? .02f : 0)).mul(Main.tickSpeed))
         );
 
         if (direction.x() > 0) {
@@ -183,8 +182,7 @@ public class Duck extends Ticking implements Serializable {
     }
 
     //TODO: Ia de los patos.
-    @Override
-    public void onTick(long deltaTime) {
+    public void onTick() {
         if (this.pathfinding == null) {
             if (this.squawkingTime > 0) {
                 this.squawkingTime--;
@@ -259,10 +257,10 @@ public class Duck extends Ticking implements Serializable {
 
         switch (this.state) {
             case WORK -> {
-                destination = this.jobSite.getLocation();
+                destination = this.jobSite.getLocation().randomLocation(3);
             }
             case IN_HOUSE -> {
-                destination = this.house.getLocation();
+                destination = this.house.getLocation().randomLocation(2);
             }
             case IN_FREETIME -> {
                 destination = this.location.randomLocation(15);
