@@ -195,6 +195,10 @@ public class Duck implements Serializable {
                     } else {
                         this.currentAnimation = Animation.IDLE;
                     }
+
+                    if (Main.RANDOM.nextFloat() > 0.4) {
+                        this.flip = Main.RANDOM.nextBoolean() ? Duck.NO_FLIP : Duck.FLIP_HORIZONTAL;
+                    }
                 } else {
                     this.currentAnimation = Animation.WALKING;
                     this.doPathfinding();

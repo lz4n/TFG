@@ -39,6 +39,14 @@ public final class Textures {
         HOUSE_LVL6 = new StaticTexture("assets/textures/feature/building/house/house_lvl6.png"),
         HOUSE_LVL7 = new AnimatedTexture("assets/textures/feature/building/house/house_lvl7", 4, 28),
         PORT = new AnimatedTexture("assets/textures/feature/building/job_site/port", 2, 30),
+        INDUSTRY_LVL1 = new StaticTexture("assets/textures/feature/building/job_site/industry/industry_lvl1.png"),
+        INDUSTRY_LVL2 = new StaticTexture("assets/textures/feature/building/job_site/industry/industry_lvl2.png"),
+        INDUSTRY_LVL3 = new StaticTexture("assets/textures/feature/building/job_site/industry/industry_lvl3.png"),
+        INDUSTRY_LVL4 = new StaticTexture("assets/textures/feature/building/job_site/industry/industry_lvl4.png"),
+        INDUSTRY_LVL5 = new StaticTexture("assets/textures/feature/building/job_site/industry/industry_lvl5.png"),
+        HOSPITAL = new StaticTexture("assets/textures/feature/building/service/hospital.png"),
+        POLICE_STATION = new StaticTexture("assets/textures/feature/building/service/police_station.png"),
+
 
         /** ENTITIES **/
         DUCK = new AnimatedTexture("assets/textures/entity/duck", 2, 30),

@@ -108,10 +108,27 @@ public class MouseListener {
                 //Colocar/Destruir features cuando se hace click sobre ellas.
                 if (KeyBind.INTERACT.isPressed()) {
                     if (Main.PLAYER.isUsingBulldozer()) {
-                        Main.PLAYER.destroySelectedFeature();
+                        if (Main.PLAYER.destroySelectedFeature()) {
+                            return;
+                        }
                     } else {
-                        Main.PLAYER.placeSelectedItem();
+                        if (Main.PLAYER.placeSelectedItem()) {
+                            return;
+                        }
                     }
+                }
+
+                boolean isDuckSelected = false;
+                for (Duck duck: Main.world.getDucks()) {
+                    if (!isDuckSelected) {
+                        isDuckSelected = duck.getBoundingBox().containsLocation(MouseListener.getInGameLocation());
+                        duck.setSelected(isDuckSelected);
+                    } else {
+                        duck.setSelected(false);
+                    }
+                }
+                if (isDuckSelected) {
+                    return;
                 }
             }
         } else if (action == GLFW.GLFW_RELEASE) {
@@ -121,10 +138,6 @@ public class MouseListener {
             if (Main.PLAYER.getTerrainSelection() != null) {
                 Main.PLAYER.placeSelectedItem();
                 Main.PLAYER.removeTerrainSelection();
-            }
-
-            for (Duck duck: Main.world.getDucks()) {
-                duck.setSelected(duck.getBoundingBox().containsLocation(MouseListener.getInGameLocation()));
             }
         }
     }

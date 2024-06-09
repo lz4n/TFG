@@ -242,8 +242,8 @@ public class World implements Serializable {
         try {
             //Ocupamos todas las casillas que ocupe la feature.
             int posX = (int) feature.getLocation().getX(), posY = (int) feature.getLocation().getY();
-            for (int x = 0; x < feature.getSize().x(); x++) {
-                for (int y = 0; y < feature.getSize().y(); y++) {
+            for (int x = 0; x < feature.getBlockSize().x(); x++) {
+                for (int y = 0; y < feature.getBlockSize().y(); y++) {
                     this.FEATURES[this.mapCoordinatesToIndex(posX + x, posY + y)] = feature;
                     if ((feature instanceof Building) && !(feature instanceof Port)) {
                         Terrain terrain = this.getTerrain(posX +x, posY +y);
@@ -263,7 +263,7 @@ public class World implements Serializable {
             if (updateMesh) {
                 featureType.updateMesh();
             } else {
-                featureType.getMesh().addVertex(feature.getLocation().getX(), feature.getLocation().getY(), feature.getSize().x(), feature.getSize().y(), feature.getVariant());
+                featureType.getMesh().addVertex(feature.getLocation().getX(), feature.getLocation().getY(), feature.getBlockSize().x(), feature.getBlockSize().y(), feature.getVariant());
             }
 
             if (feature instanceof Building building) {
@@ -298,8 +298,8 @@ public class World implements Serializable {
         try {
             //Limpiamos todas las celdas que ocupe la feature.
             int posX = (int) feature.getLocation().getX(), posY = (int) feature.getLocation().getY();
-            for (int x = 0; x < feature.getSize().x(); x++) {
-                for (int y = 0; y < feature.getSize().y(); y++) {
+            for (int x = 0; x < feature.getBlockSize().x(); x++) {
+                for (int y = 0; y < feature.getBlockSize().y(); y++) {
                     this.FEATURES[this.mapCoordinatesToIndex(posX + x, posY + y)] = null;
                 }
             }
@@ -555,7 +555,9 @@ public class World implements Serializable {
     }
 
     public void onTick(boolean paused) {
-        new LinkedList<>(this.particlesList).forEach(Particle::onTick);
+        if (this.particlesList != null) {
+            new LinkedList<>(this.particlesList).forEach(Particle::onTick);
+        }
 
         if (!paused || Main.tickSpeed != 0) {
             this.BUILDINGS.forEach(Feature::onTick);

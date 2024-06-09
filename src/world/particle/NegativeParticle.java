@@ -11,7 +11,7 @@ public class NegativeParticle extends Particle {
      * @param location Posición donde se va a generar la partícula.
      */
     public NegativeParticle(Location location) {
-        super(location);
+        super(location.add(0, -1));
 
         super.scale = 0;
     }

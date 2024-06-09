@@ -1,5 +1,6 @@
 package world.feature.building.jobSite;
 
+import org.joml.Vector2f;
 import org.joml.Vector2i;
 import world.entity.Duck;
 import world.feature.building.Building;
@@ -8,7 +9,7 @@ import world.location.Location;
 public abstract class JobSite extends Building {
     protected Duck[] workers;
 
-    public JobSite(Location location, Vector2i sizeInBlocks, FeatureType featureType, int variant) {
+    public JobSite(Location location, Vector2f sizeInBlocks, FeatureType featureType, int variant) {
         super(location, sizeInBlocks, featureType, variant);
     }
 

@@ -31,8 +31,12 @@ import utils.render.texture.Colors;
 import utils.render.texture.Texture;
 import utils.render.texture.Textures;
 import world.entity.Duck;
-import world.feature.Feature;
+import world.feature.*;
+import world.feature.building.Hospital;
 import world.feature.building.House;
+import world.feature.building.PoliceStation;
+import world.feature.building.jobSite.Industry;
+import world.feature.building.jobSite.Port;
 import world.location.Location;
 import world.particle.BulldozerParticle;
 import world.particle.CursorParticle;
@@ -78,34 +82,44 @@ public class Player {
         ));
         this.put(Player.ZONING_TAB, List.of(
                 Arrays.asList(
-                        new FeatureItem(Textures.HOUSE_LVL1, Feature.FeatureType.HOUSE, 0, "Casa (nvl. I)", "Casa para que habiten 7 patos.", 100),
-                        new FeatureItem(Textures.HOUSE_LVL2, Feature.FeatureType.HOUSE, 1, "Casa (nvl. II)", "Casa para que habiten 7 patos.", 400),
-                        new FeatureItem(Textures.HOUSE_LVL3, Feature.FeatureType.HOUSE, 2, "Casa (nvl. III)", "Casa para que habiten 7 patos.", 800),
-                        new FeatureItem(Textures.HOUSE_LVL4, Feature.FeatureType.HOUSE, 3, "Casa (nvl. IV)", "Casa para que habiten 7 patos.", 1200),
-                        new FeatureItem(Textures.HOUSE_LVL5, Feature.FeatureType.HOUSE, 4, "Casa (nvl. V)", "Casa para que habiten 7 patos.", 1600),
-                        new FeatureItem(Textures.HOUSE_LVL6, Feature.FeatureType.HOUSE, 5, "Casa (nvl. VI)", "Casa para que habiten 7 patos.", 2000),
-                        new FeatureItem(Textures.HOUSE_LVL7, Feature.FeatureType.HOUSE, 6, "Casa (nvl. VII)", "Casa para que habiten 7 patos.", 10000)
+                        new FeatureItem(Textures.HOUSE_LVL1, location -> new House(location, 0), "Casa (nvl. I)", "Casa para que habiten 7 patos.", 100),
+                        new FeatureItem(Textures.HOUSE_LVL2, location -> new House(location, 1),"Casa (nvl. II)", "Casa para que habiten 7 patos.", 400),
+                        new FeatureItem(Textures.HOUSE_LVL3, location -> new House(location, 2), "Casa (nvl. III)", "Casa para que habiten 7 patos.", 800),
+                        new FeatureItem(Textures.HOUSE_LVL4, location -> new House(location, 3), "Casa (nvl. IV)", "Casa para que habiten 7 patos.", 1200),
+                        new FeatureItem(Textures.HOUSE_LVL5, location -> new House(location, 4), "Casa (nvl. V)", "Casa para que habiten 7 patos.", 1600),
+                        new FeatureItem(Textures.HOUSE_LVL6, location -> new House(location, 5), "Casa (nvl. VI)", "Casa para que habiten 7 patos.", 2000),
+                        new FeatureItem(Textures.HOUSE_LVL7, location -> new House(location, 6), "Casa (nvl. VII)", "Casa para que habiten 7 patos.", 10000)
                 )
         ));
         this.put(Player.INDUSTRY_TAB, List.of(
                 Arrays.asList(
-                        new FeatureItem(Textures.PORT, Feature.FeatureType.HOUSE, 7, "Puerto", "Un puerto.", 8000)
+                        new FeatureItem(Textures.INDUSTRY_LVL1, location -> new Industry(location, 1), "Industria (nvl. I)", "cuackn`t", 8000),
+                        new FeatureItem(Textures.INDUSTRY_LVL2, location -> new Industry(location, 2), "Industria (nvl. II)", "cuackn`t", 8000),
+                        new FeatureItem(Textures.INDUSTRY_LVL3, location -> new Industry(location, 3), "Industria (nvl. III)", "cuackn`t", 8000),
+                        new FeatureItem(Textures.INDUSTRY_LVL4, location -> new Industry(location, 4), "Industria (nvl. IV)", "cuackn`t", 8000),
+                        new FeatureItem(Textures.INDUSTRY_LVL5, location -> new Industry(location, 5), "Industria (nvl. V)", "cuackn`t", 8000),
+                        new FeatureItem(Textures.PORT, Port::new, "Puerto", "Un puerto.", 8000)
                 )
         ));
-        this.put(Player.SERVICES_TAB, new ArrayList<>());
+        this.put(Player.SERVICES_TAB, List.of(
+                Arrays.asList(
+                        new FeatureItem(Textures.HOSPITAL, Hospital::new, "Hospital", "Piiiiiiiii-", 8000),
+                        new FeatureItem(Textures.POLICE_STATION, PoliceStation::new, "Estación de Policía", "niiii noooo niiiii nooo niii nooo", 8000)
+                )
+        ));
         this.put(Player.NATURE_TAB, Arrays.asList(
                 Arrays.asList(
-                        new FeatureItem(Textures.BUSH, Feature.FeatureType.BUSH, 0, "Hierba", null, 25),
-                        new FeatureItem(Textures.TREE1, Feature.FeatureType.TREE, 0, "Arbol de roble", null, 50),
-                        new FeatureItem(Textures.TREE2, Feature.FeatureType.TREE, 1, "Árbol de abedúl", null, 50)),
+                        new FeatureItem(Textures.BUSH, Bush::new, "Hierba", null, 25),
+                        new FeatureItem(Textures.TREE1, location -> new Tree(location, 0), "Arbol de roble", null, 50),
+                        new FeatureItem(Textures.TREE2, location -> new Tree(location, 1), "Árbol de abedúl", null, 50)),
                 Arrays.asList(
-                        new FeatureItem(Textures.TULIP, Feature.FeatureType.FLOWER, 0, "Tulipanes", null, 75),
-                        new FeatureItem(Textures.TULIP_2, Feature.FeatureType.FLOWER, 1, "Más tulipanes", null, 75),
-                        new FeatureItem(Textures.BLUE_ORCHID, Feature.FeatureType.FLOWER, 2, "Orquidea azul", null, 75),
-                        new FeatureItem(Textures.DANDELION, Feature.FeatureType.FLOWER, 3, "Diente de león", null, 75),
-                        new FeatureItem(Textures.RED_LILY, Feature.FeatureType.FLOWER, 4, "Lirio rojo", null, 75)),
+                        new FeatureItem(Textures.TULIP, location -> new Flower(location, 0), "Tulipanes", null, 75),
+                        new FeatureItem(Textures.TULIP_2, location -> new Flower(location, 1), "Más tulipanes", null, 75),
+                        new FeatureItem(Textures.BLUE_ORCHID, location -> new Flower(location, 2), "Orquidea azul", null, 75),
+                        new FeatureItem(Textures.DANDELION, location -> new Flower(location, 3), "Diente de león", null, 75),
+                        new FeatureItem(Textures.RED_LILY, location -> new Flower(location, 4), "Lirio rojo", null, 75)),
                 List.of(
-                        new FeatureItem(Textures.ROCK, Feature.FeatureType.ROCK, 0, "Una piedra", null, 0))
+                        new FeatureItem(Textures.ROCK, Rock::new, "Una piedra", null, 0))
         ));
         this.put(Player.SPECIAL_TAB, new ArrayList<>());
 
@@ -544,7 +558,7 @@ public class Player {
      */
     public Feature createSelectedFeature() {
         if (this.selectedItem != null && this.selectedItem instanceof FeatureItem featureItem) {
-            return featureItem.getFeatureType().createFeature(MouseListener.getInGameLocation().truncate(), featureItem.getVariantToPlace());
+            return featureItem.getFeatureToPlace(MouseListener.getInGameLocation().truncate());
         }
         return null;
     }
@@ -729,20 +743,24 @@ public class Player {
     /**
      * Elimina la feature que esté seleccionando el jugador.
      */
-    public void destroySelectedFeature() {
+    public boolean destroySelectedFeature() {
         Feature selectedFeature = MouseListener.getInGameLocation().getFeature();
         if (selectedFeature != null) {
             Main.world.removeFeature(selectedFeature);
             for (int particles = 0; particles < selectedFeature.getSize().x() * selectedFeature.getSize().y() * 5; particles++) {
                 Main.world.addParticle(new BulldozerParticle(MouseListener.getInGameLocation().truncate().add(-0.5f, -0.5f).add(
-                        Main.RANDOM.nextFloat(0, selectedFeature.getSize().x()),
-                        Main.RANDOM.nextFloat(0, selectedFeature.getSize().y())
+                        Main.RANDOM.nextFloat(0, selectedFeature.getBlockSize().x()),
+                        Main.RANDOM.nextFloat(0, selectedFeature.getBlockSize().y())
                 )));
             }
+
+            return true;
         }
+
+        return false;
     }
 
-    public void placeSelectedItem() {
+    public boolean placeSelectedItem() {
         if (this.selectedItem instanceof FeatureItem featureItem) {
             Feature selectedFeature = this.createSelectedFeature();
             if (selectedFeature != null) {
@@ -751,16 +769,18 @@ public class Player {
                     Main.world.addMoney(-featureItem.getPrice());
                     for (int particles = 0; particles < selectedFeature.getSize().x() * selectedFeature.getSize().y() * 5; particles++) {
                         Main.world.addParticle(new PositiveParticle(MouseListener.getInGameLocation().truncate().add(-0.5f, -0.5f).add(
-                                Main.RANDOM.nextFloat(0, selectedFeature.getSize().x()),
-                                Main.RANDOM.nextFloat(0, selectedFeature.getSize().y())
+                                Main.RANDOM.nextFloat(0, selectedFeature.getBlockSize().x()),
+                                Main.RANDOM.nextFloat(0, selectedFeature.getBlockSize().y())
                         )));
                     }
 
-                    featureItem.getFeatureType().getSoundEffect().play(SoundCategory.SOUND_EFFECTS);
+                    selectedFeature.getFeatureType().getSoundEffect().play(SoundCategory.SOUND_EFFECTS);
                 } else {
                     Main.world.addParticle(new NegativeParticle(MouseListener.getInGameLocation().add(-.5f, .5f)));
                 }
             }
+
+            return true;
         }
         if (this.selectedItem instanceof TerrainItem && this.terrainSelection != null) {
             LinkedHashSet<Terrain.TerrainType> terrainTypesToUpdate = new LinkedHashSet<>();
@@ -788,8 +808,8 @@ public class Player {
                         Main.world.removeFeature(feature);
                         for (int particles = 0; particles < feature.getSize().x() * feature.getSize().y() * 5; particles++) {
                             Main.world.addParticle(new BulldozerParticle(location.clone().add(-0.5f, -0.5f).add(
-                                    Main.RANDOM.nextFloat(0, feature.getSize().x()),
-                                    Main.RANDOM.nextFloat(0, feature.getSize().y())
+                                    Main.RANDOM.nextFloat(0, feature.getBlockSize().x()),
+                                    Main.RANDOM.nextFloat(0, feature.getBlockSize().y())
                             )));
                         }
                     }
@@ -807,7 +827,11 @@ public class Player {
             System.gc();
 
             SoundEffect.WORLD_EFFECT_PLACE_TERRAIN.play(SoundCategory.SOUND_EFFECTS);
+
+            return true;
         }
+
+        return false;
     }
 
     public Tooltip getTooltip() {

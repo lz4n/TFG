@@ -10,7 +10,7 @@ import world.terrain.Terrain;
 
 public class Port extends JobSite {
     public Port(Location location) {
-        super(location, new Vector2i(2, 3), FeatureType.HOUSE, 7);
+        super(location, new Vector2f(25, 39).div(WorldScene.SPRITE_SIZE), FeatureType.JOB_SITE, 0);
         if (super.getLocation().add(1, 0).getTerrain().getType().equals(Terrain.TerrainType.WATER)) {
             super.setFlip(Feature.FLIP_HORIZONTAL);
         } else  if (super.getLocation().add(-1, 0).getTerrain().getType().equals(Terrain.TerrainType.WATER)) {
@@ -58,10 +58,5 @@ public class Port extends JobSite {
         }
 
         return false;
-    }
-
-    @Override
-    public Vector2f getRealSize() {
-        return new Vector2f(25, 39).div(WorldScene.SPRITE_SIZE);
     }
 }

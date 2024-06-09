@@ -152,6 +152,7 @@ public class WorldScene implements Scene {
             Texture.unbind();
         });
 
+        Shader.ENTITY.uploadFloat("uFlip", 0);
 
         Shader.ENTITY.uploadInt("uIsSelected", 0);
         Main.world.getParticlesList().forEach(particle -> {
@@ -246,7 +247,7 @@ public class WorldScene implements Scene {
         if (!Main.PLAYER.isHidingUi() && !Main.PLAYER.isPaused() && MouseListener.getInGameLocation() != null && !MouseListener.getInGameLocation().isOutOfTheWorld() && !Main.PLAYER.isMouseOnInventory()) {
             Feature selectedFeature;
             if ((selectedFeature = MouseListener.getInGameLocation().getFeature()) != null && !Main.PLAYER.isSelectingTerrain()) {
-                for (int x = 1; x <= selectedFeature.getSize().x(); x++) for (int y = 1; y <= selectedFeature.getSize().y(); y++) {
+                for (int x = 1; x <= selectedFeature.getBlockSize().x(); x++) for (int y = 1; y <= selectedFeature.getBlockSize().y(); y++) {
                     Main.world.addParticle(new CursorParticle(selectedFeature.getLocation().add(x -1, y -1)));
                 }
             } else {
