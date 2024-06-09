@@ -269,8 +269,6 @@ public class World implements Serializable {
             if (feature instanceof Building building) {
                 this.BUILDINGS.add(building);
                 building.onAdd();
-
-                this.DUCKS_LIST.forEach(Duck::findJob);
             }
 
             this.featuresCount++;
@@ -325,6 +323,8 @@ public class World implements Serializable {
         this.spawnDuck(duck);
         duck.onAdd();
         this.ducksCount++;
+
+        Main.world.updateUnemployment();
     }
 
     public void spawnDuck(Duck duck) {
@@ -485,10 +485,6 @@ public class World implements Serializable {
      */
     public LinkedList<Duck> getDucks() {
         return new LinkedList<>(this.DUCKS_LIST);
-    }
-
-    public void forEachEntity(Consumer<Duck> consumer) {
-        this.DUCKS_LIST.forEach(consumer);
     }
 
     /**

@@ -40,7 +40,7 @@ public class Duck implements Serializable {
     private final static int[][] SCHEDULE = new int[][]{ //Hará referencia a los horarios de los patos. HORA ENTRADA TRABAJO || HORA SALIDA TRABAJO || HORA IRSE A DORMIR
              {World.hourToTick(8, 30), World.hourToTick(17, 30), World.hourToTick(22, 0)},
              {World.hourToTick(15, 20), World.hourToTick(21,20), World.hourToTick(5, 0)},
-             {World.hourToTick(23, 40), World.hourToTick(6, 30), World.hourToTick(12, 20)}
+             {World.hourToTick(0, 40), World.hourToTick(6, 30), World.hourToTick(12, 20)}
     };
 
     /**
@@ -160,8 +160,6 @@ public class Duck implements Serializable {
         this.jobSite.removeWorker(this);
         this.jobSite = null;
 
-        this.findJob();
-
         Main.world.updateUnemployment();
     }
 
@@ -178,7 +176,6 @@ public class Duck implements Serializable {
     }
 
     public void onAdd() {
-        this.findJob();
     }
 
     //TODO: Ia de los patos.
@@ -222,7 +219,7 @@ public class Duck implements Serializable {
             return;
         }
 
-        for (Building building : Main.world.getBuildings()) {
+        for (Building building : Main.world.getBuildings().stream().sorted(Comparator.comparing(building -> building.getLocation().getDistance(this.location))).toList()) {
             if (building.getLocation().getDistance(this.getLocation()) < 100 && building instanceof JobSite jobSite && this.setJobSite(jobSite)) {
                 break;
             }
@@ -254,6 +251,10 @@ public class Duck implements Serializable {
     }
 
     private void doPathfinding() {
+        if (this.jobSite == null) {
+            this.findJob();
+        }
+
         this.setState();
         this.updateTooltip();
 
