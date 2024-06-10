@@ -13,7 +13,7 @@ import java.awt.*;
 
 public class PoliceStation extends Building {
     public PoliceStation(Location location) {
-        super(location, new Vector2f(20, 19).div(WorldScene.SPRITE_SIZE), FeatureType.SERVICES, 1);
+        super(location, new Vector2f(20, 19).div(WorldScene.SPRITE_SIZE), FeatureType.BUILDING, 14);
     }
 
     public int getProtection() {

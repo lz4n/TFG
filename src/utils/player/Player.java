@@ -92,18 +92,18 @@ public class Player {
         ));
         this.put(Player.INDUSTRY_TAB, List.of(
                 Arrays.asList(
-                        new FeatureItem(Textures.INDUSTRY_LVL1, location -> new Industry(location, 1), "Industria (nvl. I)", "cuackn`t", 8000),
-                        new FeatureItem(Textures.INDUSTRY_LVL2, location -> new Industry(location, 2), "Industria (nvl. II)", "cuackn`t", 8000),
-                        new FeatureItem(Textures.INDUSTRY_LVL3, location -> new Industry(location, 3), "Industria (nvl. III)", "cuackn`t", 8000),
-                        new FeatureItem(Textures.INDUSTRY_LVL4, location -> new Industry(location, 4), "Industria (nvl. IV)", "cuackn`t", 8000),
-                        new FeatureItem(Textures.INDUSTRY_LVL5, location -> new Industry(location, 5), "Industria (nvl. V)", "cuackn`t", 8000),
-                        new FeatureItem(Textures.PORT, Port::new, "Puerto", "Un puerto.", 8000)
+                        new FeatureItem(Textures.INDUSTRY_LVL1, location -> new Industry(location, 1), "Industria (nvl. I)", "cuackn`t", 200),
+                        new FeatureItem(Textures.INDUSTRY_LVL2, location -> new Industry(location, 2), "Industria (nvl. II)", "cuackn`t", 1100),
+                        new FeatureItem(Textures.INDUSTRY_LVL3, location -> new Industry(location, 3), "Industria (nvl. III)", "cuackn`t", 2200),
+                        new FeatureItem(Textures.INDUSTRY_LVL4, location -> new Industry(location, 4), "Industria (nvl. IV)", "cuackn`t", 3300),
+                        new FeatureItem(Textures.INDUSTRY_LVL5, location -> new Industry(location, 5), "Industria (nvl. V)", "cuackn`t", 4400),
+                        new FeatureItem(Textures.PORT, Port::new, "Puerto", "Un puerto.", 15000)
                 )
         ));
         this.put(Player.SERVICES_TAB, List.of(
                 Arrays.asList(
-                        new FeatureItem(Textures.HOSPITAL, Hospital::new, "Hospital", "Piiiiiiiii-", 8000),
-                        new FeatureItem(Textures.POLICE_STATION, PoliceStation::new, "Estación de Policía", "niiii noooo niiiii nooo niii nooo", 8000)
+                        new FeatureItem(Textures.HOSPITAL, Hospital::new, "Hospital", "Piiiiiiiii-", 10000),
+                        new FeatureItem(Textures.POLICE_STATION, PoliceStation::new, "Estación de Policía", "niiii noooo niiiii nooo niii nooo", 5000)
                 )
         ));
         this.put(Player.NATURE_TAB, Arrays.asList(
@@ -494,7 +494,7 @@ public class Player {
                         this.selectedItem = null;
                         slotWidget.setSelected(false);
                     });
-                    this.INVENTORY.addWidget(screenIndicatorWidget, tab);
+                    this.INVENTORY.addWidgetToAllTabs(screenIndicatorWidget);
 
                     this.selectedItem = item;
                 });

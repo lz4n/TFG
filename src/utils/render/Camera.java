@@ -15,7 +15,7 @@ import java.lang.Math;
  * @author Izan
  */
 public class Camera {
-    private static final float MIN_ZOOM = 0f, MAX_ZOOM = 2f;
+    private static final float MIN_ZOOM = .2f, MAX_ZOOM = 2f;
 
     /**
      * Contantes para la amplitud de la camara.

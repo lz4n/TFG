@@ -13,7 +13,7 @@ import java.awt.*;
 
 public class Industry extends JobSite {
     public Industry(Location location, int variant) {
-        super(location, Industry.getSize(variant), FeatureType.JOB_SITE, variant);
+        super(location, Industry.getSize(variant), FeatureType.BUILDING, variant +7);
         switch (variant) {
             case 0 -> this.workers = new Duck[1];
             case 1 -> this.workers = new Duck[6];
@@ -36,23 +36,23 @@ public class Industry extends JobSite {
 
     @Override
     public int getCost() {
-        switch (this.getVariant()) {
-            case 0 -> {
-                return -20;
-            }
+        switch (this.getVariant() -7) {
             case 1 -> {
-                return -50;
+                return -40;
             }
             case 2 -> {
-                return -80;
+                return -50;
             }
             case 3 -> {
-                return -110;
+                return -80;
             }
             case 4 -> {
-                return -140;
+                return -110;
             }
             case 5 -> {
+                return -140;
+            }
+            case 6 -> {
                 return -170;
             }
         }
@@ -61,23 +61,23 @@ public class Industry extends JobSite {
     }
 
     private int getIncomesPerDuck() {
-        switch (this.getVariant()) {
-            case 0 -> {
+        switch (this.getVariant() -7) {
+            case 1 -> {
                 return 25;
             }
-            case 1 -> {
+            case 2 -> {
                 return 30;
             }
-            case 2 -> {
+            case 3 -> {
                 return 35;
             }
-            case 3 -> {
+            case 4 -> {
                 return 40;
             }
-            case 4 -> {
+            case 5 -> {
                 return 45;
             }
-            case 5 -> {
+            case 6 -> {
                 return 50;
             }
         }

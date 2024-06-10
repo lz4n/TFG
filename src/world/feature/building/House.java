@@ -2,7 +2,6 @@ package world.feature.building;
 
 import main.Main;
 import org.joml.Vector2f;
-import org.joml.Vector2i;
 import ui.tooltip.TextTooltip;
 import ui.tooltip.Tooltip;
 import utils.render.GameFont;
@@ -17,15 +16,15 @@ public class House extends Building {
     protected Duck[] inhabitants;
 
     public House(Location location, int variant) {
-        super(location, House.getSize(variant +1), FeatureType.HOUSE, variant);
+        super(location, House.getSize(variant +1), FeatureType.BUILDING, variant);
         switch (variant) {
             case 0 -> this.inhabitants = new Duck[1];
-            case 1 -> this.inhabitants = new Duck[6];
-            case 2 -> this.inhabitants = new Duck[9];
-            case 3 -> this.inhabitants = new Duck[12];
-            case 4 -> this.inhabitants = new Duck[15];
-            case 5 -> this.inhabitants = new Duck[21];
-            case 6 -> this.inhabitants = new Duck[25];
+            case 1 -> this.inhabitants = new Duck[3];
+            case 2 -> this.inhabitants = new Duck[6];
+            case 3 -> this.inhabitants = new Duck[9];
+            case 4 -> this.inhabitants = new Duck[12];
+            case 5 -> this.inhabitants = new Duck[15];
+            case 6 -> this.inhabitants = new Duck[20];
         }
     }
 

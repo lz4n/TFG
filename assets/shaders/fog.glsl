@@ -7,7 +7,7 @@ Shader de fragmentos común para los shaders WORLD y ENTITY. Dibuja la textura a
 /**
 Cantidad de samplers de texturas.
 */
-const int SAMPLERS_COUNT = 10;
+const int SAMPLERS_COUNT = 20;
 
 /**
 Atributos de los objetos a renderizar.

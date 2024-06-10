@@ -27,7 +27,7 @@ public abstract class Texture {
     /**
      * Cantidad de samplers de textura que están disponibles para su uso.
      */
-    public static final int SAMPLERS_COUNT = 10;
+    public static final int SAMPLERS_COUNT = 20;
 
 
     /**

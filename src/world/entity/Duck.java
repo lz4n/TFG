@@ -31,7 +31,6 @@ import java.util.List;
 
 //TODO: Sistema para detectar clic a las entidades.
 public class Duck implements Serializable {
-    private static final float TAX_BASE = 50;
 
     public static final float NO_FLIP = 0, FLIP_HORIZONTAL = 1, FLIP_VERTICAL = 2, FLIP_BOTH = 3;
 
@@ -92,7 +91,7 @@ public class Duck implements Serializable {
 
         this.moveTo(
                 this.getLocation()
-                        .add(new Vector2f(direction).mul(Main.RANDOM.nextFloat(.02f, .07f) +(this.getLocation().getTerrain().getType().equals(Terrain.TerrainType.WATER) ? .02f : 0)).mul(Main.tickSpeed))
+                        .add(new Vector2f(direction).mul(Main.RANDOM.nextFloat(.01f, .04f) +(this.getLocation().getTerrain().getType().equals(Terrain.TerrainType.WATER) ? .02f : 0)).mul(Main.tickSpeed))
         );
 
         if (direction.x() > 0) {
@@ -196,7 +195,7 @@ public class Duck implements Serializable {
                 this.squawkingTime--;
                 this.currentAnimation = Animation.SQUAWKING;
             } else {
-                if (Main.RANDOM.nextFloat() > 0.3) {
+                if (Main.RANDOM.nextFloat() > 0.2) {
                     if (Main.RANDOM.nextFloat() > 0.55) {
                         this.currentAnimation = Animation.SQUAWKING;
                         this.squawkingTime = Duck.SQUAWKING_TIME;
@@ -238,8 +237,6 @@ public class Duck implements Serializable {
     }
 
     private void setState() {
-        System.out.println(Arrays.deepToString(Duck.SCHEDULE));
-
         if (Main.world.getDayTime() >= Duck.SCHEDULE[this.scheduleIndex][0] && Main.world.getDayTime() < Duck.SCHEDULE[this.scheduleIndex][1]) {
             if (this.jobSite == null) {
                 this.state = ActivityType.IN_FREETIME;
@@ -257,8 +254,6 @@ public class Duck implements Serializable {
         if (Main.world.getDayTime() >= Duck.SCHEDULE[this.scheduleIndex][2]) {
             this.state = ActivityType.IN_HOUSE;
         }
-
-        System.out.println(this.state);
     }
 
     private void doPathfinding() {
@@ -348,7 +343,11 @@ public class Duck implements Serializable {
     }
 
     public int getTaxes() {
-        this.taxes = (int) Math.ceil(Duck.TAX_BASE *this.getHappiness());
+        this.taxes = (int) Math.ceil(25 *this.getHappiness());
+
+        if (this.isUnemployed()) {
+            return -20;
+        }
 
         return this.taxes;
     }

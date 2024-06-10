@@ -192,7 +192,7 @@ public abstract class Feature implements Comparable<Feature>, Serializable {
                 Textures.TREE1,
                 Textures.TREE2
         ),
-        HOUSE(
+        BUILDING(
                 SoundEffect.WORLD_EFFECT_PLACE_BUILDING,
 
                 Textures.HOUSE_LVL1,
@@ -201,22 +201,14 @@ public abstract class Feature implements Comparable<Feature>, Serializable {
                 Textures.HOUSE_LVL4,
                 Textures.HOUSE_LVL5,
                 Textures.HOUSE_LVL6,
-                Textures.HOUSE_LVL7
-
-        ),
-        JOB_SITE(
-                SoundEffect.WORLD_EFFECT_PLACE_BUILDING,
+                Textures.HOUSE_LVL7,
 
                 Textures.PORT,
                 Textures.INDUSTRY_LVL1,
                 Textures.INDUSTRY_LVL2,
                 Textures.INDUSTRY_LVL3,
                 Textures.INDUSTRY_LVL4,
-                Textures.INDUSTRY_LVL5
-
-        ),
-        SERVICES(
-                SoundEffect.WORLD_EFFECT_PLACE_BUILDING,
+                Textures.INDUSTRY_LVL5,
 
                 Textures.HOSPITAL,
                 Textures.POLICE_STATION
@@ -286,62 +278,6 @@ public abstract class Feature implements Comparable<Feature>, Serializable {
          */
         public int getVariants() {
             return this.VARIANTS;
-        }
-
-        /**
-         * Crea una feature con una variante determinada. Crea el objeto, pero no lo coloca en el mundo.
-         * @param location Posición donde se va a generar la feature.
-         * @param variant Variante de la feature que se va a generar.
-         * @return Nueva feature.
-         */
-        public Feature createFeature(Location location, int variant) {
-            switch (this) {
-                case ROCK -> {
-                    return new Rock(location);
-                }
-                case BUSH -> {
-                    return new Bush(location);
-                }
-                case TREE -> {
-                    return new Tree(location, variant);
-                }
-                case FLOWER -> {
-                    return new Flower(location, variant);
-                }
-                case HOUSE -> {
-                    if (variant <= 6) {
-                        return new House(location, variant);
-                    }
-                }
-                case JOB_SITE ->  {
-                    if (variant == 0) {
-                        return new Port(location);
-                    }
-                    if (variant <= 5) {
-                        return new Industry(location, variant);
-                    }
-                }
-                case SERVICES -> {
-                    switch (variant) {
-                        case 0 -> {
-                            return new Hospital(location);
-                        }
-                        case 1 -> {
-                            return new PoliceStation(location);
-                        }
-                    }
-                }
-            }
-            return null;
-        }
-
-        /**
-         * Crea una feature con una variante aleatoria. Crea el objeto, pero no lo coloca en el mundo.
-         * @param location Posición donde se va a generar la feature.
-         * @return Nueva feature.
-         */
-        public Feature createFeature(Location location) {
-            return createFeature(location, Main.RANDOM.nextInt(this.VARIANTS));
         }
     }
 }

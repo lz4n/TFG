@@ -11,7 +11,7 @@ public class WorldBuilder {
      * Parametros de generación.
      */
     private final int OCTAVES = 8;
-    private final float ROUGHNESS = 0.53f, SCALE = 0.3f;
+    private final float ROUGHNESS = 0.43f, SCALE = 0.8f;
 
     /**
      * Generadores de ruido.

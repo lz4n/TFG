@@ -10,7 +10,7 @@ import world.terrain.Terrain;
 
 public class Port extends JobSite {
     public Port(Location location) {
-        super(location, new Vector2f(25, 39).div(WorldScene.SPRITE_SIZE), FeatureType.JOB_SITE, 0);
+        super(location, new Vector2f(25, 39).div(WorldScene.SPRITE_SIZE), FeatureType.BUILDING, 7);
         if (super.getLocation().add(1, 0).getTerrain().getType().equals(Terrain.TerrainType.WATER)) {
             super.setFlip(Feature.FLIP_HORIZONTAL);
         } else  if (super.getLocation().add(-1, 0).getTerrain().getType().equals(Terrain.TerrainType.WATER)) {
@@ -46,15 +46,11 @@ public class Port extends JobSite {
         }
         if (thereMustBeTerrainHere.getTerrain().getType().isBuildable()) {
             return true;
-        } else {
-            System.out.println(thereMustBeTerrainHere.toString() + thereMustBeTerrainHere.getTerrain().getType() + "2");
         }
 
         thereMustBeTerrainHere.add(0, 1);
         if (thereMustBeTerrainHere.getTerrain().getType().isBuildable()) {
             return true;
-        } else {
-            System.out.println(thereMustBeTerrainHere.toString() + thereMustBeTerrainHere.getTerrain().getType()+ "3");
         }
 
         return false;

@@ -161,9 +161,6 @@ public class WorldScene implements Scene {
         Main.world.getParticlesList().forEach(particle -> {
             Shader.ENTITY.uploadFloat("uRotationAngle", particle.getRotation());
             Shader.ENTITY.uploadFloat("uScale", particle.getScale());
-            if (particle instanceof CursorParticle) {
-                System.out.println(particle.getLocation());
-            }
             particle.getTexture().draw(
                     Shader.ENTITY,
                     particle.getLocation()

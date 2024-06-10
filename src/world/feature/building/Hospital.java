@@ -13,7 +13,7 @@ import java.awt.*;
 
 public class Hospital extends Building {
     public Hospital(Location location) {
-        super(location, new Vector2f(24, 24).div(WorldScene.SPRITE_SIZE), FeatureType.SERVICES, 0);
+        super(location, new Vector2f(24, 24).div(WorldScene.SPRITE_SIZE), FeatureType.BUILDING, 13);
     }
 
     public int getProtection() {

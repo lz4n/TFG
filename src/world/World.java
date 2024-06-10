@@ -37,9 +37,9 @@ public class World implements Serializable {
             sunsetDuration = SUNSET_END - SUNSET_START,
             MONTH_DURATION_IN_DAYS = 30,
             MAX_MONTH = 12;
-    private static final float MIN_DAYLIGHT = .2f;
+    private static final float MIN_DAYLIGHT = .5f;
 
-    private static final int INITIAL_MONEY = 10000000;
+    private static final int INITIAL_MONEY = 600;
 
     /**
      * Nombre del mundo.
@@ -142,23 +142,23 @@ public class World implements Serializable {
         switch (biome) {
             case RIVER_MOUNTAIN_SHORE -> {
                 if (Main.RANDOM.nextFloat() >= 0.4)
-                    feature = Feature.FeatureType.TREE.createFeature(location);
-                else if (Main.RANDOM.nextFloat() >= 0.6) feature = Feature.FeatureType.BUSH.createFeature(location);
+                    feature = new Tree(location, Main.RANDOM.nextInt(Feature.FeatureType.TREE.getVariants()));
+                else if (Main.RANDOM.nextFloat() >= 0.6) feature = new Bush(location);
             }
             case FOREST -> {
                 if (Main.RANDOM.nextFloat() >= 0.75)
-                    feature = Feature.FeatureType.TREE.createFeature(location);
-                else if (Main.RANDOM.nextFloat() >= 0.84) feature = Feature.FeatureType.BUSH.createFeature(location);
+                    feature = new Tree(location, Main.RANDOM.nextInt(Feature.FeatureType.TREE.getVariants()));
+                else if (Main.RANDOM.nextFloat() >= 0.9) feature = new Bush(location);
             }
             case PLAINS -> {
                 if (Main.RANDOM.nextFloat() >= 0.97)
-                    feature = Feature.FeatureType.TREE.createFeature(location);
-                else if (Main.RANDOM.nextFloat() >= 0.87) feature = Feature.FeatureType.BUSH.createFeature(location);
-                else if (Main.RANDOM.nextFloat() >= 0.99) feature = Feature.FeatureType.FLOWER.createFeature(location);
+                    feature = new Tree(location, Main.RANDOM.nextInt(Feature.FeatureType.TREE.getVariants()));
+                else if (Main.RANDOM.nextFloat() >= 0.97) feature = new Bush(location);
+                else if (Main.RANDOM.nextFloat() >= 0.99) feature = new Flower(location, Main.RANDOM.nextInt(Feature.FeatureType.FLOWER.getVariants()));
             }
             case MOUNTAIN -> {
                 if (Main.RANDOM.nextFloat() >= 0.98)
-                    feature = Feature.FeatureType.ROCK.createFeature(location);
+                    feature = new Rock(location);
             }
         }
         if (feature != null && feature.canBePlaced()) {
