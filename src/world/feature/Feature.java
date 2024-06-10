@@ -24,33 +24,23 @@ import java.util.*;
  * Un mismo tipo de feature
  */
 public abstract class Feature implements Comparable<Feature>, Serializable {
-    public static final float NO_FLIP = 0, FLIP_HORIZONTAL = 1, FLIP_VERTICAL = 2, FLIP_BOTH = 3;
+    public static final float NO_FLIP = 0, FLIP_HORIZONTAL = 1;
 
-
-    /**
-     * Posición donde está hubicada la feature.
-     */
     private final Location LOCATION;
-
-    /**
-     * Tamaño de la feature en celdas.
-     */
     private final Vector2f SIZE;
-
-    /**
-     * Tipo de feature.
-     */
     private final FeatureType FEATURE_TYPE;
-
-    /**
-     * Variante de la feature.
-     */
     private final int VARIANT;
-
     private float flip = Feature.NO_FLIP;
 
+    /**
+     * Constructor para crear una nueva instancia de Feature.
+     *
+     * @param location    La ubicación de la feature.
+     * @param size        El tamaño de la feature.
+     * @param featureType El tipo de feature.
+     * @param variant     La variante de la feature.
+     */
     public Feature(Location location, Vector2f size, FeatureType featureType, int variant) {
-
         //Calculamos el desplazamiento, para que las features no estén todas en la misma posición dentro de la casilla.
         this.LOCATION = location;
         this.SIZE = size;
@@ -68,6 +58,7 @@ public abstract class Feature implements Comparable<Feature>, Serializable {
     public Location getLocation() {
         return this.LOCATION.clone();
     }
+
     /**
      * @return Tipo de feature.
      */
@@ -119,17 +110,50 @@ public abstract class Feature implements Comparable<Feature>, Serializable {
      */
     public abstract boolean checkSpecificConditions();
 
+    /**
+     * Establece el valor de flip para la feature.
+     *
+     * Este método permite establecer el valor de flip, que controla la orientación o el giro de la feature.
+     * Los valores válidos son:
+     * <ul>
+     *     <li>0: Sin flip</li>
+     *     <li>1: Flip horizontal</li>
+     * </ul>
+     *
+     * @param flip El valor de flip (0 o 1).
+     * @throws IllegalArgumentException si el valor de flip no es válido (es decir, no está en el rango de 0 a 1).
+     */
     public void setFlip(float flip) {
-        if (flip < 0 || flip > 3) {
-            throw new IllegalArgumentException(String.format("El valor 'flip' sólo puede ser 0, 1, 2 o 3, no: %f", flip));
+        if (flip < 0 || flip > 1) {
+            throw new IllegalArgumentException(String.format("El valor 'flip' sólo puede ser 0 o 1, no: %f", flip));
         }
         this.flip = flip;
     }
 
+    /**
+     * Devuelve el valor de flip actual de la feature.
+     * Este método retorna el valor de flip que controla la orientación o el giro de la feature. Los posibles valores son:
+     * <ul>
+     *     <li>0: Sin flip</li>
+     *     <li>1: Flip horizontal</li>
+     * </ul>
+     *
+     * @return El valor de flip (0 o 1).
+     */
     public float getFlip() {
         return this.flip;
     }
 
+    /**
+     * Devuelve el tamaño de la feature en bloques enteros.
+     *
+     * Este método calcula y retorna un vector bidimensional de enteros que representa el tamaño de la feature
+     * en términos de bloques enteros. Utiliza el método `Math.ceil` para redondear hacia arriba los valores de las dimensiones
+     * de la feature a fin de asegurar que cualquier parte parcial de un bloque sea contada como un bloque completo.
+     *
+     * @return Un objeto {@code Vector2i} que contiene el tamaño de la feature en bloques enteros. El componente X representa
+     *         el ancho y el componente Y representa la altura.
+     */
     public Vector2i getBlockSize() {
         return new Vector2i((int) Math.ceil(this.SIZE.x()), (int) Math.ceil(this.SIZE.y()));
     }
@@ -146,6 +170,15 @@ public abstract class Feature implements Comparable<Feature>, Serializable {
                 );
     }
 
+    /**
+     * Método llamado en cada tick del juego.
+     *
+     * Este método es una plantilla que puede ser sobrescrita por subclases para definir comportamientos específicos que
+     * deben ocurrir en cada tick del juego. Actualmente, este método no realiza ninguna acción.
+     */
+    public void onTick() {}
+
+
     @Override
     public int hashCode() {
         return this.LOCATION.hashCode();
@@ -159,8 +192,6 @@ public abstract class Feature implements Comparable<Feature>, Serializable {
         }
         return compareY;
     }
-
-    public void onTick() {}
 
     /**
      * Tipo de feature. El tipo de feature determina las posibles variantes y contiene el <code>Mesh</code> encargado de
@@ -192,7 +223,7 @@ public abstract class Feature implements Comparable<Feature>, Serializable {
                 Textures.TREE1,
                 Textures.TREE2
         ),
-        HOUSE(
+        BUILDING(
                 SoundEffect.WORLD_EFFECT_PLACE_BUILDING,
 
                 Textures.HOUSE_LVL1,
@@ -201,25 +232,19 @@ public abstract class Feature implements Comparable<Feature>, Serializable {
                 Textures.HOUSE_LVL4,
                 Textures.HOUSE_LVL5,
                 Textures.HOUSE_LVL6,
-                Textures.HOUSE_LVL7
-
-        ),
-        JOB_SITE(
-                SoundEffect.WORLD_EFFECT_PLACE_BUILDING,
+                Textures.HOUSE_LVL7,
 
                 Textures.PORT,
                 Textures.INDUSTRY_LVL1,
                 Textures.INDUSTRY_LVL2,
                 Textures.INDUSTRY_LVL3,
                 Textures.INDUSTRY_LVL4,
-                Textures.INDUSTRY_LVL5
-
-        ),
-        SERVICES(
-                SoundEffect.WORLD_EFFECT_PLACE_BUILDING,
+                Textures.INDUSTRY_LVL5,
 
                 Textures.HOSPITAL,
-                Textures.POLICE_STATION
+                Textures.POLICE_STATION,
+
+                Textures.FOUNTAIN
 
         );
 
@@ -263,7 +288,9 @@ public abstract class Feature implements Comparable<Feature>, Serializable {
             List<Feature> features = Main.world.getFeatures();
             features.removeIf(feature -> feature == null || !feature.getFeatureType().equals(this));
             this.mesh = new WorldMesh(features.size(), 2, 2, 1, 1);
-            features.forEach(feature -> mesh.addVertex(feature.getLocation().getX(), feature.getLocation().getY(), feature.getSize().x(), feature.getSize().y(), feature.getVariant(), feature.getFlip()));
+            for (Feature feature : features) {
+                mesh.addVertex(feature.getLocation().getX(), feature.getLocation().getY(), feature.getSize().x(), feature.getSize().y(), feature.getVariant(), feature.getFlip());
+            }
             this.mesh.load();
         }
 
@@ -286,62 +313,6 @@ public abstract class Feature implements Comparable<Feature>, Serializable {
          */
         public int getVariants() {
             return this.VARIANTS;
-        }
-
-        /**
-         * Crea una feature con una variante determinada. Crea el objeto, pero no lo coloca en el mundo.
-         * @param location Posición donde se va a generar la feature.
-         * @param variant Variante de la feature que se va a generar.
-         * @return Nueva feature.
-         */
-        public Feature createFeature(Location location, int variant) {
-            switch (this) {
-                case ROCK -> {
-                    return new Rock(location);
-                }
-                case BUSH -> {
-                    return new Bush(location);
-                }
-                case TREE -> {
-                    return new Tree(location, variant);
-                }
-                case FLOWER -> {
-                    return new Flower(location, variant);
-                }
-                case HOUSE -> {
-                    if (variant <= 6) {
-                        return new House(location, variant);
-                    }
-                }
-                case JOB_SITE ->  {
-                    if (variant == 0) {
-                        return new Port(location);
-                    }
-                    if (variant <= 5) {
-                        return new Industry(location, variant);
-                    }
-                }
-                case SERVICES -> {
-                    switch (variant) {
-                        case 0 -> {
-                            return new Hospital(location);
-                        }
-                        case 1 -> {
-                            return new PoliceStation(location);
-                        }
-                    }
-                }
-            }
-            return null;
-        }
-
-        /**
-         * Crea una feature con una variante aleatoria. Crea el objeto, pero no lo coloca en el mundo.
-         * @param location Posición donde se va a generar la feature.
-         * @return Nueva feature.
-         */
-        public Feature createFeature(Location location) {
-            return createFeature(location, Main.RANDOM.nextInt(this.VARIANTS));
         }
     }
 }

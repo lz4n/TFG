@@ -14,15 +14,7 @@ public class SlotWidget extends Widget implements CustomDrawWidget {
      * BoundingBox base del widget, cuando se instancia se duplica y se mueve a la posición del widget.
      */
     public final static BoundingBox BASE_BOUNDING_BOX = new BoundingBox(16, 16);
-
-    /**
-     * Textura del icono del slot.
-     */
     private final Texture CONTENT;
-
-    /**
-     * Indica si el slot está seleccionado o no.
-     */
     private boolean isSelected = false;
 
     /**

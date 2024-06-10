@@ -19,9 +19,6 @@ import java.util.Objects;
  * Representa una posición del mundo.
  */
 public class Location implements Cloneable, Serializable {
-    /**
-     * Componentes X e Y de la posición.
-     */
     private float x, y;
 
     /**
@@ -40,6 +37,11 @@ public class Location implements Cloneable, Serializable {
         return x;
     }
 
+    /**
+     * Establece el componente X de la posición.
+     *
+     * @param x Nuevo valor para el componente X.
+     */
     public void setX(float x) {
         this.x = x;
     }
@@ -51,6 +53,11 @@ public class Location implements Cloneable, Serializable {
         return y;
     }
 
+    /**
+     * Establece el componente Y de la posición.
+     *
+     * @param y Nuevo valor para el componente Y.
+     */
     public void setY(float y) {
         this.y = y;
     }
@@ -75,7 +82,7 @@ public class Location implements Cloneable, Serializable {
      * Añade un valor a los componentes de la posición.
      * @param x Adición en el eje X.
      * @param y Adición en el eje Y.
-     * @return <code>this</code>.
+     * @return <code>this</code> para permitir encadenar métodos.
      */
     public Location add(float x, float y) {
         this.x += x;
@@ -86,12 +93,18 @@ public class Location implements Cloneable, Serializable {
     /**
      * Añade un valor total tanto al eje x como y
      * @param amount cantidad de distancia.
-     * @return <code>this</code>.
+     * @return <code>this</code> para permitir encadenar métodos.
      */
     public Location add(float amount) {
         return this.add(amount, amount);
     }
 
+    /**
+     * Añade un vector 2D a la posición.
+     *
+     * @param amount El vector 2D que se quiere añadir.
+     * @return <code>this</code> para permitir encadenar métodos.
+     */
     public Location add(Vector2fc amount) {
         return this.add(amount.x(), amount.y());
     }
@@ -100,7 +113,7 @@ public class Location implements Cloneable, Serializable {
     /**
      * Multiplica los componentes por un valor.
      * @param factor Valor por el cuál se quiere multiplicar.
-     * @return <code>this</code>.
+     * @return <code>this</code> para permitir encadenar métodos.
      */
     public Location multiply(float factor) {
         this.x *= factor;
@@ -110,7 +123,7 @@ public class Location implements Cloneable, Serializable {
 
     /**
      * Trunca (quita los decimales) de los componentes.
-     * @return <code>this</code>.
+     * @return <code>this</code> para permitir encadenar métodos.
      */
     public Location truncate() {
         this.x = (int) this.getX();
@@ -119,9 +132,9 @@ public class Location implements Cloneable, Serializable {
     }
 
     /**
-     * Determina si el terreno es transitable para el pathfinding.
+     * Determina el costo de camino para el pathfinding.
      *
-     * @return true si el terreno es transitable, false si no lo es.
+     * @return El costo de camino.
      */
     public int getPathCost() {
         if (this.isOutOfTheWorld()) {
@@ -139,6 +152,11 @@ public class Location implements Cloneable, Serializable {
         return this.clone().add(0, 1).multiply(WorldScene.SPRITE_SIZE);
     }
 
+    /**
+     * Convierte las coordenadas in-game a coordenadas de pantalla relativas a la cámara.
+     *
+     * @return Una nueva instancia de Location con las coordenadas de pantalla relativas a la cámara.
+     */
     public Location getInScreenCoordsRelative() {
         Vector4f inGamePos = new Vector4f(this.getX() * WorldScene.SPRITE_SIZE,
                 this.getY() * WorldScene.SPRITE_SIZE,
@@ -179,6 +197,12 @@ public class Location implements Cloneable, Serializable {
         return Main.world.getFeature((int) this.getX(), (int) this.getY());
     }
 
+    /**
+     * Genera una ubicación aleatoria dentro de un radio dado alrededor de esta ubicación.
+     *
+     * @param radius El radio dentro del cuál se quiere generar una ubicación aleatoria.
+     * @return Una nueva instancia de Location con la ubicación aleatoria.
+     */
     public Location randomLocation(int radius) {
         Location randomLocation;
 

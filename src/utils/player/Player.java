@@ -30,8 +30,9 @@ import utils.render.Window;
 import utils.render.texture.Colors;
 import utils.render.texture.Texture;
 import utils.render.texture.Textures;
-import world.entity.Duck;
+import world.World;
 import world.feature.*;
+import world.feature.building.Fountain;
 import world.feature.building.Hospital;
 import world.feature.building.House;
 import world.feature.building.PoliceStation;
@@ -51,10 +52,6 @@ import java.util.List;
 
 
 public class Player {
-
-    /**
-     * Pestañas que tiene el inventario del jugador.
-     */
     private final static Tab GENERAL_TAB = new Tab(Textures.SELECTED_GENERAL_TAB_ICON, Textures.UNSELECTED_GENERAL_TAB_ICON),
         ZONING_TAB = new Tab(Textures.SELECTED_ZONING_TAB_ICON, Textures.UNSELECTED_ZONING_TAB_ICON),
         INDUSTRY_TAB = new Tab(Textures.SELECTED_INDUSTRY_TAB_ICON, Textures.UNSELECTED_INDUSTRY_TAB_ICON),
@@ -62,9 +59,6 @@ public class Player {
         NATURE_TAB = new Tab(Textures.SELECTED_NATURE_TAB_ICON, Textures.UNSELECTED_NATURE_TAB_ICON),
         SPECIAL_TAB = new Tab(Textures.SELECTED_SPECIAL_TAB_ICON, Textures.UNSELECTED_SPECIAL_TAB_ICON);
 
-    /**
-     * Items por pestaña del inventario.
-     */
     private final static HashMap<Tab, List<List<Item>>> ITEMS = new HashMap<>() {{
         this.put(Player.GENERAL_TAB,Arrays.asList(
                 Arrays.asList(
@@ -82,29 +76,29 @@ public class Player {
         ));
         this.put(Player.ZONING_TAB, List.of(
                 Arrays.asList(
-                        new FeatureItem(Textures.HOUSE_LVL1, location -> new House(location, 0), "Casa (nvl. I)", "Casa para que habiten 7 patos.", 100),
-                        new FeatureItem(Textures.HOUSE_LVL2, location -> new House(location, 1),"Casa (nvl. II)", "Casa para que habiten 7 patos.", 400),
-                        new FeatureItem(Textures.HOUSE_LVL3, location -> new House(location, 2), "Casa (nvl. III)", "Casa para que habiten 7 patos.", 800),
-                        new FeatureItem(Textures.HOUSE_LVL4, location -> new House(location, 3), "Casa (nvl. IV)", "Casa para que habiten 7 patos.", 1200),
-                        new FeatureItem(Textures.HOUSE_LVL5, location -> new House(location, 4), "Casa (nvl. V)", "Casa para que habiten 7 patos.", 1600),
-                        new FeatureItem(Textures.HOUSE_LVL6, location -> new House(location, 5), "Casa (nvl. VI)", "Casa para que habiten 7 patos.", 2000),
-                        new FeatureItem(Textures.HOUSE_LVL7, location -> new House(location, 6), "Casa (nvl. VII)", "Casa para que habiten 7 patos.", 10000)
+                        new FeatureItem(Textures.HOUSE_LVL1, location -> new House(location, 0), "Casa (nvl. I)", "Casa para que habiten 1 pato.", 100),
+                        new FeatureItem(Textures.HOUSE_LVL2, location -> new House(location, 1),"Casa (nvl. II)", "Casa para que habiten 3 patos.", 400),
+                        new FeatureItem(Textures.HOUSE_LVL3, location -> new House(location, 2), "Casa (nvl. III)", "Casa para que habiten 6 patos.", 800),
+                        new FeatureItem(Textures.HOUSE_LVL4, location -> new House(location, 3), "Casa (nvl. IV)", "Casa para que habiten 9 patos.", 1200),
+                        new FeatureItem(Textures.HOUSE_LVL5, location -> new House(location, 4), "Casa (nvl. V)", "Casa para que habiten 12 patos.", 1600),
+                        new FeatureItem(Textures.HOUSE_LVL6, location -> new House(location, 5), "Casa (nvl. VI)", "Casa para que habiten 15 patos.", 2000),
+                        new FeatureItem(Textures.HOUSE_LVL7, location -> new House(location, 6), "Casa (nvl. VII)", "Casa para que habiten 20 patos.", 10000)
                 )
         ));
         this.put(Player.INDUSTRY_TAB, List.of(
                 Arrays.asList(
-                        new FeatureItem(Textures.INDUSTRY_LVL1, location -> new Industry(location, 1), "Industria (nvl. I)", "cuackn`t", 8000),
-                        new FeatureItem(Textures.INDUSTRY_LVL2, location -> new Industry(location, 2), "Industria (nvl. II)", "cuackn`t", 8000),
-                        new FeatureItem(Textures.INDUSTRY_LVL3, location -> new Industry(location, 3), "Industria (nvl. III)", "cuackn`t", 8000),
-                        new FeatureItem(Textures.INDUSTRY_LVL4, location -> new Industry(location, 4), "Industria (nvl. IV)", "cuackn`t", 8000),
-                        new FeatureItem(Textures.INDUSTRY_LVL5, location -> new Industry(location, 5), "Industria (nvl. V)", "cuackn`t", 8000),
-                        new FeatureItem(Textures.PORT, Port::new, "Puerto", "Un puerto.", 8000)
+                        new FeatureItem(Textures.INDUSTRY_LVL1, location -> new Industry(location, 1), "Industria (nvl. I)", "Da trabajo a 6 patos.", 200),
+                        new FeatureItem(Textures.INDUSTRY_LVL2, location -> new Industry(location, 2), "Industria (nvl. II)", "Da trabajo a 9 patos.", 1100),
+                        new FeatureItem(Textures.INDUSTRY_LVL3, location -> new Industry(location, 3), "Industria (nvl. III)", "Da trabajo a 12 patos.", 2200),
+                        new FeatureItem(Textures.INDUSTRY_LVL4, location -> new Industry(location, 4), "Industria (nvl. IV)", "Da trabajo a 15 patos.", 3300),
+                        new FeatureItem(Textures.INDUSTRY_LVL5, location -> new Industry(location, 5), "Industria (nvl. V)", "Da trabajo a 21 patos.", 4400),
+                        new FeatureItem(Textures.PORT, Port::new, "Puerto", "Da trabajo a 50 patos. Se tiene que colocar en la costa.", 15000)
                 )
         ));
         this.put(Player.SERVICES_TAB, List.of(
                 Arrays.asList(
-                        new FeatureItem(Textures.HOSPITAL, Hospital::new, "Hospital", "Piiiiiiiii-", 8000),
-                        new FeatureItem(Textures.POLICE_STATION, PoliceStation::new, "Estación de Policía", "niiii noooo niiiii nooo niii nooo", 8000)
+                        new FeatureItem(Textures.HOSPITAL, Hospital::new, "Hospital", "Incrementa la salud de un máximo de 25 patos.", 10000),
+                        new FeatureItem(Textures.POLICE_STATION, PoliceStation::new, "Estación de Policía", "Comisaría para dar servicio a 10 patos.", 5000)
                 )
         ));
         this.put(Player.NATURE_TAB, Arrays.asList(
@@ -121,7 +115,10 @@ public class Player {
                 List.of(
                         new FeatureItem(Textures.ROCK, Rock::new, "Una piedra", null, 0))
         ));
-        this.put(Player.SPECIAL_TAB, new ArrayList<>());
+        this.put(Player.SPECIAL_TAB, List.of(
+                List.of(
+                        new FeatureItem(Textures.FOUNTAIN, Fountain::new, "La fuente", "Hace bonito.", 25000))
+        ));
 
     }};
 
@@ -129,81 +126,25 @@ public class Player {
         INCOMES_TEXT_BOX = new SmallTextBox(50, 14),
         POPULATION_TEXT_BOX = new SmallTextBox(50, 24),
         HAPPINESS_TEXT_BOX = new SmallTextBox(50, 34),
-        UNEMPLOYMENT_TEXT_BOX = new SmallTextBox(90, 4);
+        UNEMPLOYMENT_TEXT_BOX = new SmallTextBox(90, 4),
+        SECURITY_TEXT_BOX = new SmallTextBox(90, 14),
+        HEALTH_TEXT_BOX = new SmallTextBox(90, 24);
 
-    /**
-     * Inventario del jugador.
-     */
     private final Inventory INVENTORY = new Inventory();
-
-    /**
-     * Menú de pausa del jugador.
-     */
     private final Frame GAME_MENU = new Frame("Menu");
-
-    /**
-     * Menú de configuración.
-     */
     private final Frame CONFIG_MENU = new Frame("Config");
-
-    /**
-     * Menú de configuración de audio.
-     */
     private final Frame AUDIO_MENU = new Frame("Audio");
-
-    /**
-     * Menú de configuración de video.
-     */
     private final Frame VIDEO_MENU = new Frame("Video");
-
-    /**
-     * Mapa que almacena los slots correspondientes a cada item del inventario.
-     */
     private final HashMap<Item, SlotWidget> MENU_ITEMS_BY_SLOT = new HashMap<>();
-
-    /**
-     * Cámara del jugador.
-     */
-    private final Camera CAMERA = new Camera(new Vector2f(0, 0)); //Iniciamos la cámara en 0,0.
-
-    /**
-     * Almacena el contenedor que está utilizando el jugador.
-     */
+    private final Camera CAMERA = new Camera(new Vector2f(0, 0)); //Iniciamos la cámara en 0,0
     private Container container = this.INVENTORY;
-
-    /**
-     * Widget que muestra la fecha del mundo.
-     */
     private DateTimeTextBox timeTextBox;
-
-    /**
-     * Widget para cambiar la velocidad de juego.
-     */
     private AbstractButtonWidget gameSpeedButton;
-
-    /**
-     * Widget que indica que se está utilizando el bulldozer.
-     */
     private ScreenIndicatorWidget bulldozerIndicator;
-
-    /**
-     * Banderas del jugador, indican si está ocultando la interfaz, si está utilizando el bulldozer, si tiene el ratón
-     * sobre el inventario y si está en pausa.
-     */
     private boolean isHidingUI = false, isUsingBulldozer = false, isMouseOnInventory = false, isPaused = false;
-
-    /**
-     * Almacena la velocidad de juego anterior.
-     */
     private int previousGameSpeed = Main.tickSpeed;
-
-    /**
-     * Indica el item que está seleccionado para ser colocado.
-     */
     private Item selectedItem;
-
     private Tooltip tooltip = null;
-
     private LinkedHashSet<Location> terrainSelection = null;
 
     /**
@@ -282,14 +223,19 @@ public class Player {
         this.HAPPINESS_TEXT_BOX.setTooltip(new TextTooltip().addLine("Felicidad media de todos los patos", GameFont.PIXEL_CONTENT, Font.PLAIN, TextTooltip.CONTENT_TEXT_SIZE));
         this.INVENTORY.addWidgetToAllTabs(this.UNEMPLOYMENT_TEXT_BOX);
         this.UNEMPLOYMENT_TEXT_BOX.setTooltip(new TextTooltip().addLine("Índice de paro de la ciudad", GameFont.PIXEL_CONTENT, Font.PLAIN, TextTooltip.CONTENT_TEXT_SIZE));
+        this.INVENTORY.addWidgetToAllTabs(this.SECURITY_TEXT_BOX);
+        this.SECURITY_TEXT_BOX.setTooltip(new TextTooltip().addLine("Índice de seguridad de la ciudad", GameFont.PIXEL_CONTENT, Font.PLAIN, TextTooltip.CONTENT_TEXT_SIZE));
+        this.INVENTORY.addWidgetToAllTabs(this.HEALTH_TEXT_BOX);
+        this.HEALTH_TEXT_BOX.setTooltip(new TextTooltip().addLine("Índice de salud de la ciudad", GameFont.PIXEL_CONTENT, Font.PLAIN, TextTooltip.CONTENT_TEXT_SIZE));
 
-        this.INVENTORY.addWidgetToAllTabs(new SmallTextBox(90, 14));
-        this.INVENTORY.addWidgetToAllTabs(new SmallTextBox(90, 24));
+
         this.INVENTORY.addWidgetToAllTabs(new SmallTextBox(90, 34));
 
-        Player.ITEMS.keySet().forEach(tab -> this.addFeaturesWidgetToTab(130, tab));
+        for (Tab tab : Player.ITEMS.keySet()) {
+            this.addFeaturesWidgetToTab(130, tab);
+        }
 
-        this.INVENTORY.addWidget(new SlotWidget(800, 24, Textures.DUCK), Player.SPECIAL_TAB);
+        this.INVENTORY.addWidget(new SlotWidget(800, 24, Textures.DUCK_IDLE), Player.SPECIAL_TAB);
 
         this.INVENTORY.setCurrentTab(Player.GENERAL_TAB);
 
@@ -304,6 +250,8 @@ public class Player {
         this.updatePopulation(Main.world.getPopulation());
         this.updateHappiness(Main.world.getHappiness());
         this.updateUnemployment(Main.world.getUnemployment());
+        this.updateSecurity(Main.world.getSecurity());
+        this.updateHealth(Main.world.getHealth());
     }
 
     private void createGameMenu() {
@@ -315,10 +263,11 @@ public class Player {
         returnGameButton.setOnClickEvent(this::openInventory);
         this.GAME_MENU.addWidget(returnGameButton);
 
-        FrameButtonWidget openWorldButton = new FrameButtonWidget(8, layoutBuilder.nextTo(returnGameButton), "Abrir mundo");
-        this.GAME_MENU.addWidget(openWorldButton);
+        FrameButtonWidget newWorldButton = new FrameButtonWidget(8, layoutBuilder.nextTo(returnGameButton), "Nuevo mundo");
+        newWorldButton.setOnClickEvent(this::openNewWorld);
+        this.GAME_MENU.addWidget(newWorldButton);
 
-        FrameButtonWidget configButton = new FrameButtonWidget(8, layoutBuilder.nextTo(openWorldButton), "Configuracion");
+        FrameButtonWidget configButton = new FrameButtonWidget(8, layoutBuilder.nextTo(newWorldButton), "Configuracion");
         configButton.setOnClickEvent(this::openConfig);
         this.GAME_MENU.addWidget(configButton);
 
@@ -328,13 +277,35 @@ public class Player {
             worldFile.getParentFile().mkdirs();
             try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(worldFile))) {
                 outputStream.writeObject(Main.world);
-                outputStream.writeUTF(Main.world.getName());
+                outputStream.writeUTF("world.dat");
             } catch (IOException exception) {
                 Logger.sendMessage("Error guardando el mundo: %s.\n", Logger.LogMessageType.FATAL, exception.getMessage());
             }
             GLFW.glfwSetWindowShouldClose(Window.window, true);
         });
         this.GAME_MENU.addWidget(leaveGameButton);
+    }
+
+    private void openNewWorld() {
+        Main.world = new World(new Random().nextInt(100000000), 100);
+
+        for (Terrain.TerrainType terrainType : Terrain.TerrainType.values()) {
+            terrainType.updateMesh();
+        }
+
+        for (Feature.FeatureType featureType : Feature.FeatureType.values()) {
+            featureType.updateMesh();
+        }
+
+        this.updateMoney(Main.world.getMoney());
+        this.updateIncomes(Main.world.getIncomes());
+        this.updatePopulation(Main.world.getPopulation());
+        this.updateHappiness(Main.world.getHappiness());
+        this.updateUnemployment(Main.world.getUnemployment());
+        this.updateSecurity(Main.world.getSecurity());
+        this.updateHealth(Main.world.getHealth());
+
+        Window.currentScene.init();
     }
 
     private void createConfigMenu() {
@@ -414,11 +385,6 @@ public class Player {
         this.AUDIO_MENU.addWidget(soundEffectsSlider);
     }
 
-    /**
-     * Añade el widget del bulldozer al inventario.
-     * @param posX Posición en el eje X del inventario donde se va a colocar el botón del bulldozer.
-     * @param tab Pestaña donde se colocará el botón.
-     */
     private void addBulldozerToInventory(int posX, Tab tab) {
         this.INVENTORY.addWidget(new SeparatorWidget(posX, 0), tab);
 
@@ -433,11 +399,6 @@ public class Player {
         this.INVENTORY.addWidget(bulldozerButton, tab);
     }
 
-    /**
-     * Añade los items de las features a la pestaña correspondiente.
-     * @param widgetXPos Posición en el eje X del inventario donde se quieren colocar los items.
-     * @param tab Pestaña donde se van a colocar los items.
-     */
     private void addFeaturesWidgetToTab(int widgetXPos, Tab tab) {
         final int SLOT_SEPARATION = 20, WIDGET_POS_TOP = 4, WIDGET_POS_BOTTOM = 24;
 
@@ -478,7 +439,9 @@ public class Player {
                     this.INVENTORY.removeWidget(this.bulldozerIndicator);
                     this.isUsingBulldozer = false;
 
-                    this.MENU_ITEMS_BY_SLOT.values().forEach(itemWidget -> itemWidget.setSelected(false));
+                    for (SlotWidget itemWidget : this.MENU_ITEMS_BY_SLOT.values()) {
+                        itemWidget.setSelected(false);
+                    }
                     slotWidget.setSelected(true);
 
 
@@ -488,7 +451,7 @@ public class Player {
                         this.selectedItem = null;
                         slotWidget.setSelected(false);
                     });
-                    this.INVENTORY.addWidget(screenIndicatorWidget, tab);
+                    this.INVENTORY.addWidgetToAllTabs(screenIndicatorWidget);
 
                     this.selectedItem = item;
                 });
@@ -545,7 +508,11 @@ public class Player {
             });
             this.INVENTORY.addWidgetToAllTabs(this.bulldozerIndicator);
 
-            this.MENU_ITEMS_BY_SLOT.values().stream().filter(SlotWidget::isSelected).forEach(slotWidget -> slotWidget.setSelected(false));
+            for (SlotWidget slotWidget : this.MENU_ITEMS_BY_SLOT.values()) {
+                if (slotWidget.isSelected()) {
+                    slotWidget.setSelected(false);
+                }
+            }
         } else {
             this.INVENTORY.removeWidget(this.bulldozerIndicator);
         }
@@ -563,6 +530,15 @@ public class Player {
         return null;
     }
 
+    /**
+     * Crea un terreno seleccionado en la ubicación especificada. Si la ubicación está fuera del mundo,
+     * devuelve `null`. Si el ítem seleccionado no es nulo y es una instancia de `TerrainItem`, crea y
+     * devuelve un nuevo terreno utilizando el tipo de terreno del ítem, junto con las características
+     * del terreno actual en la ubicación especificada.
+     *
+     * @param location La ubicación donde se desea crear el terreno.
+     * @return El terreno creado, o `null` si la ubicación está fuera del mundo o si no hay un ítem de terreno seleccionado.
+     */
     public Terrain createSelectedTerrain(Location location) {
         if (location.isOutOfTheWorld()) return null;
         if (this.selectedItem != null && this.selectedItem instanceof TerrainItem terrainItem) {
@@ -588,6 +564,11 @@ public class Player {
         this.timeTextBox.updateDateTime(date, time);
     }
 
+    /**
+     * Actualiza el texto del cuadro de texto del dinero con el valor proporcionado y el color del texto.
+     *
+     * @param money El valor del dinero a mostrar.
+     */
     public void updateMoney(int money) {
         this.MONEY_TEXT_BOX.setText(
                 money + "€",
@@ -596,6 +577,11 @@ public class Player {
         );
     }
 
+    /**
+     * Actualiza el texto del cuadro de texto de ingresos con el valor proporcionado y el color del texto.
+     *
+     * @param incomes El valor de los ingresos a mostrar.
+     */
     public void updateIncomes(int incomes) {
         this.INCOMES_TEXT_BOX.setText(
                 (incomes > 0?"+":"") +incomes + "€/dia",
@@ -604,10 +590,20 @@ public class Player {
         );
     }
 
+    /**
+     * Actualiza el texto del cuadro de texto de población con el valor proporcionado.
+     *
+     * @param population El número de población a mostrar.
+     */
     public void updatePopulation(int population) {
         this.POPULATION_TEXT_BOX.setText(population +" patos", Font.PLAIN);
     }
 
+    /**
+     * Actualiza el texto del cuadro de texto de felicidad con el valor proporcionado y el color del texto.
+     *
+     * @param happiness El valor de la felicidad a mostrar (entre 0 y 1).
+     */
     public void updateHappiness(float happiness) {
         Color color = Colors.RED;
 
@@ -626,6 +622,11 @@ public class Player {
         );
     }
 
+    /**
+     * Actualiza el texto del cuadro de texto de desempleo con el valor proporcionado y el color del texto.
+     *
+     * @param unemployment El valor de desempleo a mostrar (entre 0 y 1).
+     */
     public void updateUnemployment(float unemployment) {
         Color color = Colors.GREEN;
 
@@ -639,6 +640,52 @@ public class Player {
 
         this.UNEMPLOYMENT_TEXT_BOX.setText(
                 (int) (unemployment *100) + "%",
+                Font.PLAIN,
+                color
+        );
+    }
+
+    /**
+     * Actualiza el texto del cuadro de texto de seguridad con el valor proporcionado y el color del texto.
+     *
+     * @param security El valor de seguridad a mostrar (entre 0 y 1).
+     */
+    public void updateSecurity(float security) {
+        Color color = Colors.RED;
+
+        if (security > .5f) {
+            color = Colors.ORANGE;
+
+            if (security > .75f) {
+                color = Colors.GREEN;
+            }
+        }
+
+        this.SECURITY_TEXT_BOX.setText(
+                (int) (security *100) + "%",
+                Font.PLAIN,
+                color
+        );
+    }
+
+    /**
+     * Actualiza el texto del cuadro de texto de salud con el valor proporcionado y el color del texto.
+     *
+     * @param health El valor de salud a mostrar (entre 0 y 1).
+     */
+    public void updateHealth(float health) {
+        Color color = Colors.RED;
+
+        if (health > .5f) {
+            color = Colors.ORANGE;
+
+            if (health > .75f) {
+                color = Colors.GREEN;
+            }
+        }
+
+        this.HEALTH_TEXT_BOX.setText(
+                (int) (health *100) + "%",
                 Font.PLAIN,
                 color
         );
@@ -760,6 +807,16 @@ public class Player {
         return false;
     }
 
+    /**
+     * Intenta colocar el ítem seleccionado en el juego. Dependiendo del tipo de ítem seleccionado
+     * (ya sea un ítem de característica o un ítem de terreno), realiza las acciones correspondientes.
+     * Para los ítems de característica, intenta crear la característica seleccionada y la agrega al mundo
+     * si cumple con las condiciones específicas y si el jugador tiene suficiente dinero. Para los ítems de
+     * terreno, intenta cambiar el tipo de terreno en las ubicaciones seleccionadas, actualizando el mundo
+     * en consecuencia.
+     *
+     * @return true si se pudo colocar el ítem seleccionado correctamente; de lo contrario, false.
+     */
     public boolean placeSelectedItem() {
         if (this.selectedItem instanceof FeatureItem featureItem) {
             Feature selectedFeature = this.createSelectedFeature();
@@ -786,7 +843,7 @@ public class Player {
             LinkedHashSet<Terrain.TerrainType> terrainTypesToUpdate = new LinkedHashSet<>();
             terrainTypesToUpdate.add(((TerrainItem) this.selectedItem).getTerrainToPlace());
 
-            this.terrainSelection.forEach(location -> {
+            for (Location location : this.terrainSelection) {
                 Terrain.TerrainType oldTerrainType = location.getTerrain().getType();
                 terrainTypesToUpdate.add(oldTerrainType);
 
@@ -821,9 +878,11 @@ public class Player {
                         )));
                     }
                 }
-            });
+            }
 
-            terrainTypesToUpdate.forEach(Terrain.TerrainType::updateMesh);
+            for (Terrain.TerrainType terrainType : terrainTypesToUpdate) {
+                terrainType.updateMesh();
+            }
             System.gc();
 
             SoundEffect.WORLD_EFFECT_PLACE_TERRAIN.play(SoundCategory.SOUND_EFFECTS);
@@ -834,23 +893,50 @@ public class Player {
         return false;
     }
 
+    /**
+     * Devuelve el tooltip asociado a este objeto.
+     *
+     * @return El tooltip asociado a este objeto.
+     */
     public Tooltip getTooltip() {
         return tooltip;
     }
 
+    /**
+     * Establece el tooltip asociado a este objeto.
+     *
+     * @param tooltip El tooltip que se establecerá.
+     */
     public void setTooltip(Tooltip tooltip) {
         this.tooltip = tooltip;
     }
 
+    /**
+     * Indica si se está seleccionando terreno actualmente.
+     *
+     * @return true si se está seleccionando terreno; false de lo contrario.
+     */
     public boolean isSelectingTerrain() {
         return this.terrainSelection != null;
     }
 
+    /**
+     * Obtiene una copia de las ubicaciones seleccionadas de terreno.
+     *
+     * @return Una copia de las ubicaciones seleccionadas de terreno; null si no hay ninguna selección.
+     */
     public LinkedHashSet<Location> getTerrainSelection() {
         if (!this.isSelectingTerrain()) return null;
         return new LinkedHashSet<>(this.terrainSelection);
     }
 
+    /**
+     * Agrega una ubicación a la selección de terreno, si el ítem seleccionado es un TerrainItem y la ubicación
+     * seleccionada no coincide con el tipo de terreno del ítem. También reproduce un efecto de sonido al agregar
+     * la ubicación.
+     *
+     * @param location La ubicación que se va a agregar a la selección de terreno.
+     */
     public void addToTerrainSelection(Location location) {
         if (!((TerrainItem) this.selectedItem).getTerrainToPlace().equals(location.getTerrain().getType())) {
             if (!this.isSelectingTerrain()) this.terrainSelection = new LinkedHashSet<>();
@@ -861,15 +947,25 @@ public class Player {
         }
     }
 
+    /**
+     * Elimina la selección actual de terrenos, si la hay. Esto borra todas las ubicaciones
+     * seleccionadas y establece la selección de terrenos a null.
+     */
     public void removeTerrainSelection() {
         this.terrainSelection.clear();
 
         this.terrainSelection = null;
     }
 
+    /**
+     * Realiza acciones específicas en cada tick del juego. Si actualmente se está seleccionando terreno,
+     * agrega partículas de cursor a cada ubicación seleccionada en el mundo para visualización.
+     */
     public void onTick() {
         if (this.isSelectingTerrain()) {
-            this.getTerrainSelection().forEach(location -> Main.world.addParticle(new CursorParticle(location)));
+            for (Location location : this.getTerrainSelection()) {
+                Main.world.addParticle(new CursorParticle(location));
+            }
         }
     }
 }

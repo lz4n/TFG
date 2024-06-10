@@ -13,27 +13,14 @@ import utils.render.texture.Texture;
  * @see ui.container.Frame
  */
 public abstract class Widget {
-
-    /**
-     * Posición del widget en coordendas in-game, generalmente con el orgien de coordenadas que tenga el contenedor que lo conteiene.
-     */
     private float posX, posY;
 
     /**
      * Indica si el ratón está sobre el widget.
      */
     protected boolean isHovered = false;
-
-    /**
-     * BoundingBox del widget, es el área que ocupa el widget, donde se puede clicar.
-     */
     private BoundingBox boundingBox;
-
-    /**
-     * Eventos de clic y hover.
-     */
     private WidgetEvent onClickEvent = () -> {}, onHoverEvent = () -> {};
-
     private Tooltip tooltip = null;
 
     /**
@@ -142,10 +129,20 @@ public abstract class Widget {
         this.onClickEvent.widgetEvent();
     }
 
+    /**
+     * Obtiene el tooltip asociado a este componente.
+     *
+     * @return El objeto Tooltip asociado a este componente.
+     */
     public Tooltip getTooltip() {
         return tooltip;
     }
 
+    /**
+     * Establece el tooltip para este componente.
+     *
+     * @param tooltip El tooltip que se desea establecer.
+     */
     public void setTooltip(Tooltip tooltip) {
         this.tooltip = tooltip;
     }

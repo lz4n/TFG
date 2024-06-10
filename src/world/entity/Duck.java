@@ -8,7 +8,6 @@ import ui.tooltip.Tooltip;
 import utils.BoundingBox;
 import utils.render.GameFont;
 import utils.render.scene.WorldScene;
-import utils.render.texture.Colors;
 import utils.render.texture.Texture;
 import utils.render.texture.Textures;
 import world.World;
@@ -25,27 +24,21 @@ import java.util.*;
 import java.util.List;
 
 /**
- * Las entidades son elementos móviles del juego con los que el jugador puede interactuar (en jugador no puede interactuar
+ * Las entidades son elementos móviles del juego con los que el jugador puede interactuar (el jugador no puede interactuar
  * con las partículas).
  * @see world.particle.Particle
  */
-
-//TODO: Sistema para detectar clic a las entidades.
 public class Duck implements Serializable {
-    public static final float NO_FLIP = 0, FLIP_HORIZONTAL = 1, FLIP_VERTICAL = 2, FLIP_BOTH = 3;
+
+    public static final float NO_FLIP = 0, FLIP_HORIZONTAL = 1;
+
     private static final int SQUAWKING_TIME = 50;
-    /*{"8:30", "17:30", "22:00"},
-          {"15:20", "21:20", "05:00"},
-          {"23:40", "06:30", "12:20"}*/
-    private final static int[][] SCHEDULE = new int[][]{ //Hará referencia a los horarios de los patos. HORA ENTRADA TRABAJO || HORA SALIDA TRABAJO || HORA IRSE A DORMIR
+    private final static int[][] SCHEDULE = new int[][]{
              {World.hourToTick(8, 30), World.hourToTick(17, 30), World.hourToTick(22, 0)},
              {World.hourToTick(15, 20), World.hourToTick(21,20), World.hourToTick(5, 0)},
              {World.hourToTick(0, 40), World.hourToTick(6, 30), World.hourToTick(12, 20)}
     };
 
-    /**
-     * Posición donde se encuentra la entidad.
-     */
     private Location location;
     private float flip = Duck.NO_FLIP;
     private List<Location> pathfinding;
@@ -59,6 +52,9 @@ public class Duck implements Serializable {
     private transient boolean isSelected = false;
     private BoundingBox boundingBox = new BoundingBox(-2, -2, 18, 18).divide(WorldScene.SPRITE_SIZE);
     private TextTooltip tooltip = null;
+    private float happiness = 1;
+    private int taxes = 0;
+    private DuckVariant duckVariant = DuckVariant.getRandomVariant();
 
 
     /**
@@ -76,7 +72,7 @@ public class Duck implements Serializable {
         this.boundingBox.move(location.getX(), location.getY());
     }
 
-    public boolean nextPath() {
+    private boolean nextPath() {
         if (this.pathfinding == null) return false;
         if (this.pathIndex >= this.pathfinding.size()) return true;
 
@@ -87,7 +83,7 @@ public class Duck implements Serializable {
 
         this.moveTo(
                 this.getLocation()
-                        .add(new Vector2f(direction).mul(Main.RANDOM.nextFloat(.02f, .07f) +(this.getLocation().getTerrain().getType().equals(Terrain.TerrainType.WATER) ? .02f : 0)).mul(Main.tickSpeed))
+                        .add(new Vector2f(direction).mul(Main.RANDOM.nextFloat(.01f, .04f) +(this.getLocation().getTerrain().getType().equals(Terrain.TerrainType.WATER) ? .02f : 0)).mul(Main.tickSpeed))
         );
 
         if (direction.x() > 0) {
@@ -104,7 +100,9 @@ public class Duck implements Serializable {
     }
 
     /**
-     * Mueve la entidad.
+     * Mueve la entidad hacia una ubicación especificada.
+     *
+     * @param destination La ubicación a la que se moverá la entidad.
      */
     public void moveTo(Location destination) {
         float movementX = destination.getX() - this.location.getX(), movementY = destination.getY() - this.location.getY();
@@ -120,6 +118,26 @@ public class Duck implements Serializable {
         return this.location.clone();
     }
 
+    /**
+     * Obtiene el tipo de terreno bajo la entidad.
+     *
+     * @return El tipo de terreno bajo la entidad.
+     */
+    public Terrain.TerrainType getTerrainTypeUnder() {
+        Location location =  this.getLocation().add(.5f);
+
+        if (location.isOutOfTheWorld()) {
+            return Terrain.TerrainType.GRASS;
+        }
+
+        return location.getTerrain().getType();
+    }
+
+    /**
+     * Obtiene un iterador sobre la lista de ubicaciones de la ruta de búsqueda.
+     *
+     * @return Un iterador sobre la lista de ubicaciones de la ruta de búsqueda.
+     */
     public ListIterator<Location> getPathfinding() {
         if (this.pathfinding == null) {
             return Collections.emptyListIterator();
@@ -128,14 +146,30 @@ public class Duck implements Serializable {
         return this.pathfinding.listIterator();
     }
 
+    /**
+     * Obtiene el índice actual de la ruta de búsqueda.
+     *
+     * @return El índice actual de la ruta de búsqueda.
+     */
     public int getPathIndex() {
         return this.pathIndex;
     }
 
+    /**
+     * Obtiene el estado de volteo actual.
+     *
+     * @return El estado de volteo actual.
+     */
     public float getFlip() {
         return this.flip;
     }
 
+    /**
+     * Establece el sitio de trabajo para el pato.
+     *
+     * @param jobSite El sitio de trabajo que se va a establecer.
+     * @return true si el pato fue asignado correctamente al sitio de trabajo, false de lo contrario.
+     */
     public boolean setJobSite(JobSite jobSite) {
         if (jobSite.addWorker(this)) {
             if (this.jobSite != null) {
@@ -152,6 +186,11 @@ public class Duck implements Serializable {
         return false;
     }
 
+    /**
+     * Remueve el sitio de trabajo asignado al pato, si tiene alguno. Esto implica retirar al pato
+     * de la lista de trabajadores del sitio de trabajo y luego establecer el sitio de trabajo como nulo.
+     * Además, actualiza la situación de desempleo en el mundo.
+     */
     public void removeJobSite() {
         if (this.jobSite == null) {
             return;
@@ -163,29 +202,42 @@ public class Duck implements Serializable {
         Main.world.updateUnemployment();
     }
 
-    public Texture getTexture() {
-        if (this.getLocation().getTerrain().getType().equals(Terrain.TerrainType.WATER)) {
+    /**
+     * Obtiene la textura de superposición del pato, dependiendo del tipo de terreno bajo sus pies.
+     * Si el pato está sobre agua, devuelve la textura de natación del pato. En otro caso, devuelve
+     * la textura correspondiente a la animación actual del pato.
+     *
+     * @return La textura de superposición del pato.
+     */
+    public Texture getOverlay() {
+        if (this.getTerrainTypeUnder().equals(Terrain.TerrainType.WATER)) {
             return Textures.DUCK_SWIMMING;
         }
 
         return this.currentAnimation.TEXTURE;
     }
 
-    public void onRemove() {
-        this.removeJobSite();
+    /**
+     * Obtiene la textura corporal del pato, que está determinada por la variante del pato.
+     *
+     * @return La textura corporal del pato.
+     */
+    public Texture getBodyTexture() {
+        return this.duckVariant.TEXTURE;
     }
 
-    public void onAdd() {
-    }
-
-    //TODO: Ia de los patos.
+    /**
+     * Realiza las acciones del pato en cada tic de juego. Dependiendo de las condiciones,
+     * el pato puede cambiar su animación entre caminar, graznar o estar quieto, así como
+     * realizar acciones específicas si está sobre el agua.
+     */
     public void onTick() {
         if (this.pathfinding == null) {
             if (this.squawkingTime > 0) {
                 this.squawkingTime--;
                 this.currentAnimation = Animation.SQUAWKING;
             } else {
-                if (Main.RANDOM.nextFloat() > 0.3) {
+                if (Main.RANDOM.nextFloat() > 0.2) {
                     if (Main.RANDOM.nextFloat() > 0.55) {
                         this.currentAnimation = Animation.SQUAWKING;
                         this.squawkingTime = Duck.SQUAWKING_TIME;
@@ -207,13 +259,21 @@ public class Duck implements Serializable {
             }
         }
 
-        if (this.location.getTerrain().getType().equals(Terrain.TerrainType.WATER) && Main.RANDOM.nextFloat() > 0.8) {
+        if (this.getTerrainTypeUnder().equals(Terrain.TerrainType.WATER) && Main.RANDOM.nextFloat() > 0.8) {
             Main.world.addParticle(
                     new SplashParticle(this.getLocation().add(Main.RANDOM.nextFloat(this.boundingBox.getWidth() /2f), -.4f))
             );
         }
     }
 
+    /**
+     * Busca un trabajo para el pato si actualmente está desempleado. Itera sobre todos los edificios
+     * del mundo, ordenados por la distancia desde la ubicación del pato, y asigna el primer trabajo
+     * disponible que esté dentro de un radio de 100 unidades y que el pato pueda aceptar.
+     *
+     * @see Building
+     * @see JobSite
+     */
     public void findJob() {
         if (!this.isUnemployed()) {
             return;
@@ -226,9 +286,12 @@ public class Duck implements Serializable {
         }
     }
 
+    /**
+     * Establece el estado actual del pato basado en la hora del día y su situación laboral.
+     * Dependiendo de la hora del día y si el pato tiene un sitio de trabajo asignado, el estado se
+     * establecerá como trabajo, tiempo libre o en casa.
+     */
     private void setState() {
-        System.out.println(Arrays.deepToString(Duck.SCHEDULE));
-
         if (Main.world.getDayTime() >= Duck.SCHEDULE[this.scheduleIndex][0] && Main.world.getDayTime() < Duck.SCHEDULE[this.scheduleIndex][1]) {
             if (this.jobSite == null) {
                 this.state = ActivityType.IN_FREETIME;
@@ -246,8 +309,6 @@ public class Duck implements Serializable {
         if (Main.world.getDayTime() >= Duck.SCHEDULE[this.scheduleIndex][2]) {
             this.state = ActivityType.IN_HOUSE;
         }
-
-        System.out.println(this.state);
     }
 
     private void doPathfinding() {
@@ -255,8 +316,13 @@ public class Duck implements Serializable {
             this.findJob();
         }
 
+        this.updateHappiness();
+
         this.setState();
-        this.updateTooltip();
+
+        if (this.isSelected) {
+            this.updateTooltip();
+        }
 
         Location destination = this.location;
 
@@ -281,11 +347,30 @@ public class Duck implements Serializable {
         this.pathIndex = 0;
     }
 
+    private void updateHappiness() {
+        this.happiness =
+                .2f *Main.world.getHealth()
+                +.2f *Main.world.getSecurity()
+                +.4f *(1 -Main.world.getUnemployment())
+                +.2f *(this.isUnemployed() ? 0 : 1);
+
+        Main.world.updateHappiness();
+    }
+
     private void updateTooltip() {
+        if (this.tooltip != null) {
+            this.tooltip.remove();
+        }
+
         this.tooltip = new TextTooltip();
 
-        this.tooltip.addLine(this.state.toString(), GameFont.PIXEL_CONTENT, Font.PLAIN, TextTooltip.CONTENT_TEXT_SIZE);
-        this.tooltip.addLine("Horario: " +this.scheduleIndex, GameFont.PIXEL_CONTENT, Font.PLAIN, TextTooltip.CONTENT_TEXT_SIZE);
+        this.tooltip.addLine(String.format("""
+                %s
+                %s
+                Felicidad: %d%%
+                
+                Impuestos: %d€
+                """, this.state.DESCRIPTION, this.isUnemployed() ? "Desempleado" : "Con trabajo", (int) (this.happiness *100), this.taxes), GameFont.PIXEL_CONTENT, Font.PLAIN, TextTooltip.CONTENT_TEXT_SIZE);
     }
 
     private void onSelected() {
@@ -296,10 +381,21 @@ public class Duck implements Serializable {
         this.tooltip = null;
     }
 
+    /**
+     * Devuelve si el pato está seleccionado.
+     *
+     * @return true si el pato está seleccionado, false de lo contrario.
+     */
     public boolean isSelected() {
         return this.isSelected;
     }
 
+    /**
+     * Establece si el pato está seleccionado. Llama a los métodos correspondientes
+     * {@link #onSelected()} o {@link #onUnselected()} dependiendo del cambio de estado.
+     *
+     * @param selected true para seleccionar el pato, false para deseleccionarlo.
+     */
     public void setSelected(boolean selected) {
         if (!this.isSelected && selected) {
             this.onSelected();
@@ -310,30 +406,79 @@ public class Duck implements Serializable {
         this.isSelected = selected;
     }
 
+    /**
+     * Devuelve el cuadro delimitador (bounding box) del pato, clonado para evitar modificaciones
+     * accidentales.
+     *
+     * @return El cuadro delimitador clonado del pato.
+     */
     public BoundingBox getBoundingBox() {
         return this.boundingBox.clone();
     }
 
+    /**
+     * Determina si el pato está desempleado, es decir, si no tiene un sitio de trabajo asignado.
+     *
+     * @return true si el pato está desempleado, false de lo contrario.
+     */
     public boolean isUnemployed() {
         return this.jobSite == null;
     }
 
-    public JobSite getJobSite() {
-        return this.jobSite;
+    /**
+     * Obtiene el nivel de felicidad actual del pato.
+     *
+     * @return El nivel de felicidad del pato.
+     */
+    public float getHappiness() {
+        return this.happiness;
     }
 
+    /**
+     * Calcula los impuestos que debe pagar el pato en función de su felicidad.
+     *
+     * @return Los impuestos que debe pagar el pato.
+     */
+    public int getTaxes() {
+        this.taxes = (int) Math.ceil(25 *this.getHappiness());
+
+        if (this.isUnemployed()) {
+            return -20;
+        }
+
+        return this.taxes;
+    }
+
+    /**
+     * Obtiene el tooltip asociado al pato.
+     *
+     * @return El tooltip asociado al pato.
+     */
     public Tooltip getTooltip() {
         return this.tooltip;
     }
 
+    /**
+     * Enumeración que representa los tipos de actividad del pato.
+     */
     private enum ActivityType {
-        IN_HOUSE,
-        WORK,
-        IN_FREETIME;
+        IN_HOUSE("En casa."),
+        WORK("Trabajado"),
+        IN_FREETIME("Pasando el rato.");
+
+        private final String DESCRIPTION;
+
+
+        ActivityType(String description) {
+            this.DESCRIPTION = description;
+        }
     }
 
+    /**
+     * Enumeración que representa las animaciones del pato.
+     */
     public enum Animation {
-        IDLE(Textures.DUCK),
+        IDLE(Textures.DUCK_IDLE),
         WALKING(Textures.DUCK_WALKING),
         SQUAWKING(Textures.DUCK_SQUAWKING);
 
@@ -341,6 +486,26 @@ public class Duck implements Serializable {
 
         Animation(Texture texture) {
             this.TEXTURE = texture;
+        }
+    }
+
+    /**
+     * Enumeración que representa las variantes posibles del pato.
+     */
+    public enum DuckVariant {
+        GREEN(Textures.DUCK_BODY_GREEN),
+        YELLOW(Textures.DUCK_BODY_YELLOW),
+        BLACK(Textures.DUCK_BODY_BLACK),
+        WHITE(Textures.DUCK_BODY_WHITE);
+
+        private final Texture TEXTURE;
+
+        DuckVariant(Texture texture) {
+            this.TEXTURE = texture;
+        }
+
+        private static DuckVariant getRandomVariant() {
+            return DuckVariant.values()[Main.RANDOM.nextInt(DuckVariant.values().length)];
         }
     }
 }

@@ -46,10 +46,15 @@ public final class Textures {
         INDUSTRY_LVL5 = new StaticTexture("assets/textures/feature/building/job_site/industry/industry_lvl5.png"),
         HOSPITAL = new StaticTexture("assets/textures/feature/building/service/hospital.png"),
         POLICE_STATION = new StaticTexture("assets/textures/feature/building/service/police_station.png"),
+        FOUNTAIN = new StaticTexture("assets/textures/feature/building/service/fountain.png"),
 
 
         /** ENTITIES **/
-        DUCK = new AnimatedTexture("assets/textures/entity/duck", 2, 30),
+        DUCK_BODY_GREEN = new StaticTexture("assets/textures/entity/body/green.png"),
+        DUCK_BODY_YELLOW = new StaticTexture("assets/textures/entity/body/yellow.png"),
+        DUCK_BODY_BLACK = new StaticTexture("assets/textures/entity/body/black.png"),
+        DUCK_BODY_WHITE = new StaticTexture("assets/textures/entity/body/white.png"),
+        DUCK_IDLE = new AnimatedTexture("assets/textures/entity/duck", 2, 30),
         DUCK_WALKING = new AnimatedTexture("assets/textures/entity/duck_walking", 2, 10),
         DUCK_SQUAWKING = new AnimatedTexture("assets/textures/entity/duck_squawking", 2, 25),
         DUCK_SWIMMING = new StaticTexture("assets/textures/entity/duck_swimming.png"),

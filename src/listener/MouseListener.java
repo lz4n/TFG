@@ -18,28 +18,20 @@ import world.location.Location;
  * @author Izan
  */
 public class MouseListener {
-    /**
-     * Posiciones actuales y anteriores del ratón.
-     */
+
     private static double posX, posY, lastX, lastY;
-
-    /**
-     * Almacena si los botones del ratón están siendo pulsados o no. Cada índice es un botón.
-     */
     private static boolean[] isMouseButtonPressed = new boolean[3];
-
-    /**
-     * Almacena si se está arrastrando (mover y mantener click) el ratón.
-     */
     private static boolean isDragging;
-
-    /**
-     * Posición del ratón dentro del juego.
-     */
     private static Location inGameLocation = new Location(0, 0);
 
     /**
-     * Actualiza la posición del ratón dentro del juego y actualiza el selector.
+     * Actualiza la ubicación en el juego del cursor del ratón según su posición actual en la pantalla.
+     * @param posX la posición X del cursor en la pantalla.
+     * @param posY la posición Y del cursor en la pantalla.
+     * @param windowWidth el ancho de la ventana.
+     * @param windowHeight la altura de la ventana.
+     * @param camera la cámara que se utiliza para obtener las matrices de proyección y vista.
+     * @param spriteSize el tamaño del sprite en la escena del mundo.
      */
     public static void updateInGameLocationMousePosition() {
         //Calculamos las coordenadas normalizadas del cursor en pantalla (de -1 a 1)
@@ -166,40 +158,36 @@ public class MouseListener {
         }
     }
 
-    /**
-     * Establece si un botón del ratón está siendo pulsado o no.
-     * @param button Botón del cuál se quiere actualizar su estado.
-     * @param isPressed Estado del botón.
-     */
     private static void setIsMouseButtonPressed(int button, boolean isPressed) {
         if (button < MouseListener.isMouseButtonPressed.length) {
             MouseListener.isMouseButtonPressed[button] = isPressed;
         }
     }
 
+    /**
+     * Verifica si un botón del ratón está presionado.
+     *
+     * @param button el índice del botón del ratón a verificar.
+     * @return true si el botón del ratón especificado está presionado, false en caso contrario.
+     */
     public static boolean isMouseButtonPressed(int button) {
         return MouseListener.isMouseButtonPressed[button];
     }
 
     /**
-     * @return Desplazamiento en el eje X del ratón.
+     * Obtiene la ubicación del cursor del ratón en el juego.
+     *
+     * @return una copia de la ubicación en el juego del cursor del ratón.
      */
-    public static double getDx() {
-        return MouseListener.lastX - MouseListener.posX;
-    }
-
-    /**
-     * Desplazamiento en el eje Y del ratón.
-     * @return
-     */
-    public static double getDy() {
-        return MouseListener.lastY - MouseListener.posY;
-    }
-
     public static Location getInGameLocation() {
         return MouseListener.inGameLocation.clone();
     }
 
+    /**
+     * Obtiene la ubicación del cursor del ratón en la pantalla.
+     *
+     * @return una nueva instancia de Location con la posición del cursor del ratón en la pantalla.
+     */
     public static Location getInScreenLocation() {
         return new Location((float) MouseListener.posX, (float) MouseListener.posY);
     }

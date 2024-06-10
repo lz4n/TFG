@@ -10,6 +10,7 @@ import world.terrain.Terrain;
  * Feature que representa una flor.
  */
 public class Flower extends Feature {
+
     /**
      * @param location Posición donde se va a generar la feature.
      * @param variant Variante de la feature.

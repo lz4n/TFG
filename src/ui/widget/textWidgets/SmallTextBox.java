@@ -17,31 +17,11 @@ import java.awt.*;
  * Una caja de texto pequeña.
  */
 public class SmallTextBox extends Widget implements CustomDrawWidget, OnResizeWindowEvent {
-    /**
-     * BoundingBox base del widget, cuando se instancia se duplica y se mueve a la posición del widget.
-     */
     private final static BoundingBox BASE_BOUNDING_BOX = new BoundingBox(36, 6);
-
-    /**
-     * Tamaño del texto por pixel in-game.
-     */
     private final static int TEXT_SIZE = 4;
-
-    /**
-     * Textura que contiene el texto.
-     */
     private Graphics2dTexture textTexture;
-
-    /**
-     * Texto que se está mostrando.
-     */
     private String text;
-
-    /**
-     * Estilo del texto.
-     */
     private int style;
-
     private Color color;
 
     /**
@@ -69,6 +49,13 @@ public class SmallTextBox extends Widget implements CustomDrawWidget, OnResizeWi
         }
     }
 
+    /**
+     * Establece el texto, estilo y color del cuadro de texto.
+     *
+     * @param text  Texto que se mostrará en el cuadro de texto.
+     * @param style Estilo de la fuente para el texto.
+     * @param color Color del texto.
+     */
     public void setText(String text, int style, Color color) {
         this.text = text;
         this.style = style;
@@ -95,6 +82,12 @@ public class SmallTextBox extends Widget implements CustomDrawWidget, OnResizeWi
         this.textTexture.convert();
     }
 
+    /**
+     * Establece el texto y estilo del cuadro de texto, utilizando el color blanco por defecto.
+     *
+     * @param text  Texto que se mostrará en el cuadro de texto.
+     * @param style Estilo de la fuente para el texto.
+     */
     public void setText(String text, int style) {
         this.setText(text, style, Color.WHITE);
     }

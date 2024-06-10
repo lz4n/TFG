@@ -10,6 +10,7 @@ import world.terrain.Terrain;
  * Feature que representa una piedra.
  */
 public class Rock extends Feature {
+
     /**
      * @param location Donde se va a generar la feature.
      */

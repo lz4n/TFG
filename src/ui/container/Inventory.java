@@ -24,60 +24,22 @@ public class Inventory extends Container {
      * Píxeles in-game entre widgets.
      */
     public static final int WIDGET_SPACING = 4;
-
-
-    /**
-     * Altura del inventario, en unidades in-game, no píxeles de pantalla.
-     */
     private float height;
-
-    /**
-     * Posición del inventario en el eje Y. El origen es la parte superior del inventario, por lo que de ahí para arriba
-     * serían coordenadas negativas. El eje X se origina a la izquierda de la ventana.
-     */
     private float posY;
-
-    /**
-     * Posición del scroll en el eje X.
-     */
     private float currentScrollPosX = 0;
-
-    /**
-     * Indica si se están mostrando las felchas de scroll a la derecha e izquierda.
-     */
     private boolean isShowingLeftArrow, isShowingRightArrow;
-
-    /**
-     * Indican el tiempo que están clicadas (solo graficamente, para facilitar que el usuario se de cuenta; si no, se
-     * vería muy poco tiempo) las felcas de scroll cuando se hace clic que tienen las flechas de scroll, -1 si no están sindo clicadas.
-     */
     private int clickTimeLeftArrow = -1, clickTimeRightArrow = -1;
-
-    /**
-     * Indican si el ratón está sobre las flechas de scroll.
-     */
     private boolean isHoveredLeftArrow, isHoveredRightArrow;
-
-    /**
-     * Número de pestañas que hay actualmente en el inventario.
-     */
     private int tabCount = 0;
-
-    /**
-     * Pestaña que está seleccionada actualmente.
-     */
     private Tab currentTab = new Tab(null, null);
-
-    /**
-     * Mapa que almacena los widgets que tiene cada pestaña.
-     */
     private final Map<Tab, List<Widget>> WIDGETS_PER_TAB = new HashMap<>();
-
-    /**
-     * Lista que contiene todas las pestañas del inventario.
-     */
     private final List<Tab> TABS = new LinkedList<>();
 
+    /**
+     * Constructor de la clase Inventory.
+     * Inicializa una instancia de Inventory y actualiza la visibilidad de las flechas de navegación.
+     * Este constructor se utiliza para inicializar un inventario y asegurarse de que las flechas de navegación estén actualizadas correctamente.
+     */
     public Inventory() {
         this.updateShowArrows();
     }
@@ -111,7 +73,9 @@ public class Inventory extends Container {
      * @param widget Widget que se quiere añadir.
      */
     public void addWidgetToAllTabs(Widget widget) {
-        this.TABS.forEach(tab -> this.addWidget(widget, tab));
+        for (Tab tab : this.TABS) {
+            this.addWidget(widget, tab);
+        }
     }
 
     /**
@@ -139,7 +103,9 @@ public class Inventory extends Container {
      * @param widget Widget que se quiere eliminar.
      */
     public void removeWidget(Widget widget) {
-        this.TABS.forEach(tab -> this.removeWidget(widget, tab));
+        for (Tab tab : this.TABS) {
+            this.removeWidget(widget, tab);
+        }
     }
 
     @Override
@@ -152,17 +118,17 @@ public class Inventory extends Container {
                 this.height);
 
         //Dibujamos los widgets.
-        super.widgets.forEach(widget -> {
+        for (Widget widget : super.widgets) {
             float widgetPosX, widgetPosY,
-            widgetSizeX = Container.pixelSizeInScreen *widget.getBoundingBox().getWidth(),
-            widgetSizeY = Container.pixelSizeInScreen *widget.getBoundingBox().getHeight();
+                    widgetSizeX = Container.pixelSizeInScreen * widget.getBoundingBox().getWidth(),
+                    widgetSizeY = Container.pixelSizeInScreen * widget.getBoundingBox().getHeight();
             //Si tienen la anotacion IgnoreScrollMovement ignorarán el scroll.
             if (widget.getClass().isAnnotationPresent(IgnoreScrollMovement.class)) {
-                widgetPosX = Container.pixelSizeInScreen *widget.getPosX();
-                widgetPosY = Container.pixelSizeInScreen *widget.getPosY() +this.posY;
+                widgetPosX = Container.pixelSizeInScreen * widget.getPosX();
+                widgetPosY = Container.pixelSizeInScreen * widget.getPosY() + this.posY;
             } else {
-                widgetPosX = Container.pixelSizeInScreen *(widget.getPosX() +this.currentScrollPosX);
-                widgetPosY = Container.pixelSizeInScreen *widget.getPosY() +this.posY;
+                widgetPosX = Container.pixelSizeInScreen * (widget.getPosX() + this.currentScrollPosX);
+                widgetPosY = Container.pixelSizeInScreen * widget.getPosY() + this.posY;
             }
 
             widget.getTexture().draw(Shader.HUD, widgetPosX, widgetPosY, widgetSizeX, widgetSizeY);
@@ -174,7 +140,7 @@ public class Inventory extends Container {
                     customDrawWidget.draw(Container.pixelSizeInScreen, Container.pixelSizeInScreen * (widget.getPosX() + this.currentScrollPosX), Container.pixelSizeInScreen * widget.getPosY() + this.posY);
                 }
             }
-        });
+        }
 
         //Dibujamos las felchas de scroll.
         if (this.isShowingLeftArrow) {
@@ -340,7 +306,9 @@ public class Inventory extends Container {
      * Deselecciona todas las pestañas. Actualiza solo la parte gráfica.
      */
     public void unselectAllTabs() {
-        this.TABS.forEach(tab -> tab.setSelected(false));
+        for (Tab tab : this.TABS) {
+            tab.setSelected(false);
+        }
     }
 
     /**

@@ -60,11 +60,6 @@ public abstract class AbstractPhysicsParticle extends Particle {
         }
     }
 
-    /**
-     * Calcula la sentido que tiene el la velocidad.
-     * @param num Velocidad de la cúal se quiese sacar la sentido.
-     * @return Número entero que indica el sentido de la velocidad. Si la velocidad es 0, devuelve 0. Si es positiva devuelve 1, y si es negativa devuelve -1.
-     */
     private static int getDirection(float num) {
         if (num == 0) return 0;
         return num>0?-1:1;

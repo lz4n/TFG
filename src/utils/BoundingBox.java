@@ -8,10 +8,6 @@ import world.location.Location;
  * Representa un área rectangular 2D imaginaria definida por dos puntos.
  */
 public class BoundingBox implements Cloneable {
-
-    /**
-     * Posiciones de las esquinas.
-     */
     private float xMin = 0, yMin = 0, xMax, yMax;
 
     /**
@@ -64,7 +60,7 @@ public class BoundingBox implements Cloneable {
     /**
      * Multiplica los componentes por un valor.
      * @param factor Valor por el cuál se quiere multiplicar.
-     * @return <code>this</code>.
+     * @return <code>this</code> para permitir encadenar métodos.
      */
     public BoundingBox multiply(float factor) {
         this.xMin *= factor;
@@ -77,7 +73,7 @@ public class BoundingBox implements Cloneable {
     /**
      * Divide los componentes por un valor.
      * @param factor Valor por el cuál se quiere multiplicar.
-     * @return <code>this</code>.
+     * @return <code>this</code> para permitir encadenar métodos.
      */
     public BoundingBox divide(float factor) {
         this.xMin /= factor;

@@ -7,6 +7,10 @@ package utils.render.mesh;
  * @author Izan
  */
 public class SingleObjectMesh extends Mesh {
+    /**
+     * Instancia estática del objeto SingleObjectMesh, que representa un único objeto mesh.
+     * Este objeto mesh es utilizado para renderización u otras operaciones en el contexto de gráficos.
+     */
     public static final SingleObjectMesh SINGLE_OBJECT_MESH = new SingleObjectMesh();
 
     private SingleObjectMesh() {

@@ -5,6 +5,7 @@ import main.Main;
 import org.joml.Matrix4f;
 import org.lwjgl.glfw.GLFW;
 import ui.container.Inventory;
+import ui.tooltip.Tooltip;
 import utils.Setting;
 import utils.Time;
 import utils.render.GameFont;
@@ -16,6 +17,7 @@ import utils.render.texture.*;
 import world.WorldGenerator;
 import world.entity.Duck;
 import world.feature.Feature;
+import world.feature.building.Building;
 import world.location.Location;
 import world.particle.*;
 import world.terrain.Terrain;
@@ -29,24 +31,25 @@ import java.util.ListIterator;
  *
  * @author Izan
  */
-public class WorldScene implements Scene {
+public class WorldScene {
     /**
      * Tamaño base (sin contar el zoom) de los sprites.
      */
     public static final int SPRITE_SIZE = 16;
 
     private static final int DEBUGGING_REFRESH_DELAY = 5;
-
     private final WorldMesh WORLD_BORDER_MESH = new WorldMesh(1, 2, 2);
-
     private int debuggingRefreshDelay = 30;
     private Graphics2dTexture debugScreen;
 
-    @Override
+    /**
+     * Inicializa el mundo y carga los objetos necesarios para la representación gráfica.
+     * Esto incluye la generación del mundo, ajuste de mallas de terrenos y características,
+     * carga de objetos de malla únicos, y configuración del borde del mundo.
+     * Se recomienda llamar a este método al inicio del programa para preparar el entorno gráfico.
+     */
     public void init() {
         new WorldGenerator().run();
-
-        Main.world.setTerrain(0, 0, new Terrain(Terrain.TerrainType.STONE_TILE, Biome.BEACH, 0, 0, 0));
 
         for (Terrain.TerrainType terrainType: Terrain.TerrainType.values()) {
             terrainType.getMesh().adjust();
@@ -57,7 +60,7 @@ public class WorldScene implements Scene {
             featureType.getMesh().adjust();
         }
 
-        drawTerrain();
+        this.drawTerrain();
 
         SingleObjectMesh.SINGLE_OBJECT_MESH.load();
 
@@ -79,7 +82,15 @@ public class WorldScene implements Scene {
         }
     }
 
-
+    /**
+     * Actualiza la escena del juego en cada fotograma.
+     * Limpia el contenido de la ventana y establece el color de fondo.
+     * Activa las transparencias y configura las propiedades de iluminación diurna si está activada.
+     * Dibuja los elementos del mundo, entidades, partículas y objetos de depuración si se está depurando.
+     * También gestiona la visualización de tooltips y la interacción del jugador con la interfaz de usuario.
+     *
+     * @param dTime Tiempo delta desde el último fotograma.
+     */
     public void update(long dTime) {
         //Borramos los contenidos de la ventana y establecemos el color del fondo.
         GL20.glClearColor(38f / 255, 85f / 255, 144f /255, 0f);
@@ -145,28 +156,26 @@ public class WorldScene implements Scene {
             Shader.ENTITY.uploadInt("textureSamplers[" + samplerId + "]", samplerId);
         }
 
-        Main.world.getDucks().forEach(duck -> {
-            Shader.ENTITY.uploadFloat("uFlip", duck.getFlip());
-            Shader.ENTITY.uploadInt("uIsSelected", duck.isSelected() ? 1 : 0);
-            duck.getTexture().draw(Shader.ENTITY, duck.getLocation(), 0.8f);
+        for (Duck duck1 : Main.world.getDucks()) {
+            Shader.ENTITY.uploadFloat("uFlip", duck1.getFlip());
+            Shader.ENTITY.uploadInt("uIsSelected", duck1.isSelected() ? 1 : 0);
+            duck1.getBodyTexture().draw(Shader.ENTITY, duck1.getLocation(), 0.8f);
+            duck1.getOverlay().draw(Shader.ENTITY, duck1.getLocation(), 0.8f);
             Texture.unbind();
-        });
+        }
 
         Shader.ENTITY.uploadFloat("uFlip", 0);
 
         Shader.ENTITY.uploadInt("uIsSelected", 0);
-        Main.world.getParticlesList().forEach(particle -> {
+        for (Particle particle : Main.world.getParticlesList()) {
             Shader.ENTITY.uploadFloat("uRotationAngle", particle.getRotation());
             Shader.ENTITY.uploadFloat("uScale", particle.getScale());
-            if (particle instanceof CursorParticle) {
-                System.out.println(particle.getLocation());
-            }
             particle.getTexture().draw(
                     Shader.ENTITY,
                     particle.getLocation()
             );
             Texture.unbind();
-        });
+        }
 
         //Generamos la pantalla de debug
         if (Main.isDebugging) {
@@ -253,6 +262,14 @@ public class WorldScene implements Scene {
             } else {
                 Main.world.addParticle(new CursorParticle(MouseListener.getInGameLocation()));
             }
+
+            if (selectedFeature instanceof Building building) {
+                Tooltip tooltip = building.getTooltip();
+
+                if (tooltip != null) {
+                    tooltip.showAtMouse();
+                }
+            }
         }
 
         if (Main.PLAYER.getTooltip() != null) {
@@ -338,19 +355,33 @@ public class WorldScene implements Scene {
         return debugScreen;
     }
 
-    @Override
+    /**
+     * Redimensiona la ventana del juego, ajustando el contenedor del jugador según las nuevas dimensiones.
+     */
     public void resizeWindow() {
         Main.PLAYER.getContainer().onResizeWindowEvent(Window.getWidth(), Window.getHeight());
     }
 
-    @Override
+    /**
+     * Maneja el evento de clic del mouse en la posición especificada.
+     * Si la interfaz de usuario no está oculta y el mouse está sobre el inventario del jugador, se gestiona el evento de clic en el inventario.
+     *
+     * @param mouseX Posición X del mouse.
+     * @param mouseY Posición Y del mouse.
+     */
     public void click(float mouseX, float mouseY) {
         if (!Main.PLAYER.isHidingUi() && Main.PLAYER.isMouseOnInventory()) {
             Main.PLAYER.getContainer().onClickEvent(mouseX, mouseY);
         }
     }
 
-    @Override
+    /**
+     * Maneja el movimiento del mouse en la posición especificada.
+     * Si la interfaz de usuario no está oculta, actualiza el estado del mouse sobre el inventario del jugador basado en el evento de movimiento del mouse.
+     *
+     * @param mouseX Posición X del mouse.
+     * @param mouseY Posición Y del mouse.
+     */
     public void moveMouse(float mouseX, float mouseY) {
         if (!Main.PLAYER.isHidingUi()) {
             Main.PLAYER.setMouseOnInventory(Main.PLAYER.getContainer().onMouseMoveEvent(mouseX, mouseY));

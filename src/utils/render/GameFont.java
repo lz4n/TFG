@@ -16,10 +16,6 @@ public enum GameFont {
     PIXEL_CONTENT("assets/fonts/pixelated.ttf"),
     DEBUG("assets/fonts/arial.ttf");
 
-    /**
-     * Fuente awt de la fuente.
-     * @see Font
-     */
     private Font font;
 
     /**
@@ -87,6 +83,14 @@ public enum GameFont {
         return new Graphics2dTexture(1, 1);
     }
 
+    /**
+     * Dibuja texto en esta textura utilizando el estilo, tamaño y color especificados.
+     *
+     * @param text   El texto a dibujar.
+     * @param style  El estilo del texto (por ejemplo, Font.PLAIN, Font.BOLD, etc.).
+     * @param size   El tamaño del texto.
+     * @return La textura actualizada con el texto dibujado.
+     */
     public Graphics2dTexture drawText(String text, int style, int size) {
         return this.drawText(text, style, size, Color.WHITE);
     }

@@ -1,10 +1,13 @@
 package world;
 
 import main.Main;
+import utils.Logger;
 import utils.Setting;
 import world.entity.Duck;
 import world.feature.*;
 import world.feature.building.Building;
+import world.feature.building.Hospital;
+import world.feature.building.PoliceStation;
 import world.feature.building.jobSite.Port;
 import world.location.Location;
 import world.particle.CloudParticle;
@@ -16,15 +19,16 @@ import world.worldBuilder.WorldBuilder;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.function.Consumer;
 
 /**
- * Representa el mundo de juego.
+ * Representa el mundo del juego.
+ * Esta clase contiene toda la lógica y los elementos necesarios para la simulación del mundo.
+ * Implementa {@code Serializable} para permitir la serialización del estado del mundo.
  */
 public class World implements Serializable {
 
     /**
-     * Duración de las fases del día, meses y años.
+     * Duración de las fases del día, meses y años en ticks.
      */
     public static final int
             TOTAL_DAY_DURATION = 6000,
@@ -36,77 +40,43 @@ public class World implements Serializable {
             sunsetDuration = SUNSET_END - SUNSET_START,
             MONTH_DURATION_IN_DAYS = 30,
             MAX_MONTH = 12;
-    private static final float MIN_DAYLIGHT = .2f;
+    private static final float MIN_DAYLIGHT = .5f;
 
-    private static final int INITIAL_MONEY = 10000000;
+    private static final int INITIAL_MONEY = 600;
 
-    /**
-     * Nombre del mundo.
-     */
-    private final String NAME;
-
-    /**
-     * Semilla que se ha usado para la generación del mundo.
-     */
     private final int SEED;
 
-    /**
-     * Tamaño del mundo en unidades in-game;
-     */
     private final int WORLD_SIZE;
 
     /**
-     * WorldBuilder que ha generado el mundo,
+     * WorldBuilder utilizado para generar el mundo.
      */
     public transient final WorldBuilder BUILDER;
 
-    /**
-     * Array que almacena todos los objetos que conforman el terreno.
-     */
     private final Terrain[] TERRAIN;
 
-    /**
-     * Array que almacena todas las features.
-     */
     private final Feature[] FEATURES;
 
     private List<Building> BUILDINGS = new ArrayList<>();
 
-    /**
-     * Lista con todas las entidades.
-     */
     private final List<Duck> DUCKS_LIST = new LinkedList<>();
 
-    /**
-     * Lista con todas las partículas.
-     */
     private transient List<Particle> particlesList = new LinkedList<>();
 
-    /**
-     * Hora, dia, mes y año del mundo.
-     */
     private int dayTime = World.SUNRISE_START, day = LocalDateTime.now().getDayOfMonth(), month = LocalDateTime.now().getMonthValue(), year = LocalDateTime.now().getYear();
 
-    /**
-     * Número de features y entidades totales del mundo.
-     */
     private int featuresCount, ducksCount;
 
-    /**
-     * Índice de felicidad del mundo.
-     */
-    private float happiness = 1, unemployment = 1;
+    private float happiness = 1, unemployment = 1, security = 1, health = 1;
 
-    private int money = World.INITIAL_MONEY, incomes = 50, population = 0;
+    private int money = World.INITIAL_MONEY, incomes = 0, population = 0;
 
     /**
-     * Ínstancia un mundo, pero no lo genera.
-     * @param name Nombre del mundo.
+     * Instancia un mundo, pero no lo genera.
      * @param seed Semilla del mundo.
      * @param worldSize Tamaño del mundo.
      */
-    public World(String name, int seed, int worldSize) {
-        this.NAME = name;
+    public World(int seed, int worldSize) {
         this.SEED = seed;
         this.WORLD_SIZE = worldSize;
         this.TERRAIN = new Terrain[this.WORLD_SIZE * this.WORLD_SIZE];
@@ -137,34 +107,38 @@ public class World implements Serializable {
         this.setTerrain(x, y, terrain, false);
 
         //Generamos las features según el bioma.
+        generateFeaturesAt(x, y, biome, feature);
+
+        return terrain;
+    }
+
+    private static void generateFeaturesAt(int x, int y, Biome biome, Feature feature) {
         Location location = new Location(x, y);
         switch (biome) {
             case RIVER_MOUNTAIN_SHORE -> {
                 if (Main.RANDOM.nextFloat() >= 0.4)
-                    feature = Feature.FeatureType.TREE.createFeature(location);
-                else if (Main.RANDOM.nextFloat() >= 0.6) feature = Feature.FeatureType.BUSH.createFeature(location);
+                    feature = new Tree(location, Main.RANDOM.nextInt(Feature.FeatureType.TREE.getVariants()));
+                else if (Main.RANDOM.nextFloat() >= 0.6) feature = new Bush(location);
             }
             case FOREST -> {
                 if (Main.RANDOM.nextFloat() >= 0.75)
-                    feature = Feature.FeatureType.TREE.createFeature(location);
-                else if (Main.RANDOM.nextFloat() >= 0.84) feature = Feature.FeatureType.BUSH.createFeature(location);
+                    feature = new Tree(location, Main.RANDOM.nextInt(Feature.FeatureType.TREE.getVariants()));
+                else if (Main.RANDOM.nextFloat() >= 0.9) feature = new Bush(location);
             }
             case PLAINS -> {
                 if (Main.RANDOM.nextFloat() >= 0.97)
-                    feature = Feature.FeatureType.TREE.createFeature(location);
-                else if (Main.RANDOM.nextFloat() >= 0.87) feature = Feature.FeatureType.BUSH.createFeature(location);
-                else if (Main.RANDOM.nextFloat() >= 0.99) feature = Feature.FeatureType.FLOWER.createFeature(location);
+                    feature = new Tree(location, Main.RANDOM.nextInt(Feature.FeatureType.TREE.getVariants()));
+                else if (Main.RANDOM.nextFloat() >= 0.97) feature = new Bush(location);
+                else if (Main.RANDOM.nextFloat() >= 0.99) feature = new Flower(location, Main.RANDOM.nextInt(Feature.FeatureType.FLOWER.getVariants()));
             }
             case MOUNTAIN -> {
                 if (Main.RANDOM.nextFloat() >= 0.98)
-                    feature = Feature.FeatureType.ROCK.createFeature(location);
+                    feature = new Rock(location);
             }
         }
         if (feature != null && feature.canBePlaced()) {
             Main.world.addFeature(feature, false);
         }
-
-        return terrain;
     }
 
     /**
@@ -214,7 +188,6 @@ public class World implements Serializable {
      */
     public void setTerrain(int x, int y, Terrain terrain) {
         this.setTerrain(x, y, terrain, true);
-
     }
 
     /**
@@ -227,12 +200,13 @@ public class World implements Serializable {
         try {
             return this.FEATURES[this.mapCoordinatesToIndex(x, y)];
         } catch (ArrayIndexOutOfBoundsException exception) {
+            Logger.sendMessage("Error obteniendo una Feature en x=%d,y=%d: %s", Logger.LogMessageType.WARNING, x, y, exception.getMessage());
             return null;
         }
     }
 
     /**
-     * Genera una feature en el mundo.
+     * Añade una feature en el mundo.
      * @param feature Feature que se quiere generar.
      * @param updateMesh Si se va a actualizar el mesh del tipo de feature o no. Cuando se está generando el mundo no se
      * actualiza el mesh.
@@ -269,11 +243,14 @@ public class World implements Serializable {
             if (feature instanceof Building building) {
                 this.BUILDINGS.add(building);
                 building.onAdd();
+
+                this.updateIncomes();
             }
 
             this.featuresCount++;
             return feature;
-        } catch (ArrayIndexOutOfBoundsException ignore) {
+        } catch (ArrayIndexOutOfBoundsException exception) {
+            Logger.sendMessage("Error intentando colocar una Feature: %s", Logger.LogMessageType.WARNING, exception.getMessage());
         }
         return null;
     }
@@ -306,43 +283,42 @@ public class World implements Serializable {
             feature.getFeatureType().updateMesh();
 
             if (feature instanceof Building building) {
-                building.onRemove();
                 this.BUILDINGS.remove(building);
+                building.onRemove();
+
+                this.updateIncomes();
             }
 
             this.featuresCount--;
-        } catch (ArrayIndexOutOfBoundsException ignore) {
+        } catch (ArrayIndexOutOfBoundsException exception) {
+            Logger.sendMessage("Error intentando eliminar una Feature: %s", Logger.LogMessageType.WARNING, exception.getMessage());
         }
     }
 
     /**
-     * Genera una entidad.
-     * @param duck Entidad que se quiere generar.
+     * Genera una un pato.
+     * @param duck Pato que se quiere generar.
      */
     public void addDuck(Duck duck) {
-        this.spawnDuck(duck);
-        duck.onAdd();
+        this.DUCKS_LIST.add(duck);
         this.ducksCount++;
 
-        Main.world.updateUnemployment();
-    }
-
-    public void spawnDuck(Duck duck) {
-        this.DUCKS_LIST.add(duck);
-    }
-
-    public void despawnDuck(Duck duck) {
-        this.DUCKS_LIST.remove(duck);
+        this.updateUnemployment();
+        this.updateSecurity();
+        this.updateHealth();
     }
 
     /**
-     * Elimina una entidad.
-     * @param duck Entidad que se quiere eliminar.
+     * Elimina una pato.
+     * @param duck Pato que se quiere eliminar.
      */
     public void removeDuck(Duck duck) {
-        this.despawnDuck(duck);
-        duck.onRemove();
+        this.DUCKS_LIST.remove(duck);
+        duck.removeJobSite();
         this.ducksCount--;
+
+        this.updateSecurity();
+        this.updateHealth();
     }
 
     /**
@@ -361,13 +337,6 @@ public class World implements Serializable {
      */
     public void removeParticle(Particle particle) {
         this.particlesList.remove(particle);
-    }
-
-    /**
-     * @return Nombre del mundo.
-     */
-    public String getName() {
-        return this.NAME;
     }
 
     /**
@@ -497,30 +466,50 @@ public class World implements Serializable {
         return new LinkedList<>(this.particlesList);
     }
 
+    /**
+     * Añade una cantidad específica de dinero al jugador.
+     * Actualiza el total de dinero en el jugador después de añadir la cantidad.
+     *
+     * @param amount La cantidad de dinero que se quiere añadir.
+     */
     public void addMoney(int amount) {
         this.money += amount;
 
         Main.PLAYER.updateMoney(this.money);
     }
 
+    /**
+     * Obtiene la cantidad de dinero actual del jugador en el mundo.
+     *
+     * @return La cantidad de dinero actual.
+     */
     public int getMoney() {
         return this.money;
     }
 
-    public void addIncome(int amount) {
-        this.incomes += amount;
-
-        Main.PLAYER.updateIncomes(this.incomes);
-    }
-
+    /**
+     * Obtiene los ingresos actuales del mundo.
+     *
+     * @return Los ingresos actuales.
+     */
     public int getIncomes() {
         return this.incomes;
     }
 
+    /**
+     * Obtiene la población actual del mundo.
+     *
+     * @return La población actual.
+     */
     public int getPopulation() {
         return this.population;
     }
 
+    /**
+     * Añade una cantidad especificada a la población actual.
+     *
+     * @param amount La cantidad de población a añadir.
+     */
     public void addPopulation(int amount) {
         this.population += amount;
 
@@ -534,35 +523,123 @@ public class World implements Serializable {
         return this.happiness;
     }
 
+    /**
+     * @return Índice de desempleo.
+     */
     public float getUnemployment() {
         return this.unemployment;
     }
 
-    public void addHappiness(float aomunt) {
-        this.happiness = Math.clamp(this.happiness +aomunt, 0, 1);
+    /**
+     * @return Índice de seguridad.
+     */
+    public float getSecurity() {
+        return this.security;
+    }
+
+    /**
+     * @return Índice de salud.
+     */
+    public float getHealth() {
+        return this.health;
+    }
+
+    /**
+     * Calcula los ingresos del mundo según la cantidad y felicidad de los paos y la industria.
+     * @see Duck#getTaxes()
+     * @see Building#getIncomes()
+     */
+    public void updateIncomes() {
+        this.incomes = (int) this.getDucks().stream().mapToDouble(Duck::getTaxes).sum();
+
+        this.incomes += this.getBuildings().stream().mapToInt(Building::getIncomes).sum();
+
+        Main.PLAYER.updateIncomes(this.getIncomes());
+    }
+
+    /**
+     * Calcula la felicidad media de los patos.
+     */
+    public void updateHappiness() {
+        OptionalDouble averageHappiness = this.getDucks().stream().mapToDouble(Duck::getHappiness).average();
+
+        if (averageHappiness.isPresent()) {
+            this.happiness = (float) averageHappiness.getAsDouble();
+        } else {
+            this.happiness = 1;
+        }
+
+        this.updateIncomes();
 
         Main.PLAYER.updateHappiness(this.happiness);
     }
 
+    /**
+     * Calcula la tasa de desempleo.
+     */
     public void updateUnemployment() {
         this.unemployment = this.DUCKS_LIST.stream().filter(Duck::isUnemployed).count() / (float) this.ducksCount;
+
+        this.updateIncomes();
 
         Main.PLAYER.updateUnemployment(this.unemployment);
     }
 
+    /**
+     * Calcula el índice de seguridad.
+     */
+    public void updateSecurity() {
+        int protection = 0;
+
+        for (Building building : this.BUILDINGS) {
+            if (building instanceof PoliceStation policeStation) {
+                protection += policeStation.getProtection();
+            }
+        }
+
+        this.security = Math.clamp(protection / (float) this.getDucksCount(), 0 , 1);
+
+        Main.PLAYER.updateSecurity(this.security);
+    }
+
+    /**
+     * Calcula el índice de salud.
+     */
+    public void updateHealth() {
+        int protection = 0;
+
+        for (Building building : this.BUILDINGS) {
+            if (building instanceof Hospital hospital) {
+                protection += hospital.getProtection();
+            }
+        }
+
+        this.health = Math.clamp(protection / (float) this.getDucksCount(), 0, 1);
+
+        Main.PLAYER.updateHealth(this.health);
+    }
+
+    /**
+     * Método que se llama en cada tick de juego. Simula el paso del tiempo y llama a las funciones de tick del resto de objetos.
+     * @param paused Si el juegeo se encuentra en pausa o no.
+     */
     public void onTick(boolean paused) {
         if (this.particlesList != null) {
-            new LinkedList<>(this.particlesList).forEach(Particle::onTick);
+            for (Particle particle : new LinkedList<>(this.particlesList)) {
+                particle.onTick();
+            }
         }
 
         if (!paused || Main.tickSpeed != 0) {
-            this.BUILDINGS.forEach(Feature::onTick);
-            this.DUCKS_LIST.forEach(Duck::onTick);
+            for (Building BUILDING : this.BUILDINGS) {
+                BUILDING.onTick();
+            }
+            for (Duck duck : this.DUCKS_LIST) {
+                duck.onTick();
+            }
 
             this.dayTime += Main.tickSpeed;
             if (this.dayTime >= World.TOTAL_DAY_DURATION) { //Si ha pasado un día
-                //TODO Mecánica de felicidad, que sea random cada dia es temporal.
-                this.addHappiness((Main.RANDOM.nextFloat() / 10) * (Main.RANDOM.nextBoolean() ? -1 : -1));
                 this.dayTime = 0;
 
                 //Aumentamos el mes y año si hace falta..
@@ -594,6 +671,12 @@ public class World implements Serializable {
         }
     }
 
+    /**
+     * Convierte horas a ticks.
+     * @param hour Hora que se quiere convertir.
+     * @param minute Minuto que se quiere convertir.
+     * @return Número de ticks correspondientes.
+     */
     public static int hourToTick(int hour, int minute) {
         return (int) (
                 (hour * World.TOTAL_DAY_DURATION / 24) +

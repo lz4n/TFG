@@ -6,6 +6,9 @@ import utils.render.texture.Texture;
 import utils.render.texture.Textures;
 import world.location.Location;
 
+/**
+ * Partícula que se genera cuando un pato está en el agua.
+ */
 public class SplashParticle extends AbstractPhysicsParticle {
     /**
      * @param location        Posición donde se va a generar la partícula.

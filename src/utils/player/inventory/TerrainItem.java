@@ -7,15 +7,17 @@ import world.terrain.Terrain;
  * Representa un item que sirve para colocar terreno.
  */
 public class TerrainItem extends Item {
-
-    /**
-     * Terreno que se va a colocar.
-     */
     private final Terrain.TerrainType TERRAIN_TO_PLACE;
 
     /**
-     * @param texture Textura del item.
-     * @param terrainToPlace Terreno que se va a colocar.
+     * Constructor para un ítem de terreno, inicializa con la textura proporcionada, el tipo de terreno a colocar,
+     * nombre, descripción y precio del ítem.
+     *
+     * @param texture       La textura del ítem.
+     * @param terrainToPlace El tipo de terreno que este ítem colocará.
+     * @param name          El nombre del ítem.
+     * @param description   La descripción del ítem.
+     * @param price         El precio del ítem.
      */
     public TerrainItem(Texture texture, Terrain.TerrainType terrainToPlace, String name, String description, int price) {
         super(texture, name, description, price);

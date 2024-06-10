@@ -12,10 +12,6 @@ import utils.render.Window;
  * @author Izan
  */
 public class KeyListener {
-    /**
-     * Almacena si una tecla está siendo pulsada o no. Cada índice se refiere a una tecla, y hay 348 teclas.<br>Las teclas son constantes de tipo <code>int</code> de la clase <code>GLFW</code>, por ejemplo: <code>GLFW.GLFW_KEY_UP</code>.
-     * @see GLFW
-     */
     private static boolean[] isKeyPressed = new boolean[348]; //Hay 348 teclas
 
     /**

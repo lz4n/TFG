@@ -12,19 +12,8 @@ import utils.render.texture.Texture;
  * Representa un botón abstracto, con contenido y que se puede clicar.
  */
 public abstract class AbstractButtonWidget extends Widget implements CustomDrawWidget {
-    /**
-     * Tiempo que se mantiene clicado el botón, para facilitar que el usuario se de cuenta de que se ha clicado el botón.
-     */
     private static final int CLICK_TIME = 15;
-
-    /**
-     * Textura del botón cuando está clicado y cuando no.
-     */
     private final Texture TEXTURE, CLICKED_TEXTURE;
-
-    /**
-     * Desplazamiento que tiene el contenido del botón cuando se hace hover.
-     */
     private final Vector2f HOVER_OFFSET;
 
     /**

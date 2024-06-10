@@ -15,19 +15,8 @@ import utils.render.texture.Textures;
  */
 @IgnoreScrollMovement
 public class ScreenIndicatorWidget extends Widget implements OnResizeWindowEvent, CustomDrawWidget {
-    /**
-     * BoundingBox base del widget, cuando se instancia se duplica y se mueve a la posición del widget.
-     */
     private final static BoundingBox BASE_BOUNDING_BOX = new BoundingBox(16, 29);
-
-    /**
-     * Posición en los ejes X e Y. La posición se calcula respecto a la esquina superior izquierda de la ventana, no del inventario.
-     */
     private final float RELATIVE_X, RELATIVE_Y;
-
-    /**
-     * Icono que se muestra en el indicador.
-     */
     private final Texture CONTENT;
 
     /**

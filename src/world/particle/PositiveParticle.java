@@ -6,7 +6,9 @@ import utils.render.texture.Texture;
 import utils.render.texture.Textures;
 import world.location.Location;
 
-
+/**
+ * Partícula que se genera para dar un input positivo al jugador.
+ */
 public class PositiveParticle extends AbstractPhysicsParticle {
 
     /**

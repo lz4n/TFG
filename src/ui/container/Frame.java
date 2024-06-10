@@ -25,54 +25,18 @@ import java.awt.*;
  */
 public class Frame extends Container {
 
-    /**
-     * BoundingBox base del frame, todos los frames están en la misma posición, y tienen el mismo tamaño, por lo que la
-     * BoundingBox no se clona, es común para todos los frames.
-     * @see BoundingBox
-     */
     private final static BoundingBox BASE_BOUNDING_BOX = new BoundingBox(100, 156);
-
-    /**
-     * Tamaño del texto por pixel in-game. Por ejemplo, si los pixeles in-gmae miden 2 veces el pixel en la pantalla, el texto tendrá
-     * un tamaño de 30 (15 *2);
-     * @see Container#pixelSizeInScreen
-     */
     private final static int UNIT_TEXT_SIZE = 15;
-
-    /**
-     * Posición el frame en los ejes X e Y, en píxeles in-game.
-     */
     private float posX, posY;
-
-    /**
-     * Posición del título en el eje X. El título se centra en el eje X, pero está fijo en el Y.
-     */
     private float posXName;
-
-    /**
-     * Título del frame, que se muestra en la parte superior.
-     */
     private final String NAME;
-
-    /**
-     * Textura del título del frame.
-     */
     private Graphics2dTexture nameTexture;
 
     //** SCROLLBAR **//
 
-    /**
-     * Posición donde se coloca el rail de la scrollbar, y su tamaño. En coordenadas in-game relativas, con origen en la
-     * esquina superior izquierda.
-     */
     private final static Vector2f SCROLL_BAR_RAIL_POS = new Vector2f(93, 17);
     private final static Vector2f SCROLL_BAR_RAIL_SIZE = new Vector2f(4, 134);
-
-    /**
-     * Altura del slider de la scrollbar.
-     */
     private final static int SLIDER_HEIGHT = 6;
-
     private boolean hasScrollbar = false;
     private float sliderPos = 0;
     private float maxScrollbarPos = 0;
@@ -214,18 +178,18 @@ public class Frame extends Container {
         );
 
         //Dibujamos los widgets.
-        super.widgets.forEach(widget -> {
-            float widgetPosX = Container.pixelSizeInScreen *(widget.getPosX() +this.posX), //Las coordenadas del frame son relativas, cuyo origen está en la esquina superior izquierda del frame.
-                    widgetPosY = Container.pixelSizeInScreen *(widget.getPosY() +this.posY +this.sliderPos), //Las coordenadas del frame son relativas, cuyo origen está en la esquina superior izquierda del frame. Se le suma la posición del scroll.
-                    widgetSizeX = Container.pixelSizeInScreen *widget.getBoundingBox().getWidth(),
-                    widgetSizeY = Container.pixelSizeInScreen *widget.getBoundingBox().getHeight();
+        for (Widget widget : super.widgets) {
+            float widgetPosX = Container.pixelSizeInScreen * (widget.getPosX() + this.posX), //Las coordenadas del frame son relativas, cuyo origen está en la esquina superior izquierda del frame.
+                    widgetPosY = Container.pixelSizeInScreen * (widget.getPosY() + this.posY + this.sliderPos), //Las coordenadas del frame son relativas, cuyo origen está en la esquina superior izquierda del frame. Se le suma la posición del scroll.
+                    widgetSizeX = Container.pixelSizeInScreen * widget.getBoundingBox().getWidth(),
+                    widgetSizeY = Container.pixelSizeInScreen * widget.getBoundingBox().getHeight();
 
             widget.getTexture().draw(Shader.HUD, widgetPosX, widgetPosY, widgetSizeX, widgetSizeY);
 
             if (widget instanceof CustomDrawWidget customDrawWidget) {
-                customDrawWidget.draw(Container.pixelSizeInScreen, Container.pixelSizeInScreen *(widget.getPosX() +this.posX), Container.pixelSizeInScreen *(widget.getPosY() +this.posY +this.sliderPos));
+                customDrawWidget.draw(Container.pixelSizeInScreen, Container.pixelSizeInScreen * (widget.getPosX() + this.posX), Container.pixelSizeInScreen * (widget.getPosY() + this.posY + this.sliderPos));
             }
-        });
+        }
 
         //Desactivamos el Scissor
         GL11.glDisable(GL11.GL_SCISSOR_TEST);
@@ -300,12 +264,12 @@ public class Frame extends Container {
         this.nameTexture = GameFont.PIXEL.drawText(this.NAME, Font.PLAIN, Frame.UNIT_TEXT_SIZE *(int) Container.pixelSizeInScreen);
         this.posXName = (newWidth - this.nameTexture.getSize().x()) /2f;
 
-        super.widgets.forEach(widget -> {
+        for (Widget widget : super.widgets) {
             this.maxScrollbarPos = Math.max(maxScrollbarPos, widget.getPosY());
-            if (this.maxScrollbarPos > ((Frame.BASE_BOUNDING_BOX.getHeight() -16) -nameTexture.getSize().y() /Container.pixelSizeInScreen)) {
+            if (this.maxScrollbarPos > ((Frame.BASE_BOUNDING_BOX.getHeight() - 16) - nameTexture.getSize().y() / Container.pixelSizeInScreen)) {
                 this.hasScrollbar = true;
             }
-        });
+        }
         this.maxScrollbarPos -= Frame.BASE_BOUNDING_BOX.getHeight() -16 -nameTexture.getSize().y() /Container.pixelSizeInScreen;
 
         this.updateScrollbarSlider();
@@ -328,27 +292,46 @@ public class Frame extends Container {
             return;
         }
 
-        this.widgets.stream()
-                .filter(widget -> widget instanceof OnMouseDragEvent)
-                .forEach(widget -> ((OnMouseDragEvent) widget).onMouseDragEvent(mouseX /Container.pixelSizeInScreen -this.posX, mouseY /Container.pixelSizeInScreen  -this.posY));
+        for (Widget widget : this.widgets) {
+            if (widget instanceof OnMouseDragEvent onMouseDragEvent) {
+                onMouseDragEvent.onMouseDragEvent(mouseX / Container.pixelSizeInScreen - this.posX, mouseY / Container.pixelSizeInScreen - this.posY);
+            }
+        }
     }
 
+    /**
+     * Construye y gestiona la disposición vertical de widgets dentro de un Frame.
+     * Permite posicionar widgets uno debajo del otro con un espaciado personalizable.
+     */
     public static class FrameLayoutBuilder {
         private static final int INITIAL_POS = 24;
 
         private final int SPACING;
         private int posY = FrameLayoutBuilder.INITIAL_POS;
 
+        /**
+         * Crea un constructor de diseño para widgets con el espaciado especificado.
+         * @param spacing Espacio vertical entre widgets.
+         */
         public FrameLayoutBuilder(int spacing) {
             this.SPACING = spacing;
         }
 
+        /**
+         * Calcula la posición Y para el siguiente widget, colocándolo debajo del widget dado más el espaciado.
+         * @param widget Widget del que se quiere colocar el siguiente widget debajo.
+         * @return La posición Y calculada para el siguiente widget.
+         */
         public int nextTo(Widget widget) {
             posY += (int) (widget.getBoundingBox().getHeight() + this.SPACING);
 
             return posY;
         }
 
+        /**
+         * Obtiene la posición Y actual donde se colocará el siguiente widget.
+         * @return La posición Y actual.
+         */
         public int nextTo() {
             return this.posY;
         }

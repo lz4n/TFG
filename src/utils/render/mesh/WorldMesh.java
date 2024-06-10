@@ -11,19 +11,8 @@ import java.util.Arrays;
  * @see Mesh
  */
 public class WorldMesh extends Mesh {
-    /**
-     * Generador de coordenadas UV. Cada objeto puede tener unas coordenadas UV distintas.
-     */
     private final UVCoordsGenerator UV_COORDS_RANDOMIZER;
-
-    /**
-     * Número de objetos que se han colocado en el mesh hasta el momento.
-     */
     private int elementsCount = 0;
-
-    /**
-     * Últimos índices utilizados de los arrays de vérices y elementos.
-     */
     private int previousVertexArrayPos = 0, previousElementArrayPos = 0;
 
     /**
@@ -132,6 +121,11 @@ public class WorldMesh extends Mesh {
         this.elementsCount += 4;
     }
 
+    /**
+     * Ajusta los arreglos de vértices y elementos del mesh a sus tamaños actuales.
+     * Esto implica recortar los arreglos para que coincidan exactamente con la cantidad
+     * de vértices y elementos utilizados actualmente.
+     */
     public void adjust() {
         this.vertexArray = Arrays.copyOf(this.vertexArray, this.previousVertexArrayPos);
         this.elementArray = Arrays.copyOf(this.elementArray, this.previousElementArrayPos);

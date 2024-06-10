@@ -6,15 +6,31 @@ import world.location.Location;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
+/**
+ * Clase que implementa el algoritmo de búsqueda de caminos (Pathfinding).
+ * Utiliza el patrón Singleton para asegurar que solo exista una instancia de Pathfinding.
+ */
 public class Pathfinding {
     private static final Pathfinding PATHFINDER = new Pathfinding();
 
     private Pathfinding() {}
 
+    /**
+     * Obtiene la instancia única de Pathfinding.
+     *
+     * @return la instancia única de Pathfinding.
+     */
     public static Pathfinding getPathfinder() {
         return Pathfinding.PATHFINDER;
     }
 
+    /**
+     * Encuentra el camino desde una ubicación inicial hasta una ubicación objetivo.
+     *
+     * @param start la ubicación inicial.
+     * @param goal la ubicación objetivo.
+     * @return una lista de ubicaciones que representa el camino desde el inicio hasta el objetivo.
+     */
     public List<Location> findPath(Location start, Location goal) {
         Node ndStart = new Node(start);
         Node ndEnd = new Node(goal);
@@ -28,7 +44,7 @@ public class Pathfinding {
             Node ndActual;
         };
 
-        AtomicReference<Float> tentative_gScore = new AtomicReference<>(0f);
+        float tentative_gScore = 0;
         while (!openList.isEmpty()) {
             ref.ndActual = openList.removeFirst();
             closeList.add(ref.ndActual);
@@ -37,15 +53,15 @@ public class Pathfinding {
                 return recreatePath(ref.ndActual);
             }
 
-            getNeighbors(ref.ndActual).forEach(neighbor -> {
+            for (Node neighbor : getNeighbors(ref.ndActual)) {
                 if (closeList.contains(neighbor))
-                    return;
+                    continue;
 
-                tentative_gScore.set(ref.ndActual.getPathWalk() + calculatePathWalk(ref.ndActual, neighbor));
+                tentative_gScore = ref.ndActual.getPathWalk() + calculatePathWalk(ref.ndActual, neighbor);
 
-                if (!openList.contains(neighbor) || tentative_gScore.get() < neighbor.getPathWalk()) {
+                if (!openList.contains(neighbor) || tentative_gScore < neighbor.getPathWalk()) {
                     neighbor.setParent(ref.ndActual);
-                    neighbor.setPathWalk(tentative_gScore.get());
+                    neighbor.setPathWalk(tentative_gScore);
                     neighbor.setPathHeuristic(calculateHeuristic(neighbor, ndEnd));
                     neighbor.setPathTotal(neighbor.getPathWalk() + neighbor.getPathHeuristic());
 
@@ -53,7 +69,7 @@ public class Pathfinding {
                         openList.add(neighbor);
                     }
                 }
-            });
+            }
 
             openList.sort(Comparator.comparingDouble(Node::getPathTotal));
         }
@@ -73,8 +89,8 @@ public class Pathfinding {
     }
 
     private List<Node> getNeighbors(Node node) {
-        // Este método debe ser implementado para obtener los nodos vecinos.
-        // Aquí se incluye un ejemplo genérico.
+        //Este método debe ser implementado para obtener los nodos vecinos.
+        //Aquí se incluye un ejemplo genérico.
         List<Node> neighbors = new ArrayList<>();
         // Ejemplo de vecinos en una cuadrícula de 4 direcciones (arriba, abajo, izquierda, derecha)
         neighbors.add(new Node((int) (node.getX() + 1), (int) node.getY()));
@@ -84,13 +100,14 @@ public class Pathfinding {
         return neighbors;
     }
 
+
     private float calculatePathWalk(Node from, Node to) {
-        // Calcular el costo de moverse de un nodo a otro.
-        return to.getPathCost(); // Ejemplo simple, en la práctica se debería calcular basado en la distancia real.
+        //Calcular el costo de moverse de un nodo a otro.
+        return to.getPathCost(); //Ejemplo simple, en la práctica se debería calcular basado en la distancia real.
     }
 
     private float calculateHeuristic(Node from, Node to) {
-        // Calcular la heurística (usualmente la distancia manhattan).
+        //Calcular la heurística (usualmente la distancia manhattan).
         return Math.abs(from.getX() - to.getX()) + Math.abs(from.getY() - to.getY());
     }
 }

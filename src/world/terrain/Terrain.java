@@ -17,31 +17,18 @@ import java.util.Random;
  * que contiene la celda.
  */
 public class Terrain implements Serializable {
-
-    /**
-     * Tipo de terreno que contiene la celda.
-     * @see TerrainType
-     */
     private final TerrainType TYPE;
-
-    /**
-     * Bioma de la celda.
-     * @see Biome
-     */
     private final Biome BIOME;
-
-    /**
-     * Parametros de la generación del mundo que tiene la celda.
-     * @see world.worldBuilder.WorldBuilder
-     */
     private final double CONTINENTALITY_NOISE, WEIRDNESS_NOISE, RIVERS_NOISE;
 
     /**
+     * Constructor para la clase Terrain.
+     *
      * @param type Tipo de terreno.
      * @param biome Bioma de la casilla.
      * @param continentalityNoise Valor del mapa de ruido de continentalidad.
      * @param weirdnessNoise Valor del mapa de ruido de rareza.
-     * @param riversNoise Valor del mapa de ruido de rios.
+     * @param riversNoise Valor del mapa de ruido de ríos.
      */
     public Terrain(TerrainType type, Biome biome, double continentalityNoise, double weirdnessNoise, double riversNoise) {
         this.TYPE = type;
@@ -51,6 +38,12 @@ public class Terrain implements Serializable {
         this.RIVERS_NOISE = riversNoise;
     }
 
+    /**
+     * Añade el terreno al mesh en la posición dada.
+     *
+     * @param x Coordenada x de la celda.
+     * @param y Coordenada y de la celda.
+     */
     public void addToMesh(int x, int y) {
         this.getType().getMesh().addVertex(
                 x -(this.getType().HAS_CONNECTED_TEXTURES ? (1f/WorldScene.SPRITE_SIZE) : 0),
@@ -129,7 +122,11 @@ public class Terrain implements Serializable {
         private final Texture TEXTURE;
 
         /**
+         * Constructor para la enumeración TerrainType.
+         *
          * @param texture Textura del tipo de terreno.
+         * @param isBuildable Determina si se puede construir en este terreno.
+         * @param pathCost Costo de camino del terreno.
          * @param hasRandomUV Determina si se van a randomizar las coordenadas UV del terreno.
          * @param hasConnectedTextures Determina si las texturas se van a conectar con la textura de otros terrenos.
          */
@@ -143,19 +140,21 @@ public class Terrain implements Serializable {
         }
 
         private WorldMesh createMesh() {
-            //TODO: Error con randoms YV
-            /*if (this.HAS_RANDOM_UV) {
+            if (this.HAS_RANDOM_UV) {
                 return new WorldMesh(Main.world.getSize() * Main.world.getSize(), new int[]{2, 2},
                         (posX, posY) -> switch (new Random((long) Main.world.getSeed() *Main.world.mapCoordinatesToIndex(posX, posY)).nextInt(4)) {
-                            case 0 -> new byte[]{1, 1, 0, 0, 1, 0, 0, 1};
-                            case 1 -> new byte[]{1, 1, 0, 0, 0, 1, 1, 0};
-                            case 2 -> new byte[]{0, 0, 1, 1, 1, 0, 0, 1};
-                            default -> new byte[]{0, 0, 1, 1, 0, 1, 1, 0};
+                            case 0 -> new int[]{1, 1, 0, 0, 1, 0, 0, 1};
+                            case 1 -> new int[]{1, 1, 0, 0, 0, 1, 1, 0};
+                            case 2 -> new int[]{0, 0, 1, 1, 1, 0, 0, 1};
+                            default -> new int[]{0, 0, 1, 1, 0, 1, 1, 0};
                         });
-            }*/
+            }
             return new WorldMesh(Main.world.getSize() * Main.world.getSize(), 2, 2);
         }
 
+        /**
+         * Actualiza el mesh del terreno.
+         */
         public void updateMesh() {
             this.mesh = this.createMesh();
             Thread thread = new Thread(() -> {
@@ -176,6 +175,11 @@ public class Terrain implements Serializable {
             }
         }
 
+        /**
+         * Verifica si se puede construir en este terreno.
+         *
+         * @return true si se puede construir, false en caso contrario.
+         */
         public boolean isBuildable() {
             return this.IS_BUILDABLE;
         }

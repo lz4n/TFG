@@ -49,7 +49,6 @@ public class Setting<T> {
 
     private final String ID;
     private T value;
-
     private Setting(String name, T defaultValue) {
         this.ID = name;
         this.value = defaultValue;
@@ -64,7 +63,7 @@ public class Setting<T> {
         try {
             Setting.PROPERTIES.load(new FileReader(PROPERTIES_FILE));
 
-            Setting.SETTING_LIST.forEach(setting -> {
+            for (Setting<?> setting : Setting.SETTING_LIST) {
                 Object value = null;
 
                 try {
@@ -75,7 +74,8 @@ public class Setting<T> {
                         case Float floatValue -> {
                             value = Float.parseFloat(Setting.PROPERTIES.getProperty(setting.ID, floatValue.toString()));
                         }
-                        default -> Logger.sendMessage("El tipo de datos de la opción %s no está soportado para lectura.", Logger.LogMessageType.WARNING);
+                        default ->
+                                Logger.sendMessage("El tipo de datos de la opción %s no está soportado para lectura.", Logger.LogMessageType.WARNING);
                     }
                 } catch (ClassCastException exception) {
                     Logger.sendMessage("Error de casting al leer la opción %s: %s.", Logger.LogMessageType.WARNING, setting.ID, exception.getMessage());
@@ -84,7 +84,7 @@ public class Setting<T> {
                 if (value != null) {
                     setting.setValue(value);
                 }
-            });
+            }
 
             Logger.sendMessage("Se ha leido con éxito el archivo de configuración.", Logger.LogMessageType.INFO);
         } catch (IOException exception) {
@@ -102,9 +102,9 @@ public class Setting<T> {
      */
     public static void save() {
         try {
-            Setting.SETTING_LIST.forEach(setting -> {
+            for (Setting<?> setting : Setting.SETTING_LIST) {
                 Setting.PROPERTIES.setProperty(setting.ID, setting.getValue().toString());
-            });
+            }
 
             Setting.PROPERTIES.store(new FileWriter(Setting.PROPERTIES_FILE, false), null);
             Logger.sendMessage("Se ha guardado con éxito el archivo de configuración.", Logger.LogMessageType.INFO);

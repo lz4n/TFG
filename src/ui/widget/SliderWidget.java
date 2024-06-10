@@ -24,35 +24,14 @@ import java.awt.*;
 import java.util.function.Consumer;
 
 public class SliderWidget extends Widget implements CustomDrawWidget, OnResizeWindowEvent, OnMouseDragEvent, OnMouseMoveEvent {
-    /**
-     * BoundingBox base del widget, cuando se instancia se duplica y se mueve a la posición del widget.
-     */
     private final static BoundingBox BASE_BOUNDING_BOX = new BoundingBox(84, 16);
-
-    /**
-     * Tamaño del texto por pixel in-game.
-     */
     private final static int TITLE_TEXT_SIZE = 6, VALUE_TEXT_SIZE = 4;
-
-    /**
-     * Desplazamiento que tiene el contenido del botón cuando se pasa el ratón por encima.
-     */
     private static final Vector2f HOVER_OFFSET = new Vector2f(0, -1);
-
     private static final Vector2f SLIDER_SIZE = new Vector2f(5, 16);
-
     private String text;
-
-    /**
-     * Textura que contiene el texto del slider. Cada vez que se cambie el tamaño del botón, debe cambiar el tamaño del texto,
-     * y se recalcula la textura.
-     */
     private Graphics2dTexture textTexture;
-
     private boolean isClicked = false;
-
     private float sliderValue = 0;
-
     private Consumer<Float> onValueChangeEvent = null;
 
     /**
@@ -124,6 +103,11 @@ public class SliderWidget extends Widget implements CustomDrawWidget, OnResizeWi
         }
     }
 
+    /**
+     * Establece el valor del slider y llama al evento de cambio de valor si está definido.
+     *
+     * @param value El nuevo valor del slider.
+     */
     public void setValue(float value) {
         this.sliderValue = value;
 
@@ -134,6 +118,11 @@ public class SliderWidget extends Widget implements CustomDrawWidget, OnResizeWi
         this.reloadTextTexture();
     }
 
+    /**
+     * Establece el consumidor que será invocado cuando ocurra un cambio de valor en el slider.
+     *
+     * @param onValueChangeEvent El consumidor que manejará el evento de cambio de valor. Debe aceptar un argumento de tipo Float.
+     */
     public void setOnValueChangeEvent(Consumer<Float> onValueChangeEvent) {
         this.onValueChangeEvent = onValueChangeEvent;
     }
