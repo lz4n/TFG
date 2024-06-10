@@ -32,11 +32,13 @@ public enum KeyBind {
     DEBUG_ONLY_CALL_GC(GLFW.GLFW_KEY_F10),
     DEBUG_SPAWN_ENTITY(GLFW.GLFW_KEY_E);
 
-    /**
-     * Tecla o botón del ratón que está asignada.
-     */
     private int key;
 
+    /**
+     * Constructor que inicializa una instancia de KeyBind con la tecla especificada.
+     *
+     * @param key El código numérico que representa la tecla asignada.
+     */
     KeyBind(int key) {
         this.key = key;
     }

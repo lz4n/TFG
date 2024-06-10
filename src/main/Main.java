@@ -49,6 +49,17 @@ public class Main {
      */
     public static boolean isDebugging = false;
 
+    /**
+     * Punto de entrada principal para la aplicación.
+     * <p>
+     * Este método procesa los argumentos de línea de comandos para activar el modo de depuración y
+     * cambiar el directorio de instalación. Establece el directorio de instalación por defecto si
+     * no se proporciona uno, y maneja la configuración del entorno de la aplicación. Intenta leer
+     * el archivo del mundo y carga la configuración y la ventana principal.
+     * </p>
+     *
+     * @param args los argumentos de línea de comandos proporcionados a la aplicación.
+     */
     public static void main(String[] args) {
         //Leemos los argumentos.
         for (String argument: args) {
@@ -71,7 +82,7 @@ public class Main {
             }
         }
 
-        //Si el direcetorio no existe, y no se puede crear, se lanza una excepción.
+        //Si el directorio no existe, y no se puede crear, se lanza una excepción.
         if (!Main.installDirectory.exists() && !Main.installDirectory.mkdirs()) {
             throw new RuntimeException("No se ha podido iniciar la aplicación: no se ha conseguido establecer ningún directorio de juego (" + Main.installDirectory + ") o no se tienen permisos. Intenta utilizar --directory:<dir>.");
         }

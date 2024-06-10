@@ -41,34 +41,11 @@ public enum Shader {
      */
     SHAPE("assets/shaders/shape", true);
 
-    /**
-     * Indica si el shader puede instanciar texturas.
-     */
     private final boolean SUPPORTS_INSTANTATION;
-
-    /**
-     * Contenido del archivo .glsl del shader de vértices.
-     */
     private String vertexShader = null;
-
-    /**
-     * Contenido del archivo .glsl del shader de fragmentos.
-     */
     private String fragmentShader = null;
-
-    /**
-     * Identificador número del shader de vértices.
-     */
     private int vertexID;
-
-    /**
-     * Identificador número del shader de fragmentos.
-     */
     private int fragmentID;
-
-    /**
-     * Identificador número del programa de shader, con los shaders de vértices y fragmentos ya cargados.
-     */
     private int shaderProgramID;
 
     /**
@@ -170,17 +147,6 @@ public enum Shader {
         FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
         matrix4f.get(matrixBuffer);
         GL20.glUniformMatrix4fv(variableLocation, false, matrixBuffer);
-    }
-
-    /**
-     * Envía un vector tridimensional de flotantes al shader.
-     * @param variableName Nombre de la variable en el shader (declarada con <code>uniform</code> en el archivo <code>.glsl</code>).
-     * @param floatValue1 Primer componente del vector.
-     * @param floatValue2 Segundo componente del vector.
-     * @param floatValue3 Tercer componente del vector.
-     */
-    public void upload3f(String variableName, float floatValue1, float floatValue2, float floatValue3) {
-        GL20.glUniform3f(GL20.glGetUniformLocation(this.shaderProgramID, variableName), floatValue1, floatValue2, floatValue3);
     }
 
     /**

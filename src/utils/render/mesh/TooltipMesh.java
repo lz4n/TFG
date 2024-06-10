@@ -5,24 +5,27 @@ import utils.render.scene.WorldScene;
 import java.util.Arrays;
 
 public class TooltipMesh extends Mesh {
-
-    /**
-     * Número de objetos que se han colocado en el mesh hasta el momento.
-     */
     private int elementsCount = 0;
-
+    private int previousVertexArrayPos = 0, previousElementArrayPos = 0;
 
     /**
-     * Últimos índices utilizados de los arrays de vérices y elementos.
+     * Constructor de la clase TooltipMesh. Inicializa el arreglo de vértices y el arreglo de elementos del mesh.
      */
-    private int previousVertexArrayPos = 0, previousElementArrayPos = 0;
-    
     public TooltipMesh() {
         super(2);
         this.vertexArray = new float[this.vertexSize *1 *4];
         this.elementArray = new int[1 *2 *3];
     }
 
+    /**
+     * Agrega un vértice al mesh con las coordenadas especificadas y calcula los elementos para formar dos triángulos.
+     *
+     * @param x         Coordenada X del vértice inferior izquierdo.
+     * @param y         Coordenada Y del vértice inferior izquierdo.
+     * @param sizeX     Tamaño en X del vértice.
+     * @param sizeY     Tamaño en Y del vértice.
+     * @param pixelSize Tamaño en píxeles para el escalado.
+     */
     public void addVertex(float x, float y, float sizeX, float sizeY, float pixelSize) {
         
         if (this.previousVertexArrayPos >= this.vertexArray.length) {

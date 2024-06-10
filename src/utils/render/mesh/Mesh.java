@@ -34,10 +34,6 @@ public abstract class Mesh {
      * Array que almacena el tamaño de cada atributo de los vértices.
      */
     protected int[] vertexAttributesSize;
-
-    /**
-     * Identificador del <code>mesh</code> dentro de <code>OpenGL</code>.
-     */
     private int vaoId;
 
     /**
@@ -94,6 +90,11 @@ public abstract class Mesh {
         }
     }
 
+    /**
+     * Dibuja el mesh en la pantalla utilizando OpenGL. Primero vincula el objeto de arreglo de vértices (VAO),
+     * habilita los atributos de vértice necesarios, dibuja los elementos del mesh y luego deshabilita los atributos
+     * de vértice antes de desvincular el VAO.
+     */
     public void draw() {
         ARBVertexArrayObject.glBindVertexArray(this.vaoId);
         for (int attributeIndex = 0; attributeIndex < this.vertexAttributesSize.length; attributeIndex++) {
@@ -106,12 +107,19 @@ public abstract class Mesh {
         ARBVertexArrayObject.glBindVertexArray(0);
     }
 
+    /**
+     * Obtiene el número de elementos en el arreglo de elementos del mesh.
+     *
+     * @return El número de elementos en el arreglo de elementos del mesh.
+     */
     public int getElementCount() {
         return this.elementArray.length;
     }
 
     /**
-     * @return Identificador del <code>mesh</code> dentro de <code>OpenGL</code>.
+     * Obtiene el identificador del VAO (objeto de arreglo de vértices) en OpenGL asociado con este mesh.
+     *
+     * @return El identificador del VAO en OpenGL.
      */
     public int getVaoId() {
         return this.vaoId;

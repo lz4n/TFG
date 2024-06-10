@@ -17,19 +17,8 @@ import java.awt.*;
  * Caja de texto que muestra la hora y fecha del mundo.
  */
 public class DateTimeTextBox extends Widget implements CustomDrawWidget {
-    /**
-     * BoundingBox base del widget, cuando se instancia se duplica y se mueve a la posición del widget.
-     */
     private final static BoundingBox BASE_BOUNDING_BOX = new BoundingBox(36, 16);
-
-    /**
-     * Tamaño del texto de la hora y fecha por pixel in-game.
-     */
     private final static int TIME_TEXT_SIZE = 10, DATE_TEXT_SIZE = 4;
-
-    /**
-     * Textura que contiene ambos textos.
-     */
     private Graphics2dTexture textTexture;
 
     /**

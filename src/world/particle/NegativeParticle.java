@@ -4,7 +4,9 @@ import utils.render.texture.Texture;
 import utils.render.texture.Textures;
 import world.location.Location;
 
-
+/**
+ * Partícula utilizada para dar un input negativo al jugador.
+ */
 public class NegativeParticle extends Particle {
 
     /**

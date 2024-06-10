@@ -16,32 +16,11 @@ import java.lang.Math;
  */
 public class Camera {
     private static final float MIN_ZOOM = .2f, MAX_ZOOM = 2f;
-
-    /**
-     * Contantes para la amplitud de la camara.
-     */
     private static final int RIGHT_ORTHO_CONST = 80, TOP_ORTHO_CONST = 41;
-
     private static final BoundingBox CAMERA_AREA = new BoundingBox(0, 0, Main.world.getSize(), Main.world.getSize()).multiply(WorldScene.SPRITE_SIZE);
-
-    /**
-     * La matriz de proyección define como se van a mapear los objetos en la pantalla.
-     */
     private Matrix4f projectionMatrix = new Matrix4f();
-
-    /**
-     * La matriz de vista indica la posición u orientación de la camara respecto a los objetos in-game.
-     */
     private Matrix4f viewMatrix = new Matrix4f();
-
-    /**
-     * Posición de la cámara en pixeles, no indica la posición in-game.
-     */
     private Vector2f cameraPosition;
-
-    /**
-     * Zoom de la cámara, por defecto es 1. Cuanto más se acerce a 0 más grande será el zoom.
-     */
     private float zoom = 1;
 
     /**

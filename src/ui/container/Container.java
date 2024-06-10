@@ -88,6 +88,12 @@ public abstract class Container {
         }
     }
 
+    /**
+     * Evento que se llama cuando se arrastra el ratón. Redirecciona el evento de arrastre a los widgets que implementen la interfaz <i>OnMouseDragEvent</i>.
+     *
+     * @param mouseX Posición en el eje X del ratón.
+     * @param mouseY Posición en el eje Y del ratón.
+     */
     public void onDragEvent(float mouseX, float mouseY) {
         for (Widget widget : this.widgets) {
             if (widget instanceof OnMouseDragEvent onMouseDragEvent) {
@@ -96,6 +102,9 @@ public abstract class Container {
         }
     }
 
+    /**
+     * Evento que se llama cuando se mueve el ratón sin parámetros de posición. Redirecciona el evento de movimiento del ratón a los widgets que implementen la interfaz <i>OnMouseMoveEvent</i>.
+     */
     public void onMouseMoveEvent() {
         for (Widget widget : this.widgets) {
             if (widget instanceof OnMouseMoveEvent onMouseMoveEvent) {

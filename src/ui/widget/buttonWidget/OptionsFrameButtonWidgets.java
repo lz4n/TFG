@@ -9,9 +9,13 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.function.Consumer;
 
+/**
+ * Botón de marco con opciones que permite seleccionar entre varias opciones representadas por un mapa de opciones.
+ *
+ * @param <T> Tipo de la opción.
+ */
 public class OptionsFrameButtonWidgets<T> extends FrameButtonWidget {
     private final static int TITLE_TEXT_SIZE = 6, VALUE_TEXT_SIZE = 4;
-
     private final Map<T, String> OPTIONS;
     private Iterator<Map.Entry<T, String>> iterator;
     private Map.Entry<T, String> currentEntry;
@@ -21,6 +25,8 @@ public class OptionsFrameButtonWidgets<T> extends FrameButtonWidget {
      * @param posX Posición en el eje X.
      * @param posY Posición en el eje Y.
      * @param text Texto del botón.
+     * @param options     Mapa de opciones disponibles donde cada clave representa una opción y cada valor su nombre o descripción.
+     * @param initialValue Valor inicial seleccionado para el botón.
      */
     public OptionsFrameButtonWidgets(float posX, float posY, String text, Map<T, String> options, T initialValue) {
         super(posX, posY, text);
@@ -40,6 +46,11 @@ public class OptionsFrameButtonWidgets<T> extends FrameButtonWidget {
         this.updateTextTexture();
     }
 
+    /**
+     * Establece el consumidor que será invocado cuando ocurra un cambio de valor.
+     *
+     * @param onValueChangeEvent El consumidor que manejará el evento de cambio de valor. Debe aceptar un argumento de tipo T.
+     */
     public void setOnValueChangeEvent(Consumer<T> onValueChangeEvent) {
         this.onValueChangeEvent = onValueChangeEvent;
     }
@@ -59,6 +70,11 @@ public class OptionsFrameButtonWidgets<T> extends FrameButtonWidget {
         this.updateTextTexture();
     }
 
+    /**
+     * Obtiene la opción actualmente seleccionada.
+     *
+     * @return La opción actualmente seleccionada.
+     */
     public T getCurrentOption() {
         return this.currentEntry.getKey();
     }

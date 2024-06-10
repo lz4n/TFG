@@ -1,9 +1,6 @@
 package world.worldBuilder;
 
-import org.joml.Vector3f;
 import world.terrain.Terrain;
-
-import javax.swing.*;
 
 /**
  * Diferentes biomas que tiene el juego. Los biomas determinan algunos comportamientos y el terreno de esa celda.

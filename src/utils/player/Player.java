@@ -6,8 +6,6 @@ import org.joml.Vector2f;
 import org.lwjgl.glfw.GLFW;
 import ui.widget.buttonWidget.OptionsFrameButtonWidgets;
 import utils.Setting;
-import utils.render.scene.Scene;
-import utils.render.scene.WorldScene;
 import utils.sounds.SoundCategory;
 import utils.sounds.SoundEffect;
 import ui.container.Container;
@@ -54,10 +52,6 @@ import java.util.List;
 
 
 public class Player {
-
-    /**
-     * Pestañas que tiene el inventario del jugador.
-     */
     private final static Tab GENERAL_TAB = new Tab(Textures.SELECTED_GENERAL_TAB_ICON, Textures.UNSELECTED_GENERAL_TAB_ICON),
         ZONING_TAB = new Tab(Textures.SELECTED_ZONING_TAB_ICON, Textures.UNSELECTED_ZONING_TAB_ICON),
         INDUSTRY_TAB = new Tab(Textures.SELECTED_INDUSTRY_TAB_ICON, Textures.UNSELECTED_INDUSTRY_TAB_ICON),
@@ -65,9 +59,6 @@ public class Player {
         NATURE_TAB = new Tab(Textures.SELECTED_NATURE_TAB_ICON, Textures.UNSELECTED_NATURE_TAB_ICON),
         SPECIAL_TAB = new Tab(Textures.SELECTED_SPECIAL_TAB_ICON, Textures.UNSELECTED_SPECIAL_TAB_ICON);
 
-    /**
-     * Items por pestaña del inventario.
-     */
     private final static HashMap<Tab, List<List<Item>>> ITEMS = new HashMap<>() {{
         this.put(Player.GENERAL_TAB,Arrays.asList(
                 Arrays.asList(
@@ -139,79 +130,21 @@ public class Player {
         SECURITY_TEXT_BOX = new SmallTextBox(90, 14),
         HEALTH_TEXT_BOX = new SmallTextBox(90, 24);
 
-    /**
-     * Inventario del jugador.
-     */
     private final Inventory INVENTORY = new Inventory();
-
-    /**
-     * Menú de pausa del jugador.
-     */
     private final Frame GAME_MENU = new Frame("Menu");
-
-    /**
-     * Menú de configuración.
-     */
     private final Frame CONFIG_MENU = new Frame("Config");
-
-    /**
-     * Menú de configuración de audio.
-     */
     private final Frame AUDIO_MENU = new Frame("Audio");
-
-    /**
-     * Menú de configuración de video.
-     */
     private final Frame VIDEO_MENU = new Frame("Video");
-
-    /**
-     * Mapa que almacena los slots correspondientes a cada item del inventario.
-     */
     private final HashMap<Item, SlotWidget> MENU_ITEMS_BY_SLOT = new HashMap<>();
-
-    /**
-     * Cámara del jugador.
-     */
-    private final Camera CAMERA = new Camera(new Vector2f(0, 0)); //Iniciamos la cámara en 0,0.
-
-    /**
-     * Almacena el contenedor que está utilizando el jugador.
-     */
+    private final Camera CAMERA = new Camera(new Vector2f(0, 0)); //Iniciamos la cámara en 0,0
     private Container container = this.INVENTORY;
-
-    /**
-     * Widget que muestra la fecha del mundo.
-     */
     private DateTimeTextBox timeTextBox;
-
-    /**
-     * Widget para cambiar la velocidad de juego.
-     */
     private AbstractButtonWidget gameSpeedButton;
-
-    /**
-     * Widget que indica que se está utilizando el bulldozer.
-     */
     private ScreenIndicatorWidget bulldozerIndicator;
-
-    /**
-     * Banderas del jugador, indican si está ocultando la interfaz, si está utilizando el bulldozer, si tiene el ratón
-     * sobre el inventario y si está en pausa.
-     */
     private boolean isHidingUI = false, isUsingBulldozer = false, isMouseOnInventory = false, isPaused = false;
-
-    /**
-     * Almacena la velocidad de juego anterior.
-     */
     private int previousGameSpeed = Main.tickSpeed;
-
-    /**
-     * Indica el item que está seleccionado para ser colocado.
-     */
     private Item selectedItem;
-
     private Tooltip tooltip = null;
-
     private LinkedHashSet<Location> terrainSelection = null;
 
     /**
@@ -452,11 +385,6 @@ public class Player {
         this.AUDIO_MENU.addWidget(soundEffectsSlider);
     }
 
-    /**
-     * Añade el widget del bulldozer al inventario.
-     * @param posX Posición en el eje X del inventario donde se va a colocar el botón del bulldozer.
-     * @param tab Pestaña donde se colocará el botón.
-     */
     private void addBulldozerToInventory(int posX, Tab tab) {
         this.INVENTORY.addWidget(new SeparatorWidget(posX, 0), tab);
 
@@ -471,11 +399,6 @@ public class Player {
         this.INVENTORY.addWidget(bulldozerButton, tab);
     }
 
-    /**
-     * Añade los items de las features a la pestaña correspondiente.
-     * @param widgetXPos Posición en el eje X del inventario donde se quieren colocar los items.
-     * @param tab Pestaña donde se van a colocar los items.
-     */
     private void addFeaturesWidgetToTab(int widgetXPos, Tab tab) {
         final int SLOT_SEPARATION = 20, WIDGET_POS_TOP = 4, WIDGET_POS_BOTTOM = 24;
 
@@ -607,6 +530,15 @@ public class Player {
         return null;
     }
 
+    /**
+     * Crea un terreno seleccionado en la ubicación especificada. Si la ubicación está fuera del mundo,
+     * devuelve `null`. Si el ítem seleccionado no es nulo y es una instancia de `TerrainItem`, crea y
+     * devuelve un nuevo terreno utilizando el tipo de terreno del ítem, junto con las características
+     * del terreno actual en la ubicación especificada.
+     *
+     * @param location La ubicación donde se desea crear el terreno.
+     * @return El terreno creado, o `null` si la ubicación está fuera del mundo o si no hay un ítem de terreno seleccionado.
+     */
     public Terrain createSelectedTerrain(Location location) {
         if (location.isOutOfTheWorld()) return null;
         if (this.selectedItem != null && this.selectedItem instanceof TerrainItem terrainItem) {
@@ -632,6 +564,11 @@ public class Player {
         this.timeTextBox.updateDateTime(date, time);
     }
 
+    /**
+     * Actualiza el texto del cuadro de texto del dinero con el valor proporcionado y el color del texto.
+     *
+     * @param money El valor del dinero a mostrar.
+     */
     public void updateMoney(int money) {
         this.MONEY_TEXT_BOX.setText(
                 money + "€",
@@ -640,6 +577,11 @@ public class Player {
         );
     }
 
+    /**
+     * Actualiza el texto del cuadro de texto de ingresos con el valor proporcionado y el color del texto.
+     *
+     * @param incomes El valor de los ingresos a mostrar.
+     */
     public void updateIncomes(int incomes) {
         this.INCOMES_TEXT_BOX.setText(
                 (incomes > 0?"+":"") +incomes + "€/dia",
@@ -648,10 +590,20 @@ public class Player {
         );
     }
 
+    /**
+     * Actualiza el texto del cuadro de texto de población con el valor proporcionado.
+     *
+     * @param population El número de población a mostrar.
+     */
     public void updatePopulation(int population) {
         this.POPULATION_TEXT_BOX.setText(population +" patos", Font.PLAIN);
     }
 
+    /**
+     * Actualiza el texto del cuadro de texto de felicidad con el valor proporcionado y el color del texto.
+     *
+     * @param happiness El valor de la felicidad a mostrar (entre 0 y 1).
+     */
     public void updateHappiness(float happiness) {
         Color color = Colors.RED;
 
@@ -670,6 +622,11 @@ public class Player {
         );
     }
 
+    /**
+     * Actualiza el texto del cuadro de texto de desempleo con el valor proporcionado y el color del texto.
+     *
+     * @param unemployment El valor de desempleo a mostrar (entre 0 y 1).
+     */
     public void updateUnemployment(float unemployment) {
         Color color = Colors.GREEN;
 
@@ -688,9 +645,12 @@ public class Player {
         );
     }
 
-    public void updateSecurity(float security
-
-    ) {
+    /**
+     * Actualiza el texto del cuadro de texto de seguridad con el valor proporcionado y el color del texto.
+     *
+     * @param security El valor de seguridad a mostrar (entre 0 y 1).
+     */
+    public void updateSecurity(float security) {
         Color color = Colors.RED;
 
         if (security > .5f) {
@@ -708,6 +668,11 @@ public class Player {
         );
     }
 
+    /**
+     * Actualiza el texto del cuadro de texto de salud con el valor proporcionado y el color del texto.
+     *
+     * @param health El valor de salud a mostrar (entre 0 y 1).
+     */
     public void updateHealth(float health) {
         Color color = Colors.RED;
 
@@ -842,6 +807,16 @@ public class Player {
         return false;
     }
 
+    /**
+     * Intenta colocar el ítem seleccionado en el juego. Dependiendo del tipo de ítem seleccionado
+     * (ya sea un ítem de característica o un ítem de terreno), realiza las acciones correspondientes.
+     * Para los ítems de característica, intenta crear la característica seleccionada y la agrega al mundo
+     * si cumple con las condiciones específicas y si el jugador tiene suficiente dinero. Para los ítems de
+     * terreno, intenta cambiar el tipo de terreno en las ubicaciones seleccionadas, actualizando el mundo
+     * en consecuencia.
+     *
+     * @return true si se pudo colocar el ítem seleccionado correctamente; de lo contrario, false.
+     */
     public boolean placeSelectedItem() {
         if (this.selectedItem instanceof FeatureItem featureItem) {
             Feature selectedFeature = this.createSelectedFeature();
@@ -918,23 +893,50 @@ public class Player {
         return false;
     }
 
+    /**
+     * Devuelve el tooltip asociado a este objeto.
+     *
+     * @return El tooltip asociado a este objeto.
+     */
     public Tooltip getTooltip() {
         return tooltip;
     }
 
+    /**
+     * Establece el tooltip asociado a este objeto.
+     *
+     * @param tooltip El tooltip que se establecerá.
+     */
     public void setTooltip(Tooltip tooltip) {
         this.tooltip = tooltip;
     }
 
+    /**
+     * Indica si se está seleccionando terreno actualmente.
+     *
+     * @return true si se está seleccionando terreno; false de lo contrario.
+     */
     public boolean isSelectingTerrain() {
         return this.terrainSelection != null;
     }
 
+    /**
+     * Obtiene una copia de las ubicaciones seleccionadas de terreno.
+     *
+     * @return Una copia de las ubicaciones seleccionadas de terreno; null si no hay ninguna selección.
+     */
     public LinkedHashSet<Location> getTerrainSelection() {
         if (!this.isSelectingTerrain()) return null;
         return new LinkedHashSet<>(this.terrainSelection);
     }
 
+    /**
+     * Agrega una ubicación a la selección de terreno, si el ítem seleccionado es un TerrainItem y la ubicación
+     * seleccionada no coincide con el tipo de terreno del ítem. También reproduce un efecto de sonido al agregar
+     * la ubicación.
+     *
+     * @param location La ubicación que se va a agregar a la selección de terreno.
+     */
     public void addToTerrainSelection(Location location) {
         if (!((TerrainItem) this.selectedItem).getTerrainToPlace().equals(location.getTerrain().getType())) {
             if (!this.isSelectingTerrain()) this.terrainSelection = new LinkedHashSet<>();
@@ -945,12 +947,20 @@ public class Player {
         }
     }
 
+    /**
+     * Elimina la selección actual de terrenos, si la hay. Esto borra todas las ubicaciones
+     * seleccionadas y establece la selección de terrenos a null.
+     */
     public void removeTerrainSelection() {
         this.terrainSelection.clear();
 
         this.terrainSelection = null;
     }
 
+    /**
+     * Realiza acciones específicas en cada tick del juego. Si actualmente se está seleccionando terreno,
+     * agrega partículas de cursor a cada ubicación seleccionada en el mundo para visualización.
+     */
     public void onTick() {
         if (this.isSelectingTerrain()) {
             for (Location location : this.getTerrainSelection()) {

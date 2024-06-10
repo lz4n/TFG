@@ -4,7 +4,9 @@ import utils.render.texture.Texture;
 import utils.render.texture.Textures;
 import world.location.Location;
 
-
+/**
+ * Partícula que indica el bloque y/o Feature que se está seleccionando.
+ */
 public class CursorParticle extends Particle {
 
     /**

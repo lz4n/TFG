@@ -8,7 +8,17 @@ import world.feature.Feature;
 import world.location.Location;
 import world.terrain.Terrain;
 
+/**
+ * Representa un puerto en el mundo del juego.
+ * Un puerto debe estar ubicado junto al agua y puede emplear a patos.
+ */
 public class Port extends JobSite {
+
+    /**
+     * Constructor para la clase Port.
+     *
+     * @param location La ubicación del puerto.
+     */
     public Port(Location location) {
         super(location, new Vector2f(25, 39).div(WorldScene.SPRITE_SIZE), FeatureType.BUILDING, 7);
         if (super.getLocation().add(1, 0).getTerrain().getType().equals(Terrain.TerrainType.WATER)) {

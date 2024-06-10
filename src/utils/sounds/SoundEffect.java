@@ -16,9 +16,14 @@ public enum SoundEffect {
 
     private final boolean IS_BACKGROUND_MUSIC;
     private final File[] FILES;
-
     private static Clip musicClip;
 
+    /**
+     * Constructor para inicializar un efecto de sonido con sus archivos de audio correspondientes.
+     *
+     * @param isBackgroundMusic Indica si el efecto de sonido es música de fondo.
+     * @param files             Archivos de audio asociados al efecto de sonido.
+     */
     SoundEffect(boolean isBackgroundMusic, String... files) {
         this.IS_BACKGROUND_MUSIC = isBackgroundMusic;
         this.FILES = new File[files.length];
@@ -28,6 +33,12 @@ public enum SoundEffect {
         }
     }
 
+    /**
+     * Reproduce el efecto de sonido utilizando el volumen de la categoría especificada.
+     *
+     * @param category La categoría de sonido a la cual se ajusta el volumen.
+     * @return El clip de audio que se está reproduciendo.
+     */
     public Clip play(SoundCategory category) {
         Clip audioClip = null;
 
@@ -56,6 +67,9 @@ public enum SoundEffect {
         return audioClip;
     }
 
+    /**
+     * Actualiza el volumen de la música de fondo utilizando el volumen actual de la categoría de música.
+     */
     public static void updateMusicVolume() {
         ((FloatControl) SoundEffect.musicClip.getControl(FloatControl.Type.MASTER_GAIN)).setValue((float) (Math.log(SoundCategory.MUSIC.getVolume()) / Math.log(10.0) * 20.0));
     }

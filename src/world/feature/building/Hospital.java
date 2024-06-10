@@ -11,11 +11,26 @@ import world.location.Location;
 
 import java.awt.*;
 
+/**
+ * Representa un hospital en el mundo del juego.
+ * Proporciona beneficios de salud a las áreas circundantes y tiene un costo de mantenimiento.
+ */
 public class Hospital extends Building {
+
+    /**
+     * Constructor para la clase Hospital.
+     *
+     * @param location La ubicación del hospital.
+     */
     public Hospital(Location location) {
         super(location, new Vector2f(24, 24).div(WorldScene.SPRITE_SIZE), FeatureType.BUILDING, 13);
     }
 
+    /**
+     * Obtiene la cantidad de protección que proporciona el hospital.
+     *
+     * @return La cantidad de protección.
+     */
     public int getProtection() {
         return 25;
     }

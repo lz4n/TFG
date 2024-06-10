@@ -8,9 +8,6 @@ import utils.render.texture.Textures;
  * Widget que separa dos partes de un frame mediante una barra horizontal.
  */
 public class FrameSeparatorWidget extends Widget {
-    /**
-     * BoundingBox base del widget, cuando se instancia se duplica y se mueve a la posición del widget.
-     */
     private final static BoundingBox BASE_BOUNDING_BOX = new BoundingBox(93, 3);
 
     /**

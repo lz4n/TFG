@@ -6,7 +6,9 @@ import utils.render.texture.Texture;
 import utils.render.texture.Textures;
 import world.location.Location;
 
-
+/**
+ * Partícula utilizada cuando se elimina una Feature.
+ */
 public class BulldozerParticle extends AbstractPhysicsParticle {
 
     /**

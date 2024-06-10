@@ -36,6 +36,9 @@ public abstract class Particle {
         this.location = location;
     }
 
+    /**
+     * Método que se llama en cada tick que gestiona el comportamiento de la partícula.
+     */
     public void onTick() {
         //Aumentamos el lifetime y eliminamos la partícula si supera el tiempo máximo.
         if (this.lifeTime++ > this.getMaxLifeTime()) {

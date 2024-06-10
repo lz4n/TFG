@@ -49,7 +49,6 @@ public class Setting<T> {
 
     private final String ID;
     private T value;
-
     private Setting(String name, T defaultValue) {
         this.ID = name;
         this.value = defaultValue;

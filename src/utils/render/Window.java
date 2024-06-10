@@ -12,15 +12,12 @@ import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.stb.STBImageWrite;
 import org.lwjgl.system.MemoryUtil;
-import utils.sounds.SoundCategory;
-import utils.sounds.SoundEffect;
 import ui.container.Frame;
 import ui.container.Inventory;
 import utils.KeyBind;
 import utils.Logger;
 import utils.Setting;
 import utils.Time;
-import utils.render.scene.Scene;
 import utils.render.scene.WorldScene;
 import utils.render.texture.AnimatedTexture;
 import utils.render.texture.CacheTexture;
@@ -45,14 +42,7 @@ import java.util.concurrent.Executors;
  * @author Izan
  */
 public class Window {
-    /**
-     * Tamaño por defecto de la ventana.
-     */
     private final static int WIDTH = 1920, HEIGHT = 1080;
-
-    /**
-     * Tamaño inicial de la ventana.
-     */
     private static int initialWidth, initialHeight;
 
     /**
@@ -63,8 +53,7 @@ public class Window {
     /**
      * Escena actual de la ventana.
      */
-    public static Scene currentScene = new WorldScene();
-
+    public static WorldScene currentScene = new WorldScene();
     private static ExecutorService screenshotExecutor = Executors.newCachedThreadPool();
 
 
@@ -117,10 +106,6 @@ public class Window {
         }
     }
 
-    /**
-     * Inicializa los componentes gráficos y establece los atributos y comportamientos de la ventana.
-     * También inicializa OpenGL: todos los comandos gráficos deben ejecutarse después de este método.
-     */
     private static void init() {
         //Generamos el ErrorCallback
         GLFWErrorCallback.createPrint(System.err).set();
@@ -204,9 +189,6 @@ public class Window {
 
     }
 
-    /**
-     * Crea el loop principal y calcula los FPS.
-     */
     private static void loop() {
         long beginTime = Time.getTimeInNanoseconds(), endTime, dTime = -1;
 
@@ -265,12 +247,6 @@ public class Window {
         }
     }
 
-    /**
-     * @return Vector de dos enteros con las dimensiones de la ventana.
-     *
-     * @see Window#getWidth()
-     * @see Window#getHeight()
-     */
     private static Vector2i getDimensions() {
         try {
             int[] width = new int[1], height = new int[1];
@@ -338,6 +314,13 @@ public class Window {
         Setting.FULLSCREEN.setValue(fullScreen);
     }
 
+    /**
+     * Captura una imagen de la pantalla actual y la guarda como un archivo PNG.
+     * La operación de captura e inversión de la imagen se realiza de manera asíncrona en un hilo separado.
+     * Se utiliza OpenGL para realizar la captura y se invierte la imagen verticalmente antes de guardarla.
+     * El archivo de captura se guarda en el directorio de instalación de la aplicación bajo la carpeta "screenshots".
+     * El nombre del archivo se genera basado en la fecha y hora actual del sistema.
+     */
     public static void createScreenshot() {
         //Creamos un buffer para almecenar los bytes de la pantalla: ancho *alto *4 (canales de color, RGBA)
         ByteBuffer screenBuffer = BufferUtils.createByteBuffer(Window.getWidth() *Window.getHeight() *4);

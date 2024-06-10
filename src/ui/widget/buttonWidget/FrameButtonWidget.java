@@ -20,10 +20,6 @@ public class FrameButtonWidget extends AbstractButtonWidget implements OnResizeW
      * BoundingBox base del widget, cuando se instancia se duplica y se mueve a la posición del widget.
      */
     protected final static BoundingBox BASE_BOUNDING_BOX = new BoundingBox(84, 16);
-
-    /**
-     * Tamaño del texto por pixel in-game.
-     */
     private final static float UNIT_TEXT_SIZE = 6.5f;
 
     /**

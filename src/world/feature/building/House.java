@@ -12,9 +12,19 @@ import world.particle.SmokeParticle;
 
 import java.awt.*;
 
+/**
+ * Representa una casa en el mundo del juego.
+ * Cada casa tiene una cantidad de habitantes dependiendo de su nivel.
+ */
 public class House extends Building {
     protected Duck[] inhabitants;
 
+    /**
+     * Constructor para la clase House.
+     *
+     * @param location La ubicación de la casa.
+     * @param variant El nivel de la casa, que determina su tamaño y la cantidad de habitantes.
+     */
     public House(Location location, int variant) {
         super(location, House.getSize(variant +1), FeatureType.BUILDING, variant);
         switch (variant) {
@@ -26,6 +36,19 @@ public class House extends Building {
             case 5 -> this.inhabitants = new Duck[15];
             case 6 -> this.inhabitants = new Duck[20];
         }
+    }
+
+    private static Vector2f getSize(int level) {
+        return switch (level) {
+            case 1 -> new Vector2f(15, 12).div(WorldScene.SPRITE_SIZE);
+            case 2 -> new Vector2f(15).div(WorldScene.SPRITE_SIZE);
+            case 3 -> new Vector2f(17, 16).div(WorldScene.SPRITE_SIZE);
+            case 4 -> new Vector2f(21, 18).div(WorldScene.SPRITE_SIZE);
+            case 5-> new Vector2f(21, 24).div(WorldScene.SPRITE_SIZE);
+            case 6 -> new Vector2f(23, 21).div(WorldScene.SPRITE_SIZE);
+            case 7 -> new Vector2f(25, 22).div(WorldScene.SPRITE_SIZE);
+            default -> new Vector2f(0, 0);
+        };
     }
 
     @Override
@@ -61,19 +84,6 @@ public class House extends Building {
         if (this.getVariant() +1 >= 3 && this.getVariant() +1 <= 5 && Main.RANDOM.nextFloat() > 0.97) {
             Main.world.addParticle(new SmokeParticle(this.getLocation().add(0.4f, 0.8f)));
         }
-    }
-
-    private static Vector2f getSize(int level) {
-        return switch (level) {
-            case 1 -> new Vector2f(15, 12).div(WorldScene.SPRITE_SIZE);
-            case 2 -> new Vector2f(15).div(WorldScene.SPRITE_SIZE);
-            case 3 -> new Vector2f(17, 16).div(WorldScene.SPRITE_SIZE);
-            case 4 -> new Vector2f(21, 18).div(WorldScene.SPRITE_SIZE);
-            case 5-> new Vector2f(21, 24).div(WorldScene.SPRITE_SIZE);
-            case 6 -> new Vector2f(23, 21).div(WorldScene.SPRITE_SIZE);
-            case 7 -> new Vector2f(25, 22).div(WorldScene.SPRITE_SIZE);
-            default -> new Vector2f(0, 0);
-        };
     }
 
     @Override

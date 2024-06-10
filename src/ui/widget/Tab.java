@@ -17,10 +17,6 @@ import utils.render.texture.Textures;
  */
 @IgnoreScrollMovement
 public class Tab extends Widget implements CustomDrawWidget {
-    /**
-     * BoundingBox del widget base. Cuando de insstancia un nuevo Widget se clona la BoundingBox y se mueve a la posición del nuevo widget.
-     * @see BoundingBox
-     */
     private final static BoundingBox BASE_BOUNDING_BOX = new BoundingBox(26, 12);
 
     /**
@@ -37,23 +33,16 @@ public class Tab extends Widget implements CustomDrawWidget {
      * Distancia entre el origen de una pestaña y el origen de la siguiente.
      */
     public static final float TOTAL_TAB_SIZE = Tab.TAB_SPACING + Tab.BASE_BOUNDING_BOX.getWidth();
-
-    /**
-     * Ancho total de la pestaña (contando todos los Widgets que contiene).
-     */
     private float width = 0;
-
-    /**
-     * Indica si la pestaña está seleccionada o no.
-     */
     private boolean isSelected = false;
-
-    /**
-     * Icono de la pestaña cuando está selecionada y no seleccionada.
-     */
     private final Texture SELECTED_CONTENT, UNSELECTED_CONTENT;
 
-
+    /**
+     * Constructor de la clase Tab que inicializa una pestaña con contenido seleccionado y no seleccionado.
+     *
+     * @param selectedContent   Textura del contenido cuando la pestaña está seleccionada.
+     * @param unselectedContent Textura del contenido cuando la pestaña no está seleccionada.
+     */
     public Tab(Texture selectedContent, Texture unselectedContent) {
         super(0, 0, Tab.BASE_BOUNDING_BOX);
         this.SELECTED_CONTENT = selectedContent;
@@ -61,17 +50,28 @@ public class Tab extends Widget implements CustomDrawWidget {
     }
 
     /**
-     * Actualiza el ancho de la pestaña. Se coge el valor más alto entre el ancho anterior y el nuevo ancho máximo (sumando una separación al final)
-     * @param maxWidth
+     * Actualiza el ancho de la pestaña. Se ajusta el ancho de la pestaña al mayor entre el ancho actual y el nuevo ancho máximo (sumando una separación al final).
+     *
+     * @param maxWidth El nuevo ancho máximo que se desea establecer para la pestaña.
      */
     public void updateWidth(float maxWidth) {
         this.width = Math.max(this.width, maxWidth + Inventory.WIDGET_SPACING);
     }
 
+    /**
+     * Obtiene el ancho actual de la pestaña.
+     *
+     * @return El ancho actual de la pestaña.
+     */
     public float getWidth() {
         return this.width;
     }
 
+    /**
+     * Establece si la pestaña está seleccionada o no.
+     *
+     * @param isSelected true si la pestaña está seleccionada, false de lo contrario.
+     */
     public void setSelected(boolean isSelected) {
         this.isSelected = isSelected;
     }

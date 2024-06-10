@@ -6,7 +6,9 @@ import utils.render.texture.Texture;
 import utils.render.texture.Textures;
 import world.location.Location;
 
-
+/**
+ * Partícula de humo que generan algunas casas.
+ */
 public class SmokeParticle extends AbstractPhysicsParticle {
 
     /**

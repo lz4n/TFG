@@ -10,7 +10,17 @@ import world.location.Location;
 
 import java.awt.*;
 
+/**
+ * Representa una fuente en el mundo del juego.
+ * Las fuentes tienen un costo de mantenimiento significativo y se utilizan principalmente para fines decorativos.
+ */
 public class Fountain extends Building {
+
+    /**
+     * Constructor para la clase Fountain.
+     *
+     * @param location La ubicación de la fuente.
+     */
     public Fountain(Location location) {
         super(location, new Vector2f(22, 33).div(WorldScene.SPRITE_SIZE), FeatureType.BUILDING, 15);
     }
