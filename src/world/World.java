@@ -5,6 +5,8 @@ import utils.Setting;
 import world.entity.Duck;
 import world.feature.*;
 import world.feature.building.Building;
+import world.feature.building.Hospital;
+import world.feature.building.PoliceStation;
 import world.feature.building.jobSite.Port;
 import world.location.Location;
 import world.particle.CloudParticle;
@@ -16,7 +18,6 @@ import world.worldBuilder.WorldBuilder;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.function.Consumer;
 
 /**
  * Representa el mundo de juego.
@@ -95,9 +96,9 @@ public class World implements Serializable {
     /**
      * Índice de felicidad del mundo.
      */
-    private float happiness = 1, unemployment = 1;
+    private float happiness = 1, unemployment = 1, security = 1, health = 1;
 
-    private int money = World.INITIAL_MONEY, incomes = 50, population = 0;
+    private int money = World.INITIAL_MONEY, incomes = 0, population = 0;
 
     /**
      * Ínstancia un mundo, pero no lo genera.
@@ -269,6 +270,8 @@ public class World implements Serializable {
             if (feature instanceof Building building) {
                 this.BUILDINGS.add(building);
                 building.onAdd();
+
+                this.updateIncomes();
             }
 
             this.featuresCount++;
@@ -306,8 +309,10 @@ public class World implements Serializable {
             feature.getFeatureType().updateMesh();
 
             if (feature instanceof Building building) {
-                building.onRemove();
                 this.BUILDINGS.remove(building);
+                building.onRemove();
+
+                this.updateIncomes();
             }
 
             this.featuresCount--;
@@ -320,19 +325,12 @@ public class World implements Serializable {
      * @param duck Entidad que se quiere generar.
      */
     public void addDuck(Duck duck) {
-        this.spawnDuck(duck);
-        duck.onAdd();
+        this.DUCKS_LIST.add(duck);
         this.ducksCount++;
 
-        Main.world.updateUnemployment();
-    }
-
-    public void spawnDuck(Duck duck) {
-        this.DUCKS_LIST.add(duck);
-    }
-
-    public void despawnDuck(Duck duck) {
-        this.DUCKS_LIST.remove(duck);
+        this.updateUnemployment();
+        this.updateSecurity();
+        this.updateHealth();
     }
 
     /**
@@ -340,9 +338,12 @@ public class World implements Serializable {
      * @param duck Entidad que se quiere eliminar.
      */
     public void removeDuck(Duck duck) {
-        this.despawnDuck(duck);
-        duck.onRemove();
+        this.DUCKS_LIST.remove(duck);
+        duck.removeJobSite();
         this.ducksCount--;
+
+        this.updateSecurity();
+        this.updateHealth();
     }
 
     /**
@@ -507,12 +508,6 @@ public class World implements Serializable {
         return this.money;
     }
 
-    public void addIncome(int amount) {
-        this.incomes += amount;
-
-        Main.PLAYER.updateIncomes(this.incomes);
-    }
-
     public int getIncomes() {
         return this.incomes;
     }
@@ -538,8 +533,32 @@ public class World implements Serializable {
         return this.unemployment;
     }
 
-    public void addHappiness(float aomunt) {
-        this.happiness = Math.clamp(this.happiness +aomunt, 0, 1);
+    public float getSecurity() {
+        return this.security;
+    }
+
+    public float getHealth() {
+        return this.health;
+    }
+
+    public void updateIncomes() {
+        this.incomes = (int) this.getDucks().stream().mapToDouble(Duck::getTaxes).sum();
+
+        this.incomes += this.getBuildings().stream().mapToInt(Building::getIncomes).sum();
+
+        Main.PLAYER.updateIncomes(this.getIncomes());
+    }
+
+    public void updateHappiness() {
+        OptionalDouble averageHappiness = this.getDucks().stream().mapToDouble(Duck::getHappiness).average();
+
+        if (averageHappiness.isPresent()) {
+            this.happiness = (float) averageHappiness.getAsDouble();
+        } else {
+            this.happiness = 1;
+        }
+
+        this.updateIncomes();
 
         Main.PLAYER.updateHappiness(this.happiness);
     }
@@ -547,7 +566,38 @@ public class World implements Serializable {
     public void updateUnemployment() {
         this.unemployment = this.DUCKS_LIST.stream().filter(Duck::isUnemployed).count() / (float) this.ducksCount;
 
+        this.updateIncomes();
+
         Main.PLAYER.updateUnemployment(this.unemployment);
+    }
+
+    public void updateSecurity() {
+        int protection = 0;
+
+        for (Building building : this.BUILDINGS) {
+            if (building instanceof PoliceStation policeStation) {
+                protection += policeStation.getProtection();
+            }
+        }
+
+        this.security = Math.clamp(protection / (float) this.getDucksCount(), 0 , 1);
+
+        Main.PLAYER.updateSecurity(this.security);
+    }
+
+
+    public void updateHealth() {
+        int protection = 0;
+
+        for (Building building : this.BUILDINGS) {
+            if (building instanceof Hospital hospital) {
+                protection += hospital.getProtection();
+            }
+        }
+
+        this.health = Math.clamp(protection / (float) this.getDucksCount(), 0, 1);
+
+        Main.PLAYER.updateHealth(this.health);
     }
 
     public void onTick(boolean paused) {
@@ -561,8 +611,6 @@ public class World implements Serializable {
 
             this.dayTime += Main.tickSpeed;
             if (this.dayTime >= World.TOTAL_DAY_DURATION) { //Si ha pasado un día
-                //TODO Mecánica de felicidad, que sea random cada dia es temporal.
-                this.addHappiness((Main.RANDOM.nextFloat() / 10) * (Main.RANDOM.nextBoolean() ? -1 : -1));
                 this.dayTime = 0;
 
                 //Aumentamos el mes y año si hace falta..

@@ -3,10 +3,15 @@ package world.feature.building;
 import main.Main;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
+import ui.tooltip.TextTooltip;
+import ui.tooltip.Tooltip;
+import utils.render.GameFont;
 import utils.render.scene.WorldScene;
 import world.entity.Duck;
 import world.location.Location;
 import world.particle.SmokeParticle;
+
+import java.awt.*;
 
 public class House extends Building {
     protected Duck[] inhabitants;
@@ -48,6 +53,11 @@ public class House extends Building {
     }
 
     @Override
+    public int getIncomes() {
+        return 0;
+    }
+
+    @Override
     public void onTick() {
         if (this.getVariant() +1 >= 3 && this.getVariant() +1 <= 5 && Main.RANDOM.nextFloat() > 0.97) {
             Main.world.addParticle(new SmokeParticle(this.getLocation().add(0.4f, 0.8f)));
@@ -67,5 +77,12 @@ public class House extends Building {
         };
     }
 
+    @Override
+    public Tooltip getTooltip() {
+        TextTooltip tooltip = new TextTooltip();
 
+        tooltip.addLine(String.format("Capacidad: %d patos", this.inhabitants.length), GameFont.PIXEL_CONTENT, Font.PLAIN, TextTooltip.CONTENT_TEXT_SIZE);
+
+        return tooltip;
+    }
 }

@@ -5,6 +5,7 @@ import main.Main;
 import org.joml.Matrix4f;
 import org.lwjgl.glfw.GLFW;
 import ui.container.Inventory;
+import ui.tooltip.Tooltip;
 import utils.Setting;
 import utils.Time;
 import utils.render.GameFont;
@@ -16,6 +17,7 @@ import utils.render.texture.*;
 import world.WorldGenerator;
 import world.entity.Duck;
 import world.feature.Feature;
+import world.feature.building.Building;
 import world.location.Location;
 import world.particle.*;
 import world.terrain.Terrain;
@@ -252,6 +254,14 @@ public class WorldScene implements Scene {
                 }
             } else {
                 Main.world.addParticle(new CursorParticle(MouseListener.getInGameLocation()));
+            }
+
+            if (selectedFeature instanceof Building building) {
+                Tooltip tooltip = building.getTooltip();
+
+                if (tooltip != null) {
+                    tooltip.showAtMouse();
+                }
             }
         }
 

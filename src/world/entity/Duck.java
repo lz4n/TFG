@@ -8,7 +8,6 @@ import ui.tooltip.Tooltip;
 import utils.BoundingBox;
 import utils.render.GameFont;
 import utils.render.scene.WorldScene;
-import utils.render.texture.Colors;
 import utils.render.texture.Texture;
 import utils.render.texture.Textures;
 import world.World;
@@ -32,7 +31,10 @@ import java.util.List;
 
 //TODO: Sistema para detectar clic a las entidades.
 public class Duck implements Serializable {
+    private static final float TAX_BASE = 50;
+
     public static final float NO_FLIP = 0, FLIP_HORIZONTAL = 1, FLIP_VERTICAL = 2, FLIP_BOTH = 3;
+
     private static final int SQUAWKING_TIME = 50;
     /*{"8:30", "17:30", "22:00"},
           {"15:20", "21:20", "05:00"},
@@ -59,6 +61,8 @@ public class Duck implements Serializable {
     private transient boolean isSelected = false;
     private BoundingBox boundingBox = new BoundingBox(-2, -2, 18, 18).divide(WorldScene.SPRITE_SIZE);
     private TextTooltip tooltip = null;
+    public float happiness = 1;
+    public int taxes = 0;
 
 
     /**
@@ -171,13 +175,6 @@ public class Duck implements Serializable {
         return this.currentAnimation.TEXTURE;
     }
 
-    public void onRemove() {
-        this.removeJobSite();
-    }
-
-    public void onAdd() {
-    }
-
     //TODO: Ia de los patos.
     public void onTick() {
         if (this.pathfinding == null) {
@@ -255,6 +252,8 @@ public class Duck implements Serializable {
             this.findJob();
         }
 
+        this.updateHappiness();
+
         this.setState();
         this.updateTooltip();
 
@@ -281,11 +280,23 @@ public class Duck implements Serializable {
         this.pathIndex = 0;
     }
 
+    private void updateHappiness() {
+        this.happiness =
+                .2f *Main.world.getHealth()
+                +.2f *Main.world.getSecurity()
+                +.4f *(1 -Main.world.getUnemployment())
+                +.2f *(this.isUnemployed() ? 0 : 1);
+
+        Main.world.updateHappiness();
+    }
+
     private void updateTooltip() {
         this.tooltip = new TextTooltip();
 
         this.tooltip.addLine(this.state.toString(), GameFont.PIXEL_CONTENT, Font.PLAIN, TextTooltip.CONTENT_TEXT_SIZE);
         this.tooltip.addLine("Horario: " +this.scheduleIndex, GameFont.PIXEL_CONTENT, Font.PLAIN, TextTooltip.CONTENT_TEXT_SIZE);
+        this.tooltip.addLine("HappyHappyHappy: " +this.happiness, GameFont.PIXEL_CONTENT, Font.PLAIN, TextTooltip.CONTENT_TEXT_SIZE);
+        this.tooltip.addLine("Impuestps: " +this.taxes, GameFont.PIXEL_CONTENT, Font.PLAIN, TextTooltip.CONTENT_TEXT_SIZE);
     }
 
     private void onSelected() {
@@ -318,8 +329,14 @@ public class Duck implements Serializable {
         return this.jobSite == null;
     }
 
-    public JobSite getJobSite() {
-        return this.jobSite;
+    public float getHappiness() {
+        return this.happiness;
+    }
+
+    public int getTaxes() {
+        this.taxes = (int) Math.ceil(Duck.TAX_BASE *this.getHappiness());
+
+        return this.taxes;
     }
 
     public Tooltip getTooltip() {

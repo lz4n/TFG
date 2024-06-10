@@ -30,7 +30,6 @@ import utils.render.Window;
 import utils.render.texture.Colors;
 import utils.render.texture.Texture;
 import utils.render.texture.Textures;
-import world.entity.Duck;
 import world.feature.*;
 import world.feature.building.Hospital;
 import world.feature.building.House;
@@ -129,7 +128,9 @@ public class Player {
         INCOMES_TEXT_BOX = new SmallTextBox(50, 14),
         POPULATION_TEXT_BOX = new SmallTextBox(50, 24),
         HAPPINESS_TEXT_BOX = new SmallTextBox(50, 34),
-        UNEMPLOYMENT_TEXT_BOX = new SmallTextBox(90, 4);
+        UNEMPLOYMENT_TEXT_BOX = new SmallTextBox(90, 4),
+        SECURITY_TEXT_BOX = new SmallTextBox(90, 14),
+        HEALTH_TEXT_BOX = new SmallTextBox(90, 24);
 
     /**
      * Inventario del jugador.
@@ -282,9 +283,12 @@ public class Player {
         this.HAPPINESS_TEXT_BOX.setTooltip(new TextTooltip().addLine("Felicidad media de todos los patos", GameFont.PIXEL_CONTENT, Font.PLAIN, TextTooltip.CONTENT_TEXT_SIZE));
         this.INVENTORY.addWidgetToAllTabs(this.UNEMPLOYMENT_TEXT_BOX);
         this.UNEMPLOYMENT_TEXT_BOX.setTooltip(new TextTooltip().addLine("Índice de paro de la ciudad", GameFont.PIXEL_CONTENT, Font.PLAIN, TextTooltip.CONTENT_TEXT_SIZE));
+        this.INVENTORY.addWidgetToAllTabs(this.SECURITY_TEXT_BOX);
+        this.SECURITY_TEXT_BOX.setTooltip(new TextTooltip().addLine("Índice de seguridad de la ciudad", GameFont.PIXEL_CONTENT, Font.PLAIN, TextTooltip.CONTENT_TEXT_SIZE));
+        this.INVENTORY.addWidgetToAllTabs(this.HEALTH_TEXT_BOX);
+        this.HEALTH_TEXT_BOX.setTooltip(new TextTooltip().addLine("Índice de salud de la ciudad", GameFont.PIXEL_CONTENT, Font.PLAIN, TextTooltip.CONTENT_TEXT_SIZE));
 
-        this.INVENTORY.addWidgetToAllTabs(new SmallTextBox(90, 14));
-        this.INVENTORY.addWidgetToAllTabs(new SmallTextBox(90, 24));
+
         this.INVENTORY.addWidgetToAllTabs(new SmallTextBox(90, 34));
 
         Player.ITEMS.keySet().forEach(tab -> this.addFeaturesWidgetToTab(130, tab));
@@ -304,6 +308,8 @@ public class Player {
         this.updatePopulation(Main.world.getPopulation());
         this.updateHappiness(Main.world.getHappiness());
         this.updateUnemployment(Main.world.getUnemployment());
+        this.updateSecurity(Main.world.getSecurity());
+        this.updateHealth(Main.world.getHealth());
     }
 
     private void createGameMenu() {
@@ -639,6 +645,44 @@ public class Player {
 
         this.UNEMPLOYMENT_TEXT_BOX.setText(
                 (int) (unemployment *100) + "%",
+                Font.PLAIN,
+                color
+        );
+    }
+
+    public void updateSecurity(float security
+
+    ) {
+        Color color = Colors.RED;
+
+        if (security > .5f) {
+            color = Colors.ORANGE;
+
+            if (security > .75f) {
+                color = Colors.GREEN;
+            }
+        }
+
+        this.SECURITY_TEXT_BOX.setText(
+                (int) (security *100) + "%",
+                Font.PLAIN,
+                color
+        );
+    }
+
+    public void updateHealth(float health) {
+        Color color = Colors.RED;
+
+        if (health > .5f) {
+            color = Colors.ORANGE;
+
+            if (health > .75f) {
+                color = Colors.GREEN;
+            }
+        }
+
+        this.HEALTH_TEXT_BOX.setText(
+                (int) (health *100) + "%",
                 Font.PLAIN,
                 color
         );

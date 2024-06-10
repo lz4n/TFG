@@ -3,6 +3,7 @@ package world.feature.building;
 import main.Main;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
+import ui.tooltip.Tooltip;
 import world.entity.Duck;
 import world.feature.Feature;
 import world.location.Location;
@@ -20,6 +21,12 @@ public abstract class Building extends Feature {
 
     public void onRemove() {
 
+    }
+
+    public abstract int getIncomes();
+
+    public Tooltip getTooltip() {
+        return null;
     }
 
     @Override

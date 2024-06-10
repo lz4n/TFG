@@ -59,4 +59,22 @@ public class Port extends JobSite {
 
         return false;
     }
+
+    @Override
+    public int getIncomes() {
+        int incomes = this.getCost();
+
+        for (Duck duck: this.workers) {
+            if (duck != null) {
+                incomes += 70;
+            }
+        }
+
+        return incomes;
+    }
+
+    @Override
+    public int getCost() {
+        return -220;
+    }
 }

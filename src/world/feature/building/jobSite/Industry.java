@@ -2,9 +2,14 @@ package world.feature.building.jobSite;
 
 import org.joml.Vector2f;
 import org.joml.Vector2i;
+import ui.tooltip.TextTooltip;
+import ui.tooltip.Tooltip;
+import utils.render.GameFont;
 import utils.render.scene.WorldScene;
 import world.entity.Duck;
 import world.location.Location;
+
+import java.awt.*;
 
 public class Industry extends JobSite {
     public Industry(Location location, int variant) {
@@ -20,9 +25,6 @@ public class Industry extends JobSite {
         }
     }
 
-
-
-
     private static Vector2f getSize(int level) {
         return switch (level) {
             case 1, 2, 3 -> new Vector2f(16, 16).div(WorldScene.SPRITE_SIZE);
@@ -30,5 +32,69 @@ public class Industry extends JobSite {
             case 5-> new Vector2f(22, 22).div(WorldScene.SPRITE_SIZE);
             default -> new Vector2f(0, 0);
         };
+    }
+
+    @Override
+    public int getCost() {
+        switch (this.getVariant()) {
+            case 0 -> {
+                return -20;
+            }
+            case 1 -> {
+                return -50;
+            }
+            case 2 -> {
+                return -80;
+            }
+            case 3 -> {
+                return -110;
+            }
+            case 4 -> {
+                return -140;
+            }
+            case 5 -> {
+                return -170;
+            }
+        }
+
+        return 0;
+    }
+
+    private int getIncomesPerDuck() {
+        switch (this.getVariant()) {
+            case 0 -> {
+                return 25;
+            }
+            case 1 -> {
+                return 30;
+            }
+            case 2 -> {
+                return 35;
+            }
+            case 3 -> {
+                return 40;
+            }
+            case 4 -> {
+                return 45;
+            }
+            case 5 -> {
+                return 50;
+            }
+        }
+
+        return 0;
+    }
+
+    @Override
+    public int getIncomes() {
+        int incomes = this.getCost();
+
+        for (Duck duck: this.workers) {
+            if (duck != null) {
+                incomes += this.getIncomesPerDuck();
+            }
+        }
+
+        return incomes;
     }
 }
