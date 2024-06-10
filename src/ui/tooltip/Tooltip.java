@@ -8,10 +8,12 @@ import utils.BoundingBox;
 import utils.render.Shader;
 import utils.render.Window;
 import utils.render.mesh.TooltipMesh;
+import utils.render.texture.Graphics2dTexture;
 import utils.render.texture.Texture;
 import world.location.Location;
 
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class Tooltip {
     private Vector2f size = new Vector2f(0, 0);
@@ -66,15 +68,17 @@ public class Tooltip {
         Shader.HUD.uploadMatrix4f("uProjection", new Matrix4f().ortho(0, Window.getWidth(), Window.getHeight(), 0, -1, 1));
         Shader.HUD.uploadMatrix4f("uView", new Matrix4f().identity());
 
-        textures.forEach((texture, position) -> {
+        for (Map.Entry<Texture, Vector2f> entry : textures.entrySet()) {
+            Texture texture = entry.getKey();
+            Vector2f position = entry.getValue();
             texture.draw(
                     Shader.HUD,
-                    tooltipLocation.getX() +position.x(),
-                    tooltipLocation.getY() +position.y(),
+                    tooltipLocation.getX() + position.x(),
+                    tooltipLocation.getY() + position.y(),
                     texture.getSize().x(),
                     texture.getSize().y()
             );
-        });
+        }
     }
 
     public void showAtWorld(Location location) {
@@ -92,7 +96,15 @@ public class Tooltip {
                 Math.max(size.x(), position.x() + texture.getSize().x()),
                 Math.max(size.y(), position.y() + texture.getSize().y())
         );
+    }
 
+    public void remove() {
+        for (Texture textre : this.textures.keySet()) {
+            if (textre instanceof Graphics2dTexture graphics2dTexture) {
+                graphics2dTexture.remove();
+            }
+        }
 
+        this.textures.clear();
     }
 }

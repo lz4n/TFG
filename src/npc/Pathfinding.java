@@ -28,7 +28,7 @@ public class Pathfinding {
             Node ndActual;
         };
 
-        AtomicReference<Float> tentative_gScore = new AtomicReference<>(0f);
+        float tentative_gScore = 0;
         while (!openList.isEmpty()) {
             ref.ndActual = openList.removeFirst();
             closeList.add(ref.ndActual);
@@ -37,15 +37,15 @@ public class Pathfinding {
                 return recreatePath(ref.ndActual);
             }
 
-            getNeighbors(ref.ndActual).forEach(neighbor -> {
+            for (Node neighbor : getNeighbors(ref.ndActual)) {
                 if (closeList.contains(neighbor))
-                    return;
+                    continue;
 
-                tentative_gScore.set(ref.ndActual.getPathWalk() + calculatePathWalk(ref.ndActual, neighbor));
+                tentative_gScore = ref.ndActual.getPathWalk() + calculatePathWalk(ref.ndActual, neighbor);
 
-                if (!openList.contains(neighbor) || tentative_gScore.get() < neighbor.getPathWalk()) {
+                if (!openList.contains(neighbor) || tentative_gScore < neighbor.getPathWalk()) {
                     neighbor.setParent(ref.ndActual);
-                    neighbor.setPathWalk(tentative_gScore.get());
+                    neighbor.setPathWalk(tentative_gScore);
                     neighbor.setPathHeuristic(calculateHeuristic(neighbor, ndEnd));
                     neighbor.setPathTotal(neighbor.getPathWalk() + neighbor.getPathHeuristic());
 
@@ -53,7 +53,7 @@ public class Pathfinding {
                         openList.add(neighbor);
                     }
                 }
-            });
+            }
 
             openList.sort(Comparator.comparingDouble(Node::getPathTotal));
         }

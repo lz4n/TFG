@@ -46,6 +46,7 @@ public final class Textures {
         INDUSTRY_LVL5 = new StaticTexture("assets/textures/feature/building/job_site/industry/industry_lvl5.png"),
         HOSPITAL = new StaticTexture("assets/textures/feature/building/service/hospital.png"),
         POLICE_STATION = new StaticTexture("assets/textures/feature/building/service/police_station.png"),
+        FOUNTAIN = new StaticTexture("assets/textures/feature/building/service/fountain.png"),
 
 
         /** ENTITIES **/

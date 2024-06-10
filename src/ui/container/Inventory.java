@@ -111,7 +111,9 @@ public class Inventory extends Container {
      * @param widget Widget que se quiere añadir.
      */
     public void addWidgetToAllTabs(Widget widget) {
-        this.TABS.forEach(tab -> this.addWidget(widget, tab));
+        for (Tab tab : this.TABS) {
+            this.addWidget(widget, tab);
+        }
     }
 
     /**
@@ -139,7 +141,9 @@ public class Inventory extends Container {
      * @param widget Widget que se quiere eliminar.
      */
     public void removeWidget(Widget widget) {
-        this.TABS.forEach(tab -> this.removeWidget(widget, tab));
+        for (Tab tab : this.TABS) {
+            this.removeWidget(widget, tab);
+        }
     }
 
     @Override
@@ -152,17 +156,17 @@ public class Inventory extends Container {
                 this.height);
 
         //Dibujamos los widgets.
-        super.widgets.forEach(widget -> {
+        for (Widget widget : super.widgets) {
             float widgetPosX, widgetPosY,
-            widgetSizeX = Container.pixelSizeInScreen *widget.getBoundingBox().getWidth(),
-            widgetSizeY = Container.pixelSizeInScreen *widget.getBoundingBox().getHeight();
+                    widgetSizeX = Container.pixelSizeInScreen * widget.getBoundingBox().getWidth(),
+                    widgetSizeY = Container.pixelSizeInScreen * widget.getBoundingBox().getHeight();
             //Si tienen la anotacion IgnoreScrollMovement ignorarán el scroll.
             if (widget.getClass().isAnnotationPresent(IgnoreScrollMovement.class)) {
-                widgetPosX = Container.pixelSizeInScreen *widget.getPosX();
-                widgetPosY = Container.pixelSizeInScreen *widget.getPosY() +this.posY;
+                widgetPosX = Container.pixelSizeInScreen * widget.getPosX();
+                widgetPosY = Container.pixelSizeInScreen * widget.getPosY() + this.posY;
             } else {
-                widgetPosX = Container.pixelSizeInScreen *(widget.getPosX() +this.currentScrollPosX);
-                widgetPosY = Container.pixelSizeInScreen *widget.getPosY() +this.posY;
+                widgetPosX = Container.pixelSizeInScreen * (widget.getPosX() + this.currentScrollPosX);
+                widgetPosY = Container.pixelSizeInScreen * widget.getPosY() + this.posY;
             }
 
             widget.getTexture().draw(Shader.HUD, widgetPosX, widgetPosY, widgetSizeX, widgetSizeY);
@@ -174,7 +178,7 @@ public class Inventory extends Container {
                     customDrawWidget.draw(Container.pixelSizeInScreen, Container.pixelSizeInScreen * (widget.getPosX() + this.currentScrollPosX), Container.pixelSizeInScreen * widget.getPosY() + this.posY);
                 }
             }
-        });
+        }
 
         //Dibujamos las felchas de scroll.
         if (this.isShowingLeftArrow) {
@@ -340,7 +344,9 @@ public class Inventory extends Container {
      * Deselecciona todas las pestañas. Actualiza solo la parte gráfica.
      */
     public void unselectAllTabs() {
-        this.TABS.forEach(tab -> tab.setSelected(false));
+        for (Tab tab : this.TABS) {
+            tab.setSelected(false);
+        }
     }
 
     /**

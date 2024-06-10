@@ -214,18 +214,18 @@ public class Frame extends Container {
         );
 
         //Dibujamos los widgets.
-        super.widgets.forEach(widget -> {
-            float widgetPosX = Container.pixelSizeInScreen *(widget.getPosX() +this.posX), //Las coordenadas del frame son relativas, cuyo origen está en la esquina superior izquierda del frame.
-                    widgetPosY = Container.pixelSizeInScreen *(widget.getPosY() +this.posY +this.sliderPos), //Las coordenadas del frame son relativas, cuyo origen está en la esquina superior izquierda del frame. Se le suma la posición del scroll.
-                    widgetSizeX = Container.pixelSizeInScreen *widget.getBoundingBox().getWidth(),
-                    widgetSizeY = Container.pixelSizeInScreen *widget.getBoundingBox().getHeight();
+        for (Widget widget : super.widgets) {
+            float widgetPosX = Container.pixelSizeInScreen * (widget.getPosX() + this.posX), //Las coordenadas del frame son relativas, cuyo origen está en la esquina superior izquierda del frame.
+                    widgetPosY = Container.pixelSizeInScreen * (widget.getPosY() + this.posY + this.sliderPos), //Las coordenadas del frame son relativas, cuyo origen está en la esquina superior izquierda del frame. Se le suma la posición del scroll.
+                    widgetSizeX = Container.pixelSizeInScreen * widget.getBoundingBox().getWidth(),
+                    widgetSizeY = Container.pixelSizeInScreen * widget.getBoundingBox().getHeight();
 
             widget.getTexture().draw(Shader.HUD, widgetPosX, widgetPosY, widgetSizeX, widgetSizeY);
 
             if (widget instanceof CustomDrawWidget customDrawWidget) {
-                customDrawWidget.draw(Container.pixelSizeInScreen, Container.pixelSizeInScreen *(widget.getPosX() +this.posX), Container.pixelSizeInScreen *(widget.getPosY() +this.posY +this.sliderPos));
+                customDrawWidget.draw(Container.pixelSizeInScreen, Container.pixelSizeInScreen * (widget.getPosX() + this.posX), Container.pixelSizeInScreen * (widget.getPosY() + this.posY + this.sliderPos));
             }
-        });
+        }
 
         //Desactivamos el Scissor
         GL11.glDisable(GL11.GL_SCISSOR_TEST);
@@ -300,12 +300,12 @@ public class Frame extends Container {
         this.nameTexture = GameFont.PIXEL.drawText(this.NAME, Font.PLAIN, Frame.UNIT_TEXT_SIZE *(int) Container.pixelSizeInScreen);
         this.posXName = (newWidth - this.nameTexture.getSize().x()) /2f;
 
-        super.widgets.forEach(widget -> {
+        for (Widget widget : super.widgets) {
             this.maxScrollbarPos = Math.max(maxScrollbarPos, widget.getPosY());
-            if (this.maxScrollbarPos > ((Frame.BASE_BOUNDING_BOX.getHeight() -16) -nameTexture.getSize().y() /Container.pixelSizeInScreen)) {
+            if (this.maxScrollbarPos > ((Frame.BASE_BOUNDING_BOX.getHeight() - 16) - nameTexture.getSize().y() / Container.pixelSizeInScreen)) {
                 this.hasScrollbar = true;
             }
-        });
+        }
         this.maxScrollbarPos -= Frame.BASE_BOUNDING_BOX.getHeight() -16 -nameTexture.getSize().y() /Container.pixelSizeInScreen;
 
         this.updateScrollbarSlider();
@@ -328,9 +328,11 @@ public class Frame extends Container {
             return;
         }
 
-        this.widgets.stream()
-                .filter(widget -> widget instanceof OnMouseDragEvent)
-                .forEach(widget -> ((OnMouseDragEvent) widget).onMouseDragEvent(mouseX /Container.pixelSizeInScreen -this.posX, mouseY /Container.pixelSizeInScreen  -this.posY));
+        for (Widget widget : this.widgets) {
+            if (widget instanceof OnMouseDragEvent onMouseDragEvent) {
+                onMouseDragEvent.onMouseDragEvent(mouseX / Container.pixelSizeInScreen - this.posX, mouseY / Container.pixelSizeInScreen - this.posY);
+            }
+        }
     }
 
     public static class FrameLayoutBuilder {

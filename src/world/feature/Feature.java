@@ -211,7 +211,9 @@ public abstract class Feature implements Comparable<Feature>, Serializable {
                 Textures.INDUSTRY_LVL5,
 
                 Textures.HOSPITAL,
-                Textures.POLICE_STATION
+                Textures.POLICE_STATION,
+
+                Textures.FOUNTAIN
 
         );
 
@@ -255,7 +257,9 @@ public abstract class Feature implements Comparable<Feature>, Serializable {
             List<Feature> features = Main.world.getFeatures();
             features.removeIf(feature -> feature == null || !feature.getFeatureType().equals(this));
             this.mesh = new WorldMesh(features.size(), 2, 2, 1, 1);
-            features.forEach(feature -> mesh.addVertex(feature.getLocation().getX(), feature.getLocation().getY(), feature.getSize().x(), feature.getSize().y(), feature.getVariant(), feature.getFlip()));
+            for (Feature feature : features) {
+                mesh.addVertex(feature.getLocation().getX(), feature.getLocation().getY(), feature.getSize().x(), feature.getSize().y(), feature.getVariant(), feature.getFlip());
+            }
             this.mesh.load();
         }
 

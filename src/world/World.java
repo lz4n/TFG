@@ -42,11 +42,6 @@ public class World implements Serializable {
     private static final int INITIAL_MONEY = 600;
 
     /**
-     * Nombre del mundo.
-     */
-    private final String NAME;
-
-    /**
      * Semilla que se ha usado para la generación del mundo.
      */
     private final int SEED;
@@ -102,12 +97,10 @@ public class World implements Serializable {
 
     /**
      * Ínstancia un mundo, pero no lo genera.
-     * @param name Nombre del mundo.
      * @param seed Semilla del mundo.
      * @param worldSize Tamaño del mundo.
      */
-    public World(String name, int seed, int worldSize) {
-        this.NAME = name;
+    public World(int seed, int worldSize) {
         this.SEED = seed;
         this.WORLD_SIZE = worldSize;
         this.TERRAIN = new Terrain[this.WORLD_SIZE * this.WORLD_SIZE];
@@ -365,13 +358,6 @@ public class World implements Serializable {
     }
 
     /**
-     * @return Nombre del mundo.
-     */
-    public String getName() {
-        return this.NAME;
-    }
-
-    /**
      * @return Semilla utilizada para generar el mundo.
      */
     public int getSeed() {
@@ -602,12 +588,18 @@ public class World implements Serializable {
 
     public void onTick(boolean paused) {
         if (this.particlesList != null) {
-            new LinkedList<>(this.particlesList).forEach(Particle::onTick);
+            for (Particle particle : new LinkedList<>(this.particlesList)) {
+                particle.onTick();
+            }
         }
 
         if (!paused || Main.tickSpeed != 0) {
-            this.BUILDINGS.forEach(Feature::onTick);
-            this.DUCKS_LIST.forEach(Duck::onTick);
+            for (Building BUILDING : this.BUILDINGS) {
+                BUILDING.onTick();
+            }
+            for (Duck duck : this.DUCKS_LIST) {
+                duck.onTick();
+            }
 
             this.dayTime += Main.tickSpeed;
             if (this.dayTime >= World.TOTAL_DAY_DURATION) { //Si ha pasado un día

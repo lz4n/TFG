@@ -264,7 +264,10 @@ public class Duck implements Serializable {
         this.updateHappiness();
 
         this.setState();
-        this.updateTooltip();
+
+        if (this.isSelected) {
+            this.updateTooltip();
+        }
 
         Location destination = this.location;
 
@@ -300,12 +303,19 @@ public class Duck implements Serializable {
     }
 
     private void updateTooltip() {
+        if (this.tooltip != null) {
+            this.tooltip.remove();
+        }
+
         this.tooltip = new TextTooltip();
 
-        this.tooltip.addLine(this.state.toString(), GameFont.PIXEL_CONTENT, Font.PLAIN, TextTooltip.CONTENT_TEXT_SIZE);
-        this.tooltip.addLine("Horario: " +this.scheduleIndex, GameFont.PIXEL_CONTENT, Font.PLAIN, TextTooltip.CONTENT_TEXT_SIZE);
-        this.tooltip.addLine("HappyHappyHappy: " +this.happiness, GameFont.PIXEL_CONTENT, Font.PLAIN, TextTooltip.CONTENT_TEXT_SIZE);
-        this.tooltip.addLine("Impuestps: " +this.taxes, GameFont.PIXEL_CONTENT, Font.PLAIN, TextTooltip.CONTENT_TEXT_SIZE);
+        this.tooltip.addLine(String.format("""
+                %s
+                %s
+                Felicidad: %d%%
+                
+                Impuestos: %d€
+                """, this.state.DESCRIPTION, this.isUnemployed() ? "Desempleado" : "Con trabajo", (int) (this.happiness *100), this.taxes), GameFont.PIXEL_CONTENT, Font.PLAIN, TextTooltip.CONTENT_TEXT_SIZE);
     }
 
     private void onSelected() {
@@ -357,9 +367,16 @@ public class Duck implements Serializable {
     }
 
     private enum ActivityType {
-        IN_HOUSE,
-        WORK,
-        IN_FREETIME;
+        IN_HOUSE("En casa."),
+        WORK("Trabajado"),
+        IN_FREETIME("Pasando el rato.");
+
+        private final String DESCRIPTION;
+
+
+        ActivityType(String description) {
+            this.DESCRIPTION = description;
+        }
     }
 
     public enum Animation {

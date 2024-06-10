@@ -17,18 +17,14 @@ public enum SoundCategory {
         SoundCategory.generalVolume = generalVolume;
     }
 
-    private float volume = 1f;
+    private float volume;
 
-    private SoundCategory(float volume) {
+    SoundCategory(float volume) {
         this.volume = volume;
     }
 
     public void setVolume(float volume) {
         this.volume = Math.clamp(volume, 0f, 1f);
-    }
-
-    public float getRawVolume() {
-        return this.volume;
     }
 
     public float getVolume() {

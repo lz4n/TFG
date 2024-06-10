@@ -92,8 +92,6 @@ public class Window {
         Window.initialWidth = Window.getWidth();
         Window.initialHeight = Window.getHeight();
 
-        SoundEffect.SOUND_TEST.play(SoundCategory.MUSIC);
-
         Window.loop();
 
         //Guardamos las opciones

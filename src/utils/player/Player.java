@@ -6,6 +6,8 @@ import org.joml.Vector2f;
 import org.lwjgl.glfw.GLFW;
 import ui.widget.buttonWidget.OptionsFrameButtonWidgets;
 import utils.Setting;
+import utils.render.scene.Scene;
+import utils.render.scene.WorldScene;
 import utils.sounds.SoundCategory;
 import utils.sounds.SoundEffect;
 import ui.container.Container;
@@ -30,7 +32,9 @@ import utils.render.Window;
 import utils.render.texture.Colors;
 import utils.render.texture.Texture;
 import utils.render.texture.Textures;
+import world.World;
 import world.feature.*;
+import world.feature.building.Fountain;
 import world.feature.building.Hospital;
 import world.feature.building.House;
 import world.feature.building.PoliceStation;
@@ -81,29 +85,29 @@ public class Player {
         ));
         this.put(Player.ZONING_TAB, List.of(
                 Arrays.asList(
-                        new FeatureItem(Textures.HOUSE_LVL1, location -> new House(location, 0), "Casa (nvl. I)", "Casa para que habiten 7 patos.", 100),
-                        new FeatureItem(Textures.HOUSE_LVL2, location -> new House(location, 1),"Casa (nvl. II)", "Casa para que habiten 7 patos.", 400),
-                        new FeatureItem(Textures.HOUSE_LVL3, location -> new House(location, 2), "Casa (nvl. III)", "Casa para que habiten 7 patos.", 800),
-                        new FeatureItem(Textures.HOUSE_LVL4, location -> new House(location, 3), "Casa (nvl. IV)", "Casa para que habiten 7 patos.", 1200),
-                        new FeatureItem(Textures.HOUSE_LVL5, location -> new House(location, 4), "Casa (nvl. V)", "Casa para que habiten 7 patos.", 1600),
-                        new FeatureItem(Textures.HOUSE_LVL6, location -> new House(location, 5), "Casa (nvl. VI)", "Casa para que habiten 7 patos.", 2000),
-                        new FeatureItem(Textures.HOUSE_LVL7, location -> new House(location, 6), "Casa (nvl. VII)", "Casa para que habiten 7 patos.", 10000)
+                        new FeatureItem(Textures.HOUSE_LVL1, location -> new House(location, 0), "Casa (nvl. I)", "Casa para que habiten 1 pato.", 100),
+                        new FeatureItem(Textures.HOUSE_LVL2, location -> new House(location, 1),"Casa (nvl. II)", "Casa para que habiten 3 patos.", 400),
+                        new FeatureItem(Textures.HOUSE_LVL3, location -> new House(location, 2), "Casa (nvl. III)", "Casa para que habiten 6 patos.", 800),
+                        new FeatureItem(Textures.HOUSE_LVL4, location -> new House(location, 3), "Casa (nvl. IV)", "Casa para que habiten 9 patos.", 1200),
+                        new FeatureItem(Textures.HOUSE_LVL5, location -> new House(location, 4), "Casa (nvl. V)", "Casa para que habiten 12 patos.", 1600),
+                        new FeatureItem(Textures.HOUSE_LVL6, location -> new House(location, 5), "Casa (nvl. VI)", "Casa para que habiten 15 patos.", 2000),
+                        new FeatureItem(Textures.HOUSE_LVL7, location -> new House(location, 6), "Casa (nvl. VII)", "Casa para que habiten 20 patos.", 10000)
                 )
         ));
         this.put(Player.INDUSTRY_TAB, List.of(
                 Arrays.asList(
-                        new FeatureItem(Textures.INDUSTRY_LVL1, location -> new Industry(location, 1), "Industria (nvl. I)", "cuackn`t", 200),
-                        new FeatureItem(Textures.INDUSTRY_LVL2, location -> new Industry(location, 2), "Industria (nvl. II)", "cuackn`t", 1100),
-                        new FeatureItem(Textures.INDUSTRY_LVL3, location -> new Industry(location, 3), "Industria (nvl. III)", "cuackn`t", 2200),
-                        new FeatureItem(Textures.INDUSTRY_LVL4, location -> new Industry(location, 4), "Industria (nvl. IV)", "cuackn`t", 3300),
-                        new FeatureItem(Textures.INDUSTRY_LVL5, location -> new Industry(location, 5), "Industria (nvl. V)", "cuackn`t", 4400),
-                        new FeatureItem(Textures.PORT, Port::new, "Puerto", "Un puerto.", 15000)
+                        new FeatureItem(Textures.INDUSTRY_LVL1, location -> new Industry(location, 1), "Industria (nvl. I)", "Da trabajo a 6 patos.", 200),
+                        new FeatureItem(Textures.INDUSTRY_LVL2, location -> new Industry(location, 2), "Industria (nvl. II)", "Da trabajo a 9 patos.", 1100),
+                        new FeatureItem(Textures.INDUSTRY_LVL3, location -> new Industry(location, 3), "Industria (nvl. III)", "Da trabajo a 12 patos.", 2200),
+                        new FeatureItem(Textures.INDUSTRY_LVL4, location -> new Industry(location, 4), "Industria (nvl. IV)", "Da trabajo a 15 patos.", 3300),
+                        new FeatureItem(Textures.INDUSTRY_LVL5, location -> new Industry(location, 5), "Industria (nvl. V)", "Da trabajo a 21 patos.", 4400),
+                        new FeatureItem(Textures.PORT, Port::new, "Puerto", "Da trabajo a 50 patos. Se tiene que colocar en la costa.", 15000)
                 )
         ));
         this.put(Player.SERVICES_TAB, List.of(
                 Arrays.asList(
-                        new FeatureItem(Textures.HOSPITAL, Hospital::new, "Hospital", "Piiiiiiiii-", 10000),
-                        new FeatureItem(Textures.POLICE_STATION, PoliceStation::new, "Estación de Policía", "niiii noooo niiiii nooo niii nooo", 5000)
+                        new FeatureItem(Textures.HOSPITAL, Hospital::new, "Hospital", "Incrementa la salud de un máximo de 25 patos.", 10000),
+                        new FeatureItem(Textures.POLICE_STATION, PoliceStation::new, "Estación de Policía", "Comisaría para dar servicio a 10 patos.", 5000)
                 )
         ));
         this.put(Player.NATURE_TAB, Arrays.asList(
@@ -120,7 +124,10 @@ public class Player {
                 List.of(
                         new FeatureItem(Textures.ROCK, Rock::new, "Una piedra", null, 0))
         ));
-        this.put(Player.SPECIAL_TAB, new ArrayList<>());
+        this.put(Player.SPECIAL_TAB, List.of(
+                List.of(
+                        new FeatureItem(Textures.FOUNTAIN, Fountain::new, "La fuente", "Hace bonito.", 25000))
+        ));
 
     }};
 
@@ -291,7 +298,9 @@ public class Player {
 
         this.INVENTORY.addWidgetToAllTabs(new SmallTextBox(90, 34));
 
-        Player.ITEMS.keySet().forEach(tab -> this.addFeaturesWidgetToTab(130, tab));
+        for (Tab tab : Player.ITEMS.keySet()) {
+            this.addFeaturesWidgetToTab(130, tab);
+        }
 
         this.INVENTORY.addWidget(new SlotWidget(800, 24, Textures.DUCK_IDLE), Player.SPECIAL_TAB);
 
@@ -321,10 +330,11 @@ public class Player {
         returnGameButton.setOnClickEvent(this::openInventory);
         this.GAME_MENU.addWidget(returnGameButton);
 
-        FrameButtonWidget openWorldButton = new FrameButtonWidget(8, layoutBuilder.nextTo(returnGameButton), "Abrir mundo");
-        this.GAME_MENU.addWidget(openWorldButton);
+        FrameButtonWidget newWorldButton = new FrameButtonWidget(8, layoutBuilder.nextTo(returnGameButton), "Nuevo mundo");
+        newWorldButton.setOnClickEvent(this::openNewWorld);
+        this.GAME_MENU.addWidget(newWorldButton);
 
-        FrameButtonWidget configButton = new FrameButtonWidget(8, layoutBuilder.nextTo(openWorldButton), "Configuracion");
+        FrameButtonWidget configButton = new FrameButtonWidget(8, layoutBuilder.nextTo(newWorldButton), "Configuracion");
         configButton.setOnClickEvent(this::openConfig);
         this.GAME_MENU.addWidget(configButton);
 
@@ -334,13 +344,35 @@ public class Player {
             worldFile.getParentFile().mkdirs();
             try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(worldFile))) {
                 outputStream.writeObject(Main.world);
-                outputStream.writeUTF(Main.world.getName());
+                outputStream.writeUTF("world.dat");
             } catch (IOException exception) {
                 Logger.sendMessage("Error guardando el mundo: %s.\n", Logger.LogMessageType.FATAL, exception.getMessage());
             }
             GLFW.glfwSetWindowShouldClose(Window.window, true);
         });
         this.GAME_MENU.addWidget(leaveGameButton);
+    }
+
+    private void openNewWorld() {
+        Main.world = new World(new Random().nextInt(100000000), 100);
+
+        for (Terrain.TerrainType terrainType : Terrain.TerrainType.values()) {
+            terrainType.updateMesh();
+        }
+
+        for (Feature.FeatureType featureType : Feature.FeatureType.values()) {
+            featureType.updateMesh();
+        }
+
+        this.updateMoney(Main.world.getMoney());
+        this.updateIncomes(Main.world.getIncomes());
+        this.updatePopulation(Main.world.getPopulation());
+        this.updateHappiness(Main.world.getHappiness());
+        this.updateUnemployment(Main.world.getUnemployment());
+        this.updateSecurity(Main.world.getSecurity());
+        this.updateHealth(Main.world.getHealth());
+
+        Window.currentScene.init();
     }
 
     private void createConfigMenu() {
@@ -484,7 +516,9 @@ public class Player {
                     this.INVENTORY.removeWidget(this.bulldozerIndicator);
                     this.isUsingBulldozer = false;
 
-                    this.MENU_ITEMS_BY_SLOT.values().forEach(itemWidget -> itemWidget.setSelected(false));
+                    for (SlotWidget itemWidget : this.MENU_ITEMS_BY_SLOT.values()) {
+                        itemWidget.setSelected(false);
+                    }
                     slotWidget.setSelected(true);
 
 
@@ -551,7 +585,11 @@ public class Player {
             });
             this.INVENTORY.addWidgetToAllTabs(this.bulldozerIndicator);
 
-            this.MENU_ITEMS_BY_SLOT.values().stream().filter(SlotWidget::isSelected).forEach(slotWidget -> slotWidget.setSelected(false));
+            for (SlotWidget slotWidget : this.MENU_ITEMS_BY_SLOT.values()) {
+                if (slotWidget.isSelected()) {
+                    slotWidget.setSelected(false);
+                }
+            }
         } else {
             this.INVENTORY.removeWidget(this.bulldozerIndicator);
         }
@@ -830,7 +868,7 @@ public class Player {
             LinkedHashSet<Terrain.TerrainType> terrainTypesToUpdate = new LinkedHashSet<>();
             terrainTypesToUpdate.add(((TerrainItem) this.selectedItem).getTerrainToPlace());
 
-            this.terrainSelection.forEach(location -> {
+            for (Location location : this.terrainSelection) {
                 Terrain.TerrainType oldTerrainType = location.getTerrain().getType();
                 terrainTypesToUpdate.add(oldTerrainType);
 
@@ -865,9 +903,11 @@ public class Player {
                         )));
                     }
                 }
-            });
+            }
 
-            terrainTypesToUpdate.forEach(Terrain.TerrainType::updateMesh);
+            for (Terrain.TerrainType terrainType : terrainTypesToUpdate) {
+                terrainType.updateMesh();
+            }
             System.gc();
 
             SoundEffect.WORLD_EFFECT_PLACE_TERRAIN.play(SoundCategory.SOUND_EFFECTS);
@@ -913,7 +953,9 @@ public class Player {
 
     public void onTick() {
         if (this.isSelectingTerrain()) {
-            this.getTerrainSelection().forEach(location -> Main.world.addParticle(new CursorParticle(location)));
+            for (Location location : this.getTerrainSelection()) {
+                Main.world.addParticle(new CursorParticle(location));
+            }
         }
     }
 }

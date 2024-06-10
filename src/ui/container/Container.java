@@ -45,15 +45,16 @@ public abstract class Container {
      */
     public void onHoverEvent() {
         Main.PLAYER.setTooltip(null);
-        this.widgets.stream()
-                .filter(Widget::isHovered) //Si la bandera hovered está activa es que el ratón está sobre ese widget.
-                .forEach(widget -> {
-                    widget.onHoverEvent();
+        //Si la bandera hovered está activa es que el ratón está sobre ese widget.
+        for (Widget widget : this.widgets) {
+            if (widget.isHovered()) {
+                widget.onHoverEvent();
 
-                    if (widget.getTooltip() != null) {
-                        Main.PLAYER.setTooltip(widget.getTooltip());
-                    }
-                });
+                if (widget.getTooltip() != null) {
+                    Main.PLAYER.setTooltip(widget.getTooltip());
+                }
+            }
+        }
     }
 
     /**
@@ -62,9 +63,12 @@ public abstract class Container {
      * @param mouseY Posición en el eje Y en elq ue se ha hecho clic.
      */
     public void onClickEvent(float mouseX, float mouseY) {
-        new LinkedList<>(this.widgets).stream()
-                .filter(Widget::isHovered) //Si la bandera hovered está activa es que el ratón está sobre ese widget.
-                .forEach(Widget::onMouseClickEvent);
+        //Si la bandera hovered está activa es que el ratón está sobre ese widget.
+        for (Widget widget : new LinkedList<>(this.widgets)) {
+            if (widget.isHovered()) {
+                widget.onMouseClickEvent();
+            }
+        }
     }
 
     /**
@@ -77,20 +81,26 @@ public abstract class Container {
     public void onResizeWindowEvent(float newWidth, float newHeight) {
         Container.pixelSizeInScreen = newHeight / 250f;
 
-        this.widgets.stream()
-                .filter(widget -> widget instanceof OnResizeWindowEvent)
-                .forEach(widget -> ((OnResizeWindowEvent) widget).onResizeWindowEvent(newWidth /Container.pixelSizeInScreen, newHeight /Container.pixelSizeInScreen));
+        for (Widget widget : this.widgets) {
+            if (widget instanceof OnResizeWindowEvent onResizeWindowEvent) {
+                onResizeWindowEvent.onResizeWindowEvent(newWidth / Container.pixelSizeInScreen, newHeight / Container.pixelSizeInScreen);
+            }
+        }
     }
 
     public void onDragEvent(float mouseX, float mouseY) {
-        this.widgets.stream()
-                .filter(widget -> widget instanceof OnMouseDragEvent)
-                .forEach(widget -> ((OnMouseDragEvent) widget).onMouseDragEvent(mouseX /Container.pixelSizeInScreen, mouseY /Container.pixelSizeInScreen));
+        for (Widget widget : this.widgets) {
+            if (widget instanceof OnMouseDragEvent onMouseDragEvent) {
+                onMouseDragEvent.onMouseDragEvent(mouseX / Container.pixelSizeInScreen, mouseY / Container.pixelSizeInScreen);
+            }
+        }
     }
 
     public void onMouseMoveEvent() {
-        this.widgets.stream()
-                .filter(widget -> widget instanceof OnMouseMoveEvent)
-                .forEach(widget -> ((OnMouseMoveEvent) widget).onMouseMoveEvent());
+        for (Widget widget : this.widgets) {
+            if (widget instanceof OnMouseMoveEvent onMouseMoveEvent) {
+                onMouseMoveEvent.onMouseMoveEvent();
+            }
+        }
     }
 }

@@ -12,8 +12,7 @@ public enum SoundEffect {
     WORLD_EFFECT_PLACE_STONE(false, "assets/sounds/world_effects/palce_stone.wav"),
     WORLD_EFFECT_PLACE_BUILDING(false, "assets/sounds/world_effects/place_building_1.wav", "assets/sounds/world_effects/place_building_2.wav", "assets/sounds/world_effects/place_building_3.wav"),
     WORLD_EFFECT_PLACE_TERRAIN(false, "assets/sounds/world_effects/place_terrain_1.wav", "assets/sounds/world_effects/place_terrain_2.wav"),
-    WORLD_EFFECT_PLACE_GRASS(false, "assets/sounds/world_effects/place_grass_1.wav", "assets/sounds/world_effects/place_grass_2.wav", "assets/sounds/world_effects/place_grass_3.wav"),
-    SOUND_TEST(true, "assets/sounds/punch.wav");
+    WORLD_EFFECT_PLACE_GRASS(false, "assets/sounds/world_effects/place_grass_1.wav", "assets/sounds/world_effects/place_grass_2.wav", "assets/sounds/world_effects/place_grass_3.wav");
 
     private final boolean IS_BACKGROUND_MUSIC;
     private final File[] FILES;

@@ -48,8 +48,6 @@ public class WorldScene implements Scene {
     public void init() {
         new WorldGenerator().run();
 
-        Main.world.setTerrain(0, 0, new Terrain(Terrain.TerrainType.STONE_TILE, Biome.BEACH, 0, 0, 0));
-
         for (Terrain.TerrainType terrainType: Terrain.TerrainType.values()) {
             terrainType.getMesh().adjust();
         }
@@ -59,7 +57,7 @@ public class WorldScene implements Scene {
             featureType.getMesh().adjust();
         }
 
-        drawTerrain();
+        this.drawTerrain();
 
         SingleObjectMesh.SINGLE_OBJECT_MESH.load();
 
@@ -147,18 +145,18 @@ public class WorldScene implements Scene {
             Shader.ENTITY.uploadInt("textureSamplers[" + samplerId + "]", samplerId);
         }
 
-        Main.world.getDucks().forEach(duck -> {
-            Shader.ENTITY.uploadFloat("uFlip", duck.getFlip());
-            Shader.ENTITY.uploadInt("uIsSelected", duck.isSelected() ? 1 : 0);
-            duck.getBodyTexture().draw(Shader.ENTITY, duck.getLocation(), 0.8f);
-            duck.getOverlay().draw(Shader.ENTITY, duck.getLocation(), 0.8f);
+        for (Duck duck1 : Main.world.getDucks()) {
+            Shader.ENTITY.uploadFloat("uFlip", duck1.getFlip());
+            Shader.ENTITY.uploadInt("uIsSelected", duck1.isSelected() ? 1 : 0);
+            duck1.getBodyTexture().draw(Shader.ENTITY, duck1.getLocation(), 0.8f);
+            duck1.getOverlay().draw(Shader.ENTITY, duck1.getLocation(), 0.8f);
             Texture.unbind();
-        });
+        }
 
         Shader.ENTITY.uploadFloat("uFlip", 0);
 
         Shader.ENTITY.uploadInt("uIsSelected", 0);
-        Main.world.getParticlesList().forEach(particle -> {
+        for (Particle particle : Main.world.getParticlesList()) {
             Shader.ENTITY.uploadFloat("uRotationAngle", particle.getRotation());
             Shader.ENTITY.uploadFloat("uScale", particle.getScale());
             particle.getTexture().draw(
@@ -166,7 +164,7 @@ public class WorldScene implements Scene {
                     particle.getLocation()
             );
             Texture.unbind();
-        });
+        }
 
         //Generamos la pantalla de debug
         if (Main.isDebugging) {

@@ -15,13 +15,11 @@ public class Industry extends JobSite {
     public Industry(Location location, int variant) {
         super(location, Industry.getSize(variant), FeatureType.BUILDING, variant +7);
         switch (variant) {
-            case 0 -> this.workers = new Duck[1];
             case 1 -> this.workers = new Duck[6];
             case 2 -> this.workers = new Duck[9];
             case 3 -> this.workers = new Duck[12];
             case 4 -> this.workers = new Duck[15];
             case 5 -> this.workers = new Duck[21];
-            case 6 -> this.workers = new Duck[25];
         }
     }
 
@@ -52,9 +50,6 @@ public class Industry extends JobSite {
             case 5 -> {
                 return -140;
             }
-            case 6 -> {
-                return -170;
-            }
         }
 
         return 0;
@@ -76,9 +71,6 @@ public class Industry extends JobSite {
             }
             case 5 -> {
                 return 45;
-            }
-            case 6 -> {
-                return 50;
             }
         }
 
