@@ -5,12 +5,8 @@ import org.joml.Vector2f;
 import utils.render.texture.Texture;
 import utils.render.texture.Textures;
 import world.location.Location;
-import world.tick.ForceTicking;
 
-/**
- * Partícula utilizada para hacer llegar al usuario un input positivo.
- */
-@ForceTicking
+
 public class PositiveParticle extends AbstractPhysicsParticle {
 
     /**

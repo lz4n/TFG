@@ -2,6 +2,7 @@ package world.feature;
 
 import org.joml.Vector2f;
 import org.joml.Vector2i;
+import utils.render.scene.WorldScene;
 import world.location.Location;
 import world.terrain.Terrain;
 
@@ -10,15 +11,10 @@ import world.terrain.Terrain;
  */
 public class Rock extends Feature {
     /**
-     * Tamaño de la feature en unidades in-game.
-     */
-    private static final Vector2i FEATURE_SIZE = new Vector2i(1, 1);
-
-    /**
      * @param location Donde se va a generar la feature.
      */
-    protected Rock(Location location) {
-        super(location, Rock.FEATURE_SIZE, FeatureType.ROCK, 0);
+    public Rock(Location location) {
+        super(location, new Vector2f(16, 16).div(WorldScene.SPRITE_SIZE), FeatureType.ROCK, 0);
     }
 
     @Override

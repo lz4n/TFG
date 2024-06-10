@@ -95,24 +95,25 @@ public class Terrain implements Serializable {
         return RIVERS_NOISE;
     }
 
-    public boolean isPassable() {
-        return true;
+    public int getPathCost() {
+        return this.getType().PATH_COST;
     }
 
     /**
      * Son los diferentes materiales que componen el terreno del mundo.
      */
     public enum TerrainType implements Serializable {
-        WATER(Textures.WATER, false, false, false),
-        STONE_TILE(Textures.STONE_TILE, true, false, false),
-        PATH(Textures.PATH, true, true, true),
-        SAND(Textures.SAND, true, true, true),
-        GRAVEL(Textures.GRAVEL, true, true, true),
-        GRASS(Textures.GRASS, true, true, true),
-        STONE(Textures.STONE, true, true, true),
-        SNOW(Textures.SNOW, false, true, true);
+        WATER(Textures.WATER, false, 1, false, false),
+        STONE_TILE(Textures.STONE_TILE, true, -1, false, false),
+        PATH(Textures.PATH, true, -1,true, true),
+        SAND(Textures.SAND, true, 1,true, true),
+        GRAVEL(Textures.GRAVEL, true, 2,true, true),
+        GRASS(Textures.GRASS, true, 2,true, true),
+        STONE(Textures.STONE, true, 3,true, true),
+        SNOW(Textures.SNOW, false, 5,true, true);
 
         private final boolean IS_BUILDABLE;
+        private final int PATH_COST;
         private final boolean HAS_RANDOM_UV;
         private final boolean HAS_CONNECTED_TEXTURES;
 
@@ -132,8 +133,9 @@ public class Terrain implements Serializable {
          * @param hasRandomUV Determina si se van a randomizar las coordenadas UV del terreno.
          * @param hasConnectedTextures Determina si las texturas se van a conectar con la textura de otros terrenos.
          */
-        TerrainType(Texture texture, boolean isBuildable, boolean hasRandomUV, boolean hasConnectedTextures) {
+        TerrainType(Texture texture, boolean isBuildable, int pathCost, boolean hasRandomUV, boolean hasConnectedTextures) {
             this.IS_BUILDABLE = isBuildable;
+            this.PATH_COST = pathCost;
             this.HAS_RANDOM_UV = hasRandomUV;
             this.HAS_CONNECTED_TEXTURES = hasConnectedTextures;
             this.mesh = this.createMesh();

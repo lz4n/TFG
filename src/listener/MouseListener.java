@@ -1,12 +1,15 @@
 package listener;
 
 import main.Main;
+import org.joml.Matrix4f;
 import org.joml.Vector2f;
+import org.joml.Vector4f;
 import org.lwjgl.glfw.GLFW;
 import ui.container.Frame;
 import utils.KeyBind;
 import utils.render.Window;
 import utils.render.scene.WorldScene;
+import world.entity.Duck;
 import world.location.Location;
 
 /**
@@ -38,10 +41,19 @@ public class MouseListener {
     /**
      * Actualiza la posición del ratón dentro del juego y actualiza el selector.
      */
-    public static void updateInGameLocation() {
-        if (Window.currentScene instanceof WorldScene && Main.PLAYER != null) {
-            MouseListener.inGameLocation = Main.PLAYER.getCamera().getInGameLocationMousePosition(new Vector2f((float) MouseListener.posX, (float) MouseListener.posY));
-        }
+    public static void updateInGameLocationMousePosition() {
+        //Calculamos las coordenadas normalizadas del cursor en pantalla (de -1 a 1)
+        float normalizedX = (2.0f * (float) MouseListener.posX / Window.getWidth()) - 1.0f;
+        float normalizedY = 1.0f - (2.0f * (float) MouseListener.posY / Window.getHeight());
+
+        //Vector 4D con las coordenadas normalizadas y profundidad entre -1 y 1
+        Vector4f cursorClip = new Vector4f(normalizedX, normalizedY, -1.0f, 1.0f);
+
+        //Calculamos las coordenadas in-game
+        Matrix4f inverseTransform = Main.PLAYER.getCamera().getProjectionMatrix().mul(Main.PLAYER.getCamera().getViewMatrix(), new Matrix4f()).invert();
+        Vector4f cursorView = inverseTransform.transform(cursorClip, new Vector4f());
+        cursorView.div(cursorView.w());
+        MouseListener.inGameLocation = new Location(cursorView.x() / WorldScene.SPRITE_SIZE, (cursorView.y() / WorldScene.SPRITE_SIZE));
     }
 
     /**
@@ -57,7 +69,7 @@ public class MouseListener {
         MouseListener.posX = posX;
         MouseListener.posY = posY;
 
-        MouseListener.updateInGameLocation();
+        MouseListener.updateInGameLocationMousePosition();
 
         MouseListener.isDragging = MouseListener.isMouseButtonPressed[0] || MouseListener.isMouseButtonPressed[1] || MouseListener.isMouseButtonPressed[2];
         if (MouseListener.isDragging) {
@@ -87,30 +99,47 @@ public class MouseListener {
      * @param mods Modificador de teclado, por ejemplo <code>ctrl</code>, <code>alt</code>, <code>sifht</code>.
      */
     public static void mouseButtonCallback(long window, int button, int action, int mods) {
-      if (action == GLFW.GLFW_PRESS) {
-          MouseListener.setIsMouseButtonPressed(button, true);
-          Window.currentScene.click((float) MouseListener.posX, (float) MouseListener.posY);
-          Main.PLAYER.getContainer().onDragEvent((float) posX, (float) posY);
+        if (action == GLFW.GLFW_PRESS) {
+            MouseListener.setIsMouseButtonPressed(button, true);
+            Window.currentScene.click((float) MouseListener.posX, (float) MouseListener.posY);
+            Main.PLAYER.getContainer().onDragEvent((float) posX, (float) posY);
 
-          if (!Main.PLAYER.isMouseOnInventory() && !Main.PLAYER.isPaused()) {
-              //Colocar/Destruir features cuando se hace click sobre ellas.
-              if (KeyBind.INTERACT.isPressed()) {
-                  if (Main.PLAYER.isUsingBulldozer()) {
-                      Main.PLAYER.destroySelectedFeature();
-                  } else {
-                      Main.PLAYER.placeSelectedItem();
-                  }
-              }
-          }
-      } else if (action == GLFW.GLFW_RELEASE) {
-          MouseListener.setIsMouseButtonPressed(button, false);
-          MouseListener.isDragging = false;
+            if (!Main.PLAYER.isMouseOnInventory() && !Main.PLAYER.isPaused()) {
+                //Colocar/Destruir features cuando se hace click sobre ellas.
+                if (KeyBind.INTERACT.isPressed()) {
+                    if (Main.PLAYER.isUsingBulldozer()) {
+                        if (Main.PLAYER.destroySelectedFeature()) {
+                            return;
+                        }
+                    } else {
+                        if (Main.PLAYER.placeSelectedItem()) {
+                            return;
+                        }
+                    }
+                }
 
-          if (Main.PLAYER.getTerrainSelection() != null) {
-              Main.PLAYER.placeSelectedItem();
-              Main.PLAYER.removeTerrainSelection();
-          }
-      }
+                boolean isDuckSelected = false;
+                for (Duck duck: Main.world.getDucks()) {
+                    if (!isDuckSelected) {
+                        isDuckSelected = duck.getBoundingBox().containsLocation(MouseListener.getInGameLocation());
+                        duck.setSelected(isDuckSelected);
+                    } else {
+                        duck.setSelected(false);
+                    }
+                }
+                if (isDuckSelected) {
+                    return;
+                }
+            }
+        } else if (action == GLFW.GLFW_RELEASE) {
+            MouseListener.setIsMouseButtonPressed(button, false);
+            MouseListener.isDragging = false;
+
+            if (Main.PLAYER.getTerrainSelection() != null) {
+                Main.PLAYER.placeSelectedItem();
+                Main.PLAYER.removeTerrainSelection();
+            }
+        }
     }
 
     /**

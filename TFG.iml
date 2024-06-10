@@ -7,6 +7,9 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="lib" level="project" />
+    <orderEntry type="library" name="gson-2.10.1" level="project" />
+    <orderEntry type="library" name="joml-1.10.5" level="project" />
+    <orderEntry type="library" name="lwjgl-assimp-natives-windows" level="project" />
+    <orderEntry type="library" name="NoiseGenerator" level="project" />
   </component>
 </module>

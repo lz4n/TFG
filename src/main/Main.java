@@ -25,7 +25,7 @@ public class Main {
     /**
      * Mundo de juego. Si no hay ningún mundo guardado se crea uno por defecto.
      */
-    public static World world = new World("world", new Random().nextInt(100000000), 500);
+    public static World world = new World("world", new Random().nextInt(100000000), 250);
 
     /**
      * Velocidad de tick del juego por defecto.

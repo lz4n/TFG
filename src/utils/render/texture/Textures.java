@@ -39,11 +39,20 @@ public final class Textures {
         HOUSE_LVL6 = new StaticTexture("assets/textures/feature/building/house/house_lvl6.png"),
         HOUSE_LVL7 = new AnimatedTexture("assets/textures/feature/building/house/house_lvl7", 4, 28),
         PORT = new AnimatedTexture("assets/textures/feature/building/job_site/port", 2, 30),
+        INDUSTRY_LVL1 = new StaticTexture("assets/textures/feature/building/job_site/industry/industry_lvl1.png"),
+        INDUSTRY_LVL2 = new StaticTexture("assets/textures/feature/building/job_site/industry/industry_lvl2.png"),
+        INDUSTRY_LVL3 = new StaticTexture("assets/textures/feature/building/job_site/industry/industry_lvl3.png"),
+        INDUSTRY_LVL4 = new StaticTexture("assets/textures/feature/building/job_site/industry/industry_lvl4.png"),
+        INDUSTRY_LVL5 = new StaticTexture("assets/textures/feature/building/job_site/industry/industry_lvl5.png"),
+        HOSPITAL = new StaticTexture("assets/textures/feature/building/service/hospital.png"),
+        POLICE_STATION = new StaticTexture("assets/textures/feature/building/service/police_station.png"),
+
 
         /** ENTITIES **/
         DUCK = new AnimatedTexture("assets/textures/entity/duck", 2, 30),
         DUCK_WALKING = new AnimatedTexture("assets/textures/entity/duck_walking", 2, 10),
         DUCK_SQUAWKING = new AnimatedTexture("assets/textures/entity/duck_squawking", 2, 25),
+        DUCK_SWIMMING = new StaticTexture("assets/textures/entity/duck_swimming.png"),
 
         /** PARTICLES **/
         NEGATIVE_PARTICLE = new StaticTexture("assets/textures/particle/negative.png"),
@@ -52,6 +61,7 @@ public final class Textures {
         CLOUD_PARTICLE = new StaticTexture("assets/textures/particle/cloud/cloud_1.png"),
         CLOUD_SHADOW_PARTICLE = new StaticTexture("assets/textures/particle/cloud/cloud_shadow_1.png"),
         SMOKE_PARTICLE = new StaticTexture("assets/textures/particle/smoke.png"),
+        SPLASH_PARTICLE = new StaticTexture("assets/textures/particle/splash.png"),
 
         /** USER INTERFACE **/
         CONTAINER = new StaticTexture("assets/textures/ui/inventory/container.png"),

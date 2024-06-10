@@ -5,12 +5,8 @@ import org.joml.Vector2f;
 import utils.render.texture.Texture;
 import utils.render.texture.Textures;
 import world.location.Location;
-import world.tick.ForceTicking;
 
-/**
- * Partícula que simula humo.
- */
-@ForceTicking
+
 public class SmokeParticle extends AbstractPhysicsParticle {
 
     /**
@@ -38,8 +34,8 @@ public class SmokeParticle extends AbstractPhysicsParticle {
     }
 
     @Override
-    public void onTick(long deltaTime) {
-        super.onTick(deltaTime);
+    public void onTick() {
+        super.onTick();
 
         //Gira lentamente sobre si misma.
         super.rotation += 0.001f;

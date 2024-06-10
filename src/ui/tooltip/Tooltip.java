@@ -4,6 +4,7 @@ import listener.MouseListener;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import ui.container.Container;
+import utils.BoundingBox;
 import utils.render.Shader;
 import utils.render.Window;
 import utils.render.mesh.TooltipMesh;
@@ -17,9 +18,19 @@ public class Tooltip {
 
     private LinkedHashMap<Texture, Vector2f> textures = new LinkedHashMap<>();
 
-    public void show() {
-        float tooltipPixelSize = Container.pixelSizeInScreen;
-        Location tooltipLocation = MouseListener.getInScreenLocation().add(8*tooltipPixelSize, 0);
+    private void show(Location tooltipLocation) {
+
+        if (tooltipLocation.getX() < 0) {
+            tooltipLocation.setX(0);
+        }
+
+        if (tooltipLocation.getY() < 0) {
+            tooltipLocation.setY(0);
+        }
+
+        if (tooltipLocation.getX() +this.size.x() > Window.getWidth()) {
+            tooltipLocation.add(-(tooltipLocation.getX() +this.size.x() -Window.getWidth()), 0);
+        }
 
         if (tooltipLocation.getY() +this.size.y() > Window.getHeight()) {
             tooltipLocation.add(0, -(tooltipLocation.getY() +this.size.y() -Window.getHeight()));
@@ -35,19 +46,19 @@ public class Tooltip {
         Shader.SHAPE.upload4f("uColor", 0.46f, 0.48f, 0.43f, 0.7f);
 
         mesh = new TooltipMesh();
-        mesh.addVertex(-3, -2, (size.x() /tooltipPixelSize) +6, (size.y() /tooltipPixelSize) +4, tooltipPixelSize);
+        mesh.addVertex(-3, -2, (size.x() /Container.pixelSizeInScreen) +6, (size.y() /Container.pixelSizeInScreen) +4, Container.pixelSizeInScreen);
         mesh.load();
         mesh.draw();
 
         mesh = new TooltipMesh();
-        mesh.addVertex(-2, -3, (size.x() /tooltipPixelSize) +4, (size.y() /tooltipPixelSize) +6, tooltipPixelSize);
+        mesh.addVertex(-2, -3, (size.x() /Container.pixelSizeInScreen) +4, (size.y() /Container.pixelSizeInScreen) +6, Container.pixelSizeInScreen);
         mesh.load();
         mesh.draw();
 
         Shader.SHAPE.upload4f("uColor", 0.17f, 0.17f, 0.16f, 0.5f);
 
         mesh = new TooltipMesh();
-        mesh.addVertex(-2, -2, (size.x() /tooltipPixelSize) +4, (size.y() /tooltipPixelSize) +4, tooltipPixelSize);
+        mesh.addVertex(-2, -2, (size.x() /Container.pixelSizeInScreen) +4, (size.y() /Container.pixelSizeInScreen) +4, Container.pixelSizeInScreen);
         mesh.load();
         mesh.draw();
 
@@ -64,6 +75,14 @@ public class Tooltip {
                     texture.getSize().y()
             );
         });
+    }
+
+    public void showAtWorld(Location location) {
+        this.show(location.getInScreenCoordsRelative());
+    }
+
+    public void showAtMouse() {
+        this.show(MouseListener.getInScreenLocation().add(8*Container.pixelSizeInScreen, 0));
     }
 
     public void addTexture(Vector2f position, Texture texture) {

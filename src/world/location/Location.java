@@ -1,13 +1,18 @@
 package world.location;
 
+import listener.MouseListener;
 import main.Main;
-import org.joml.Vector2f;
-import org.joml.Vector2i;
+import org.joml.*;
+import ui.container.Container;
+import utils.render.Camera;
+import utils.render.Window;
 import utils.render.scene.WorldScene;
 import world.feature.Feature;
 import world.terrain.Terrain;
 
+import java.io.Console;
 import java.io.Serializable;
+import java.lang.Math;
 import java.util.Objects;
 
 /**
@@ -87,6 +92,11 @@ public class Location implements Cloneable, Serializable {
         return this.add(amount, amount);
     }
 
+    public Location add(Vector2fc amount) {
+        return this.add(amount.x(), amount.y());
+    }
+
+
     /**
      * Multiplica los componentes por un valor.
      * @param factor Valor por el cuál se quiere multiplicar.
@@ -109,11 +119,41 @@ public class Location implements Cloneable, Serializable {
     }
 
     /**
+     * Determina si el terreno es transitable para el pathfinding.
+     *
+     * @return true si el terreno es transitable, false si no lo es.
+     */
+    public int getPathCost() {
+        if (this.isOutOfTheWorld()) {
+            return 5;
+        }
+
+        return this.getTerrain().getPathCost() + (this.getFeature() != null ? 5 : 0);
+    }
+
+    /**
      * Convierte las coordenadas in-game a coordenadas de pantalla.
      * @return Posición con las coordenadas de pantalla.
      */
     public Location getInScreenCoords() {
-        return this.clone().multiply(WorldScene.SPRITE_SIZE);
+        return this.clone().add(0, 1).multiply(WorldScene.SPRITE_SIZE);
+    }
+
+    public Location getInScreenCoordsRelative() {
+        Vector4f inGamePos = new Vector4f(this.getX() * WorldScene.SPRITE_SIZE,
+                this.getY() * WorldScene.SPRITE_SIZE,
+                0f,
+                1f);
+
+        Vector4f clipSpacePos = new Vector4f();
+        Main.PLAYER.getCamera().getProjectionMatrix().mul(Main.PLAYER.getCamera().getViewMatrix(), new Matrix4f()).transform(inGamePos, clipSpacePos);
+
+        clipSpacePos.div(clipSpacePos.w);
+
+        float screenX = ((clipSpacePos.x + 1) / 2.0f) * Window.getWidth();
+        float screenY = ((1 - clipSpacePos.y) / 2.0f) * Window.getHeight();
+
+        return new Location(screenX, screenY);
     }
 
     /**

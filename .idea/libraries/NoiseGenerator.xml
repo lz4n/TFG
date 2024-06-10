@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="NoiseGenerator">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/NoiseGenerator.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

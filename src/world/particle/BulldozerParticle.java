@@ -5,12 +5,8 @@ import org.joml.Vector2f;
 import utils.render.texture.Texture;
 import utils.render.texture.Textures;
 import world.location.Location;
-import world.tick.ForceTicking;
 
-/**
- * Partícula que se genera cuando se utiliza el bulldozer en algún elemento del juego.
- */
-@ForceTicking
+
 public class BulldozerParticle extends AbstractPhysicsParticle {
 
     /**
@@ -39,8 +35,8 @@ public class BulldozerParticle extends AbstractPhysicsParticle {
     }
 
     @Override
-    public void onTick(long deltaTime) {
-        super.onTick(deltaTime);
+    public void onTick() {
+        super.onTick();
 
         super.rotation += 0.01f;
         if (super.rotation > 360) {

@@ -1,7 +1,12 @@
 package utils.player.inventory;
 
+import utils.Logger;
 import utils.render.texture.Texture;
 import world.feature.Feature;
+import world.location.Location;
+
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * Representa un item que sirve para colocar una feature.
@@ -10,12 +15,8 @@ public class FeatureItem extends Item {
     /**
      * Tipo de feature que colocará el jugador cuando seleccione ese slot.
      */
-    private final Feature.FeatureType FEATURE_TO_PLACE;
+    private final FeaturePlacer FEATURE_TO_PLACE;
 
-    /**
-     * Variante de la feature que colocará el jugador cuando seleccione ese slot.
-     */
-    private final int VARIANT;
 
 
     /**
@@ -23,17 +24,12 @@ public class FeatureItem extends Item {
      * @param featureToPlace Tipo de feature del item.
      * @param variant        Variante de la feature del item.
      */
-    public FeatureItem(Texture texture, Feature.FeatureType featureToPlace, int variant, String name, String description, int price) {
+    public FeatureItem(Texture texture, FeaturePlacer featureToPlace, String name, String description, int price) {
         super(texture, name, description, price);
         this.FEATURE_TO_PLACE = featureToPlace;
-        this.VARIANT = variant;
     }
 
-    public Feature.FeatureType getFeatureType() {
-        return FEATURE_TO_PLACE;
-    }
-
-    public int getVariantToPlace() {
-        return VARIANT;
+    public Feature getFeatureToPlace(Location location) {
+        return this.FEATURE_TO_PLACE.apply(location);
     }
 }

@@ -9,17 +9,13 @@ import java.util.concurrent.atomic.AtomicReference;
 public class Pathfinding {
     private static final Pathfinding PATHFINDER = new Pathfinding();
 
-    private Pathfinding() {
-
-    }
+    private Pathfinding() {}
 
     public static Pathfinding getPathfinder() {
         return Pathfinding.PATHFINDER;
     }
 
     public List<Location> findPath(Location start, Location goal) {
-        List<Location> path = new ArrayList<>();
-
         Node ndStart = new Node(start);
         Node ndEnd = new Node(goal);
 
@@ -32,14 +28,13 @@ public class Pathfinding {
             Node ndActual;
         };
 
-        AtomicReference<Double> tentative_gScore = new AtomicReference<>((double) 0);
+        AtomicReference<Float> tentative_gScore = new AtomicReference<>(0f);
         while (!openList.isEmpty()) {
             ref.ndActual = openList.removeFirst();
             closeList.add(ref.ndActual);
 
             if (ref.ndActual.equals(ndEnd)) {
-                path = recreatePath(ref.ndActual);
-                break;
+                return recreatePath(ref.ndActual);
             }
 
             getNeighbors(ref.ndActual).forEach(neighbor -> {
@@ -62,7 +57,7 @@ public class Pathfinding {
 
             openList.sort(Comparator.comparingDouble(Node::getPathTotal));
         }
-        return path;
+        return new ArrayList<>();
     }
 
     private List<Location> recreatePath(Node ndEnd) {
@@ -89,9 +84,9 @@ public class Pathfinding {
         return neighbors;
     }
 
-    private double calculatePathWalk(Node from, Node to) {
+    private float calculatePathWalk(Node from, Node to) {
         // Calcular el costo de moverse de un nodo a otro.
-        return 1.0; // Ejemplo simple, en la práctica se debería calcular basado en la distancia real.
+        return to.getPathCost(); // Ejemplo simple, en la práctica se debería calcular basado en la distancia real.
     }
 
     private float calculateHeuristic(Node from, Node to) {

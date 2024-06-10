@@ -7,7 +7,10 @@ import utils.sounds.SoundEffect;
 import utils.render.mesh.WorldMesh;
 import utils.render.texture.Texture;
 import utils.render.texture.Textures;
+import world.feature.building.Hospital;
 import world.feature.building.House;
+import world.feature.building.PoliceStation;
+import world.feature.building.jobSite.Industry;
 import world.feature.building.jobSite.Port;
 import world.location.Location;
 
@@ -32,7 +35,7 @@ public abstract class Feature implements Comparable<Feature>, Serializable {
     /**
      * Tamaño de la feature en celdas.
      */
-    private final Vector2i SIZE_IN_BLOCKS;
+    private final Vector2f SIZE;
 
     /**
      * Tipo de feature.
@@ -46,11 +49,11 @@ public abstract class Feature implements Comparable<Feature>, Serializable {
 
     private float flip = Feature.NO_FLIP;
 
-    public Feature(Location location, Vector2i sizeInBlocks, FeatureType featureType, int variant) {
+    public Feature(Location location, Vector2f size, FeatureType featureType, int variant) {
 
         //Calculamos el desplazamiento, para que las features no estén todas en la misma posición dentro de la casilla.
         this.LOCATION = location;
-        this.SIZE_IN_BLOCKS = sizeInBlocks;
+        this.SIZE = size;
         this.FEATURE_TYPE = featureType;
         this.VARIANT = variant;
 
@@ -75,8 +78,8 @@ public abstract class Feature implements Comparable<Feature>, Serializable {
     /**
      * @return Vector bidimiensional de enteros que representa el tamaño de la feature.
      */
-    public Vector2i getSize() {
-        return new Vector2i(this.SIZE_IN_BLOCKS);
+    public Vector2f getSize() {
+        return new Vector2f(this.SIZE);
     }
 
     /**
@@ -94,8 +97,8 @@ public abstract class Feature implements Comparable<Feature>, Serializable {
      */
     public boolean canBePlaced() {
         int posX = (int) this.getLocation().getX(), posY = (int) this.getLocation().getY();
-        for (int x = 0; x < this.getSize().x(); x++) {
-            for (int y = 0; y < this.getSize().y(); y++) {
+        for (int x = 0; x < this.getBlockSize().x(); x++) {
+            for (int y = 0; y < this.getBlockSize().y(); y++) {
                 if (Main.world.getFeature(posX +x, posY +y) != null) return false;
                 if (new Location(posX +x, posY +y).isOutOfTheWorld()) {
                     return false;
@@ -127,15 +130,20 @@ public abstract class Feature implements Comparable<Feature>, Serializable {
         return this.flip;
     }
 
-    public Vector2f getRealSize() {
-        return new Vector2f(this.getSize().x(), this.getSize().y());
+    public Vector2i getBlockSize() {
+        return new Vector2i((int) Math.ceil(this.SIZE.x()), (int) Math.ceil(this.SIZE.y()));
     }
 
     /**
      * @return Desplazamiento máximo que puede tener la feature.
      */
     public Vector2f getRandomOffset() {
-        return new Vector2f((this.getSize().x() - this.getRealSize().x()));
+        Vector2i blockSize = this.getBlockSize();
+
+        return new Vector2f(
+                (blockSize.x() - this.SIZE.x()),
+                (blockSize.y() - this.SIZE.y())
+                );
     }
 
     @Override
@@ -151,6 +159,8 @@ public abstract class Feature implements Comparable<Feature>, Serializable {
         }
         return compareY;
     }
+
+    public void onTick() {}
 
     /**
      * Tipo de feature. El tipo de feature determina las posibles variantes y contiene el <code>Mesh</code> encargado de
@@ -191,8 +201,25 @@ public abstract class Feature implements Comparable<Feature>, Serializable {
                 Textures.HOUSE_LVL4,
                 Textures.HOUSE_LVL5,
                 Textures.HOUSE_LVL6,
-                Textures.HOUSE_LVL7,
-                Textures.PORT
+                Textures.HOUSE_LVL7
+
+        ),
+        JOB_SITE(
+                SoundEffect.WORLD_EFFECT_PLACE_BUILDING,
+
+                Textures.PORT,
+                Textures.INDUSTRY_LVL1,
+                Textures.INDUSTRY_LVL2,
+                Textures.INDUSTRY_LVL3,
+                Textures.INDUSTRY_LVL4,
+                Textures.INDUSTRY_LVL5
+
+        ),
+        SERVICES(
+                SoundEffect.WORLD_EFFECT_PLACE_BUILDING,
+
+                Textures.HOSPITAL,
+                Textures.POLICE_STATION
 
         );
 
@@ -236,7 +263,7 @@ public abstract class Feature implements Comparable<Feature>, Serializable {
             List<Feature> features = Main.world.getFeatures();
             features.removeIf(feature -> feature == null || !feature.getFeatureType().equals(this));
             this.mesh = new WorldMesh(features.size(), 2, 2, 1, 1);
-            features.forEach(feature -> mesh.addVertex(feature.getLocation().getX(), feature.getLocation().getY(), feature.getRealSize().x(), feature.getRealSize().y(), feature.getVariant(), feature.getFlip()));
+            features.forEach(feature -> mesh.addVertex(feature.getLocation().getX(), feature.getLocation().getY(), feature.getSize().x(), feature.getSize().y(), feature.getVariant(), feature.getFlip()));
             this.mesh.load();
         }
 
@@ -285,8 +312,23 @@ public abstract class Feature implements Comparable<Feature>, Serializable {
                     if (variant <= 6) {
                         return new House(location, variant);
                     }
-                    if (variant == 7) {
+                }
+                case JOB_SITE ->  {
+                    if (variant == 0) {
                         return new Port(location);
+                    }
+                    if (variant <= 5) {
+                        return new Industry(location, variant);
+                    }
+                }
+                case SERVICES -> {
+                    switch (variant) {
+                        case 0 -> {
+                            return new Hospital(location);
+                        }
+                        case 1 -> {
+                            return new PoliceStation(location);
+                        }
                     }
                 }
             }

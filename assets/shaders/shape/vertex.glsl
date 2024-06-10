@@ -21,6 +21,5 @@ uniform vec2 uPosition;
 
 void main() {
     //Transforma la posición del vértice usando las matrices de proyección y modelo-vista
-    vec4 transformedPosition = uProjection * uView * vec4(position.x +uPosition.x, position.y +uPosition.y, 1.0, 1.0);
-    gl_Position = transformedPosition;
+    gl_Position = uProjection * uView * vec4(position.x +uPosition.x, position.y +uPosition.y, 0.0, 1.0);
 }

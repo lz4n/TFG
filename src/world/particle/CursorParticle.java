@@ -3,12 +3,8 @@ package world.particle;
 import utils.render.texture.Texture;
 import utils.render.texture.Textures;
 import world.location.Location;
-import world.tick.ForceTicking;
 
-/**
- * Partícula utilizada para el selector del cursor.
- */
-@ForceTicking
+
 public class CursorParticle extends Particle {
 
     /**
