@@ -150,7 +150,8 @@ public class WorldScene implements Scene {
         Main.world.getDucks().forEach(duck -> {
             Shader.ENTITY.uploadFloat("uFlip", duck.getFlip());
             Shader.ENTITY.uploadInt("uIsSelected", duck.isSelected() ? 1 : 0);
-            duck.getTexture().draw(Shader.ENTITY, duck.getLocation(), 0.8f);
+            duck.getBodyTexture().draw(Shader.ENTITY, duck.getLocation(), 0.8f);
+            duck.getOverlay().draw(Shader.ENTITY, duck.getLocation(), 0.8f);
             Texture.unbind();
         });
 

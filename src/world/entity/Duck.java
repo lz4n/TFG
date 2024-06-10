@@ -63,6 +63,7 @@ public class Duck implements Serializable {
     private TextTooltip tooltip = null;
     public float happiness = 1;
     public int taxes = 0;
+    private DuckVariant duckVariant = DuckVariant.getRandomVariant();
 
 
     /**
@@ -124,6 +125,16 @@ public class Duck implements Serializable {
         return this.location.clone();
     }
 
+    public Terrain.TerrainType getTerrainTypeUnder() {
+        Location location =  this.getLocation().add(.5f);
+
+        if (location.isOutOfTheWorld()) {
+            return Terrain.TerrainType.GRASS;
+        }
+
+        return location.getTerrain().getType();
+    }
+
     public ListIterator<Location> getPathfinding() {
         if (this.pathfinding == null) {
             return Collections.emptyListIterator();
@@ -167,15 +178,18 @@ public class Duck implements Serializable {
         Main.world.updateUnemployment();
     }
 
-    public Texture getTexture() {
-        if (this.getLocation().getTerrain().getType().equals(Terrain.TerrainType.WATER)) {
+    public Texture getOverlay() {
+        if (this.getTerrainTypeUnder().equals(Terrain.TerrainType.WATER)) {
             return Textures.DUCK_SWIMMING;
         }
 
         return this.currentAnimation.TEXTURE;
     }
 
-    //TODO: Ia de los patos.
+    public Texture getBodyTexture() {
+        return this.duckVariant.TEXTURE;
+    }
+
     public void onTick() {
         if (this.pathfinding == null) {
             if (this.squawkingTime > 0) {
@@ -204,7 +218,7 @@ public class Duck implements Serializable {
             }
         }
 
-        if (this.location.getTerrain().getType().equals(Terrain.TerrainType.WATER) && Main.RANDOM.nextFloat() > 0.8) {
+        if (this.getTerrainTypeUnder().equals(Terrain.TerrainType.WATER) && Main.RANDOM.nextFloat() > 0.8) {
             Main.world.addParticle(
                     new SplashParticle(this.getLocation().add(Main.RANDOM.nextFloat(this.boundingBox.getWidth() /2f), -.4f))
             );
@@ -350,7 +364,7 @@ public class Duck implements Serializable {
     }
 
     public enum Animation {
-        IDLE(Textures.DUCK),
+        IDLE(Textures.DUCK_IDLE),
         WALKING(Textures.DUCK_WALKING),
         SQUAWKING(Textures.DUCK_SQUAWKING);
 
@@ -358,6 +372,23 @@ public class Duck implements Serializable {
 
         Animation(Texture texture) {
             this.TEXTURE = texture;
+        }
+    }
+
+    public enum DuckVariant {
+        GREEN(Textures.DUCK_BODY_GREEN),
+        YELLOW(Textures.DUCK_BODY_YELLOW),
+        BLACK(Textures.DUCK_BODY_BLACK),
+        WHITE(Textures.DUCK_BODY_WHITE);
+
+        private final Texture TEXTURE;
+
+        DuckVariant(Texture texture) {
+            this.TEXTURE = texture;
+        }
+
+        private static DuckVariant getRandomVariant() {
+            return DuckVariant.values()[Main.RANDOM.nextInt(DuckVariant.values().length)];
         }
     }
 }

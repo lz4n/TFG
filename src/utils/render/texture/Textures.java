@@ -49,7 +49,11 @@ public final class Textures {
 
 
         /** ENTITIES **/
-        DUCK = new AnimatedTexture("assets/textures/entity/duck", 2, 30),
+        DUCK_BODY_GREEN = new StaticTexture("assets/textures/entity/body/green.png"),
+        DUCK_BODY_YELLOW = new StaticTexture("assets/textures/entity/body/yellow.png"),
+        DUCK_BODY_BLACK = new StaticTexture("assets/textures/entity/body/black.png"),
+        DUCK_BODY_WHITE = new StaticTexture("assets/textures/entity/body/white.png"),
+        DUCK_IDLE = new AnimatedTexture("assets/textures/entity/duck", 2, 30),
         DUCK_WALKING = new AnimatedTexture("assets/textures/entity/duck_walking", 2, 10),
         DUCK_SQUAWKING = new AnimatedTexture("assets/textures/entity/duck_squawking", 2, 25),
         DUCK_SWIMMING = new StaticTexture("assets/textures/entity/duck_swimming.png"),

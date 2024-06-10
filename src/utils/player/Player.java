@@ -293,7 +293,7 @@ public class Player {
 
         Player.ITEMS.keySet().forEach(tab -> this.addFeaturesWidgetToTab(130, tab));
 
-        this.INVENTORY.addWidget(new SlotWidget(800, 24, Textures.DUCK), Player.SPECIAL_TAB);
+        this.INVENTORY.addWidget(new SlotWidget(800, 24, Textures.DUCK_IDLE), Player.SPECIAL_TAB);
 
         this.INVENTORY.setCurrentTab(Player.GENERAL_TAB);
 
