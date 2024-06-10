@@ -104,7 +104,7 @@ public class Industry extends JobSite {
 
         for (Duck duck: this.workers) {
             if (duck != null) {
-                incomes += this.getIncomesPerDuck();
+                incomes += (int) (this.getIncomesPerDuck() *duck.getHappiness());
             }
         }
 

@@ -48,7 +48,7 @@ public abstract class Feature implements Comparable<Feature>, Serializable {
         this.VARIANT = variant;
 
         float offsetX =  Main.RANDOM.nextFloat() *this.getRandomOffset().x();
-        float offsetY =  Main.RANDOM.nextFloat() *this.getRandomOffset().x();
+        float offsetY =  Main.RANDOM.nextFloat() *this.getRandomOffset().y();
         this.LOCATION.add(offsetX, offsetY);
     }
 

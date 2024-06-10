@@ -80,25 +80,25 @@ public class Player {
                         new FeatureItem(Textures.HOUSE_LVL2, location -> new House(location, 1),"Casa (nvl. II)", "Casa para que habiten 3 patos.", 400),
                         new FeatureItem(Textures.HOUSE_LVL3, location -> new House(location, 2), "Casa (nvl. III)", "Casa para que habiten 6 patos.", 800),
                         new FeatureItem(Textures.HOUSE_LVL4, location -> new House(location, 3), "Casa (nvl. IV)", "Casa para que habiten 9 patos.", 1200),
-                        new FeatureItem(Textures.HOUSE_LVL5, location -> new House(location, 4), "Casa (nvl. V)", "Casa para que habiten 12 patos.", 1600),
-                        new FeatureItem(Textures.HOUSE_LVL6, location -> new House(location, 5), "Casa (nvl. VI)", "Casa para que habiten 15 patos.", 2000),
-                        new FeatureItem(Textures.HOUSE_LVL7, location -> new House(location, 6), "Casa (nvl. VII)", "Casa para que habiten 20 patos.", 10000)
+                        new FeatureItem(Textures.HOUSE_LVL5, location -> new House(location, 4), "Casa (nvl. V)", "Casa para que habiten 12 patos.", 2000),
+                        new FeatureItem(Textures.HOUSE_LVL6, location -> new House(location, 5), "Casa (nvl. VI)", "Casa para que habiten 15 patos.", 4000),
+                        new FeatureItem(Textures.HOUSE_LVL7, location -> new House(location, 6), "Casa (nvl. VII)", "Casa para que habiten 20 patos.", 20000)
                 )
         ));
         this.put(Player.INDUSTRY_TAB, List.of(
                 Arrays.asList(
                         new FeatureItem(Textures.INDUSTRY_LVL1, location -> new Industry(location, 1), "Industria (nvl. I)", "Da trabajo a 6 patos.", 200),
-                        new FeatureItem(Textures.INDUSTRY_LVL2, location -> new Industry(location, 2), "Industria (nvl. II)", "Da trabajo a 9 patos.", 1100),
-                        new FeatureItem(Textures.INDUSTRY_LVL3, location -> new Industry(location, 3), "Industria (nvl. III)", "Da trabajo a 12 patos.", 2200),
-                        new FeatureItem(Textures.INDUSTRY_LVL4, location -> new Industry(location, 4), "Industria (nvl. IV)", "Da trabajo a 15 patos.", 3300),
-                        new FeatureItem(Textures.INDUSTRY_LVL5, location -> new Industry(location, 5), "Industria (nvl. V)", "Da trabajo a 21 patos.", 4400),
-                        new FeatureItem(Textures.PORT, Port::new, "Puerto", "Da trabajo a 50 patos. Se tiene que colocar en la costa.", 15000)
+                        new FeatureItem(Textures.INDUSTRY_LVL2, location -> new Industry(location, 2), "Industria (nvl. II)", "Da trabajo a 9 patos.", 2000),
+                        new FeatureItem(Textures.INDUSTRY_LVL3, location -> new Industry(location, 3), "Industria (nvl. III)", "Da trabajo a 12 patos.", 4000),
+                        new FeatureItem(Textures.INDUSTRY_LVL4, location -> new Industry(location, 4), "Industria (nvl. IV)", "Da trabajo a 15 patos.", 6000),
+                        new FeatureItem(Textures.INDUSTRY_LVL5, location -> new Industry(location, 5), "Industria (nvl. V)", "Da trabajo a 21 patos.", 10000),
+                        new FeatureItem(Textures.PORT, Port::new, "Puerto", "Da trabajo a 50 patos. Se tiene que colocar en la costa.", 30000)
                 )
         ));
         this.put(Player.SERVICES_TAB, List.of(
                 Arrays.asList(
-                        new FeatureItem(Textures.HOSPITAL, Hospital::new, "Hospital", "Incrementa la salud de un máximo de 25 patos.", 10000),
-                        new FeatureItem(Textures.POLICE_STATION, PoliceStation::new, "Estación de Policía", "Comisaría para dar servicio a 10 patos.", 5000)
+                        new FeatureItem(Textures.HOSPITAL, Hospital::new, "Hospital", "Incrementa la salud de un máximo de 75 patos.", 15000),
+                        new FeatureItem(Textures.POLICE_STATION, PoliceStation::new, "Estación de Policía", "Comisaría para dar servicio a 40 patos.", 10000)
                 )
         ));
         this.put(Player.NATURE_TAB, Arrays.asList(

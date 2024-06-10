@@ -32,7 +32,7 @@ public class PoliceStation extends Building {
      * @return La cantidad de protección.
      */
     public int getProtection() {
-        return 10;
+        return 40;
     }
 
     @Override

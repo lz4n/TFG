@@ -332,7 +332,7 @@ public class World implements Serializable {
     }
 
     /**
-     * Elimina una partícula y la elimina de ticking.
+     * Elimina una partícula.
      * @param particle Partícula que se quiere eliminar.
      */
     public void removeParticle(Particle particle) {
@@ -634,8 +634,17 @@ public class World implements Serializable {
             for (Building BUILDING : this.BUILDINGS) {
                 BUILDING.onTick();
             }
-            for (Duck duck : this.DUCKS_LIST) {
+
+            List<Duck> duckList = new ArrayList<>(this.DUCKS_LIST);
+            Collections.shuffle(duckList);
+            int ducks = 0;
+            for (Duck duck : duckList) {
                 duck.onTick();
+                ducks++;
+
+                if (ducks >= 600) {
+                    break;
+                }
             }
 
             this.dayTime += Main.tickSpeed;

@@ -32,7 +32,7 @@ public class Hospital extends Building {
      * @return La cantidad de protección.
      */
     public int getProtection() {
-        return 25;
+        return 75;
     }
 
     @Override

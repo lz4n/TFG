@@ -4,10 +4,12 @@ import org.joml.Vector2f;
 import org.joml.Vector4f;
 import world.location.Location;
 
+import java.io.Serializable;
+
 /**
  * Representa un área rectangular 2D imaginaria definida por dos puntos.
  */
-public class BoundingBox implements Cloneable {
+public class BoundingBox implements Cloneable, Serializable {
     private float xMin = 0, yMin = 0, xMax, yMax;
 
     /**

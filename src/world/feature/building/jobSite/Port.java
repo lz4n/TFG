@@ -72,7 +72,7 @@ public class Port extends JobSite {
 
         for (Duck duck: this.workers) {
             if (duck != null) {
-                incomes += 70;
+                incomes += (int) (70 *duck.getHappiness());
             }
         }
 

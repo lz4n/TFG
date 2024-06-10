@@ -11,10 +11,7 @@ import utils.render.Shader;
 import utils.render.Window;
 import utils.render.texture.Textures;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Representa el inventario que aparece en la parte inferior de la pantalla durante el juego..
@@ -32,7 +29,7 @@ public class Inventory extends Container {
     private boolean isHoveredLeftArrow, isHoveredRightArrow;
     private int tabCount = 0;
     private Tab currentTab = new Tab(null, null);
-    private final Map<Tab, List<Widget>> WIDGETS_PER_TAB = new HashMap<>();
+    private final Map<Tab, Set<Widget>> WIDGETS_PER_TAB = new HashMap<>();
     private final List<Tab> TABS = new LinkedList<>();
 
     /**
@@ -59,7 +56,7 @@ public class Inventory extends Container {
             this.TABS.add(newTab);
         }
         if (tab != null) {
-            List<Widget> widgetsInTab = this.WIDGETS_PER_TAB.getOrDefault(tab, new LinkedList<>());
+            Set<Widget> widgetsInTab = this.WIDGETS_PER_TAB.getOrDefault(tab, new LinkedHashSet<>());
             widgetsInTab.add(widget);
             this.WIDGETS_PER_TAB.put(tab, widgetsInTab);
         }
@@ -93,7 +90,7 @@ public class Inventory extends Container {
      * @param tab Pestaña de la cuál se quiere eliminar el widget.
      */
     public void removeWidget(Widget widget, Tab tab) {
-        List<Widget> widgetsInTab = this.WIDGETS_PER_TAB.getOrDefault(tab, new LinkedList<>());
+        Set<Widget> widgetsInTab = this.WIDGETS_PER_TAB.getOrDefault(tab, new LinkedHashSet<>());
         widgetsInTab.remove(widget);
         this.WIDGETS_PER_TAB.put(tab, widgetsInTab);
     }
@@ -319,8 +316,8 @@ public class Inventory extends Container {
     public void setCurrentTab(Tab currentTab) {
         this.currentTab = currentTab;
         this.currentTab.setSelected(true);
-        
-        super.widgets = this.WIDGETS_PER_TAB.getOrDefault(this.currentTab, new LinkedList<>());
+
+        super.widgets = this.WIDGETS_PER_TAB.getOrDefault(this.currentTab, new LinkedHashSet<>());
         super.widgets.addAll(this.TABS);
 
         this.currentScrollPosX = 0;

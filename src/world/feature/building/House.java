@@ -40,9 +40,9 @@ public class House extends Building {
 
     private static Vector2f getSize(int level) {
         return switch (level) {
-            case 1 -> new Vector2f(15, 12).div(WorldScene.SPRITE_SIZE);
-            case 2 -> new Vector2f(15).div(WorldScene.SPRITE_SIZE);
-            case 3 -> new Vector2f(17, 16).div(WorldScene.SPRITE_SIZE);
+            case 1 -> new Vector2f(15, 11).div(WorldScene.SPRITE_SIZE);
+            case 2 -> new Vector2f(17, 17).div(WorldScene.SPRITE_SIZE);
+            case 3 -> new Vector2f(17, 17).div(WorldScene.SPRITE_SIZE);
             case 4 -> new Vector2f(21, 18).div(WorldScene.SPRITE_SIZE);
             case 5-> new Vector2f(21, 24).div(WorldScene.SPRITE_SIZE);
             case 6 -> new Vector2f(23, 21).div(WorldScene.SPRITE_SIZE);

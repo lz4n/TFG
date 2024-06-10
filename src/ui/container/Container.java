@@ -6,8 +6,7 @@ import ui.widget.widgetUtils.OnMouseDragEvent;
 import ui.widget.widgetUtils.OnMouseMoveEvent;
 import ui.widget.widgetUtils.OnResizeWindowEvent;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Representa un contenedor que contiene widgets. Direcciona los eventos de clic, hover y resize a los diferentes widgets.
@@ -22,7 +21,7 @@ public abstract class Container {
     /**
      * Lista que  contiene todos los widgets que se están mostrando actualmente..
      */
-    protected List<Widget> widgets = new LinkedList<>();
+    protected Set<Widget> widgets = new LinkedHashSet<>();
 
     /**
      * Dibuja el contenedor y los widgets.

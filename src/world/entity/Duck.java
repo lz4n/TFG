@@ -48,10 +48,10 @@ public class Duck implements Serializable {
     private ActivityType state = ActivityType.IN_HOUSE;
     private int squawkingTime = 0;
     private int scheduleIndex;
-    private Animation currentAnimation = Animation.IDLE;
+    private transient Animation currentAnimation = Animation.IDLE;
     private transient boolean isSelected = false;
     private BoundingBox boundingBox = new BoundingBox(-2, -2, 18, 18).divide(WorldScene.SPRITE_SIZE);
-    private TextTooltip tooltip = null;
+    private transient TextTooltip tooltip = null;
     private float happiness = 1;
     private int taxes = 0;
     private DuckVariant duckVariant = DuckVariant.getRandomVariant();
@@ -210,6 +210,10 @@ public class Duck implements Serializable {
      * @return La textura de superposición del pato.
      */
     public Texture getOverlay() {
+        if (this.currentAnimation == null) {
+            this.currentAnimation = Animation.IDLE;
+        }
+
         if (this.getTerrainTypeUnder().equals(Terrain.TerrainType.WATER)) {
             return Textures.DUCK_SWIMMING;
         }
@@ -328,7 +332,9 @@ public class Duck implements Serializable {
 
         switch (this.state) {
             case WORK -> {
-                destination = this.jobSite.getLocation().randomLocation(3);
+                if (jobSite != null) {
+                    destination = this.jobSite.getLocation().randomLocation(3);
+                }
             }
             case IN_HOUSE -> {
                 destination = this.house.getLocation().randomLocation(2);
@@ -349,10 +355,12 @@ public class Duck implements Serializable {
 
     private void updateHappiness() {
         this.happiness =
-                .2f *Main.world.getHealth()
-                +.2f *Main.world.getSecurity()
+                .3f *Main.world.getHealth()
+                +.3f *Main.world.getSecurity()
                 +.4f *(1 -Main.world.getUnemployment())
                 +.2f *(this.isUnemployed() ? 0 : 1);
+
+        this.happiness = Math.clamp(this.happiness, 0, 1);
 
         Main.world.updateHappiness();
     }
@@ -370,7 +378,7 @@ public class Duck implements Serializable {
                 Felicidad: %d%%
                 
                 Impuestos: %d€
-                """, this.state.DESCRIPTION, this.isUnemployed() ? "Desempleado" : "Con trabajo", (int) (this.happiness *100), this.taxes), GameFont.PIXEL_CONTENT, Font.PLAIN, TextTooltip.CONTENT_TEXT_SIZE);
+                """, this.state.DESCRIPTION, this.isUnemployed() ? "No encuentra trabajo a una distancia razonable" : "Con trabajo", (int) (this.happiness *100), this.taxes), GameFont.PIXEL_CONTENT, Font.PLAIN, TextTooltip.CONTENT_TEXT_SIZE);
     }
 
     private void onSelected() {
@@ -440,10 +448,10 @@ public class Duck implements Serializable {
      * @return Los impuestos que debe pagar el pato.
      */
     public int getTaxes() {
-        this.taxes = (int) Math.ceil(25 *this.getHappiness());
-
         if (this.isUnemployed()) {
-            return -20;
+            this.taxes = -20;
+        } else {
+            this.taxes = (int) Math.ceil(25 *this.getHappiness());
         }
 
         return this.taxes;
@@ -463,7 +471,7 @@ public class Duck implements Serializable {
      */
     private enum ActivityType {
         IN_HOUSE("En casa."),
-        WORK("Trabajado"),
+        WORK("Trabajando"),
         IN_FREETIME("Pasando el rato.");
 
         private final String DESCRIPTION;
