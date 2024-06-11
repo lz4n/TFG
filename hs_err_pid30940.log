@@ -607,8 +607,8 @@ Event: 10.661 Loading class sun/awt/AppContext$PostShutdownEventRunnable
 Event: 10.661 Loading class sun/awt/AppContext$PostShutdownEventRunnable done
 Event: 10.661 Loading class sun/awt/AWTAutoShutdown$1
 Event: 10.661 Loading class sun/awt/AWTAutoShutdown$1 done
-Event: 10.661 Loading class utils/render/mesh/TooltipMesh
-Event: 10.661 Loading class utils/render/mesh/TooltipMesh done
+Event: 10.661 Loading class utils/render/mesh/ShapeMesh
+Event: 10.661 Loading class utils/render/mesh/ShapeMesh done
 Event: 16.163 Loading class utils/render/scene/WorldScene$1
 Event: 16.163 Loading class utils/render/scene/WorldScene$1 done
 Event: 16.163 Loading class utils/render/scene/WorldScene$1

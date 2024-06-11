@@ -27,7 +27,7 @@ public class Tab extends Widget implements CustomDrawWidget {
     /**
      * Desplazamiento en el eje Y de las pestañas.
      */
-    public static final int WIDGET_OFFSET_Y = -10;
+    public static final float WIDGET_OFFSET_Y = -9.9f;
 
     /**
      * Distancia entre el origen de una pestaña y el origen de la siguiente.

@@ -59,7 +59,7 @@ public class Hospital extends Building {
         TextTooltip tooltip = new TextTooltip();
 
         tooltip.addLine(String.format("Capacidad: %d patos", this.getProtection()), GameFont.PIXEL_CONTENT, Font.PLAIN, TextTooltip.CONTENT_TEXT_SIZE);
-        tooltip.addLine(String.format("Coste: %d€", this.getIncomes()), GameFont.PIXEL_CONTENT, Font.PLAIN, TextTooltip.CONTENT_TEXT_SIZE);
+        tooltip.addLine(String.format("Coste: %d§", this.getIncomes()), GameFont.PIXEL_CONTENT, Font.PLAIN, TextTooltip.CONTENT_TEXT_SIZE);
 
         return tooltip;
     }

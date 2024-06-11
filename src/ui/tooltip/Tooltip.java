@@ -4,10 +4,9 @@ import listener.MouseListener;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import ui.container.Container;
-import utils.BoundingBox;
 import utils.render.Shader;
 import utils.render.Window;
-import utils.render.mesh.TooltipMesh;
+import utils.render.mesh.ShapeMesh;
 import utils.render.texture.Graphics2dTexture;
 import utils.render.texture.Texture;
 import world.location.Location;
@@ -42,7 +41,7 @@ public class Tooltip {
             tooltipLocation.add(0, -(tooltipLocation.getY() +this.size.y() -Window.getHeight()));
         }
 
-        TooltipMesh mesh;
+        ShapeMesh mesh;
 
         Shader.SHAPE.use();
         Shader.SHAPE.uploadMatrix4f("uProjection", new Matrix4f().ortho(0, Window.getWidth(), Window.getHeight(), 0, -1, 1));
@@ -51,19 +50,19 @@ public class Tooltip {
 
         Shader.SHAPE.upload4f("uColor", 0.46f, 0.48f, 0.43f, 0.7f);
 
-        mesh = new TooltipMesh();
+        mesh = new ShapeMesh();
         mesh.addVertex(-3, -2, (size.x() /Container.pixelSizeInScreen) +6, (size.y() /Container.pixelSizeInScreen) +4, Container.pixelSizeInScreen);
         mesh.load();
         mesh.draw();
 
-        mesh = new TooltipMesh();
+        mesh = new ShapeMesh();
         mesh.addVertex(-2, -3, (size.x() /Container.pixelSizeInScreen) +4, (size.y() /Container.pixelSizeInScreen) +6, Container.pixelSizeInScreen);
         mesh.load();
         mesh.draw();
 
         Shader.SHAPE.upload4f("uColor", 0.17f, 0.17f, 0.16f, 0.5f);
 
-        mesh = new TooltipMesh();
+        mesh = new ShapeMesh();
         mesh.addVertex(-2, -2, (size.x() /Container.pixelSizeInScreen) +4, (size.y() /Container.pixelSizeInScreen) +4, Container.pixelSizeInScreen);
         mesh.load();
         mesh.draw();

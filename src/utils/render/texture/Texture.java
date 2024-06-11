@@ -3,10 +3,7 @@ package utils.render.texture;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.ARBVertexArrayObject;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL13;
-import org.lwjgl.opengl.GL20;
+import org.lwjgl.opengl.*;
 import org.lwjgl.stb.STBImage;
 import utils.BoundingBox;
 import utils.Logger;
@@ -177,6 +174,7 @@ public abstract class Texture {
             int format = (channels.get(0) == 4) ? GL20.GL_RGBA : GL20.GL_RGB;
 
             GL20.glTexImage2D(GL20.GL_TEXTURE_2D, 0, format, width.get(0), height.get(0), 0, format, GL20.GL_UNSIGNED_BYTE, image);
+            GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);
             STBImage.stbi_image_free(image);
         } else {
             Logger.sendMessage("No se ha podido cargar la textura '%s'.", Logger.LogMessageType.WARNING, path);

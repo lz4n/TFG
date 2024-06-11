@@ -122,6 +122,14 @@ public class WorldMesh extends Mesh {
     }
 
     /**
+     * Comprueba si el Mesh tiene elementos o no.
+     * @return Si el Mesh tiene elementos o no.
+     */
+    public boolean isEmpty() {
+        return this.elementsCount == 0;
+    }
+
+    /**
      * Ajusta los arreglos de vértices y elementos del mesh a sus tamaños actuales.
      * Esto implica recortar los arreglos para que coincidan exactamente con la cantidad
      * de vértices y elementos utilizados actualmente.

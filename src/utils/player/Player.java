@@ -429,7 +429,7 @@ public class Player {
                     }
 
                     if (item.getPrice() != 0) {
-                        tooltip.addLine("-" +item.getPrice() +"€", GameFont.PIXEL_CONTENT, Font.PLAIN, TextTooltip.CONTENT_TEXT_SIZE, Colors.RED);
+                        tooltip.addLine("-" +item.getPrice() +"§", GameFont.PIXEL_CONTENT, Font.PLAIN, TextTooltip.CONTENT_TEXT_SIZE, Colors.RED);
                     }
 
                     slotWidget.setTooltip(tooltip);
@@ -571,7 +571,7 @@ public class Player {
      */
     public void updateMoney(int money) {
         this.MONEY_TEXT_BOX.setText(
-                money + "€",
+                money + "§",
                 Font.PLAIN,
                 money > 0?Color.WHITE:Colors.RED
         );
@@ -584,7 +584,7 @@ public class Player {
      */
     public void updateIncomes(int incomes) {
         this.INCOMES_TEXT_BOX.setText(
-                (incomes > 0?"+":"") +incomes + "€/dia",
+                (incomes > 0?"+":"") +incomes + "§/dia",
                 Font.PLAIN,
                 incomes > 0?Colors.GREEN:Colors.RED
         );

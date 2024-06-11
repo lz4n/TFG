@@ -1,10 +1,7 @@
 package utils.render.mesh;
 
 import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.ARBVertexArrayObject;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL15C;
-import org.lwjgl.opengl.GL20;
+import org.lwjgl.opengl.*;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -105,6 +102,8 @@ public abstract class Mesh {
             GL20.glDisableVertexAttribArray(attributeIndex);
         }
         ARBVertexArrayObject.glBindVertexArray(0);
+
+        GL20.glActiveTexture(GL13.GL_TEXTURE0);
     }
 
     /**

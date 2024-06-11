@@ -39,7 +39,12 @@ public enum Shader {
     /**
      * Shader utilizado para renderizar la caja de las  tooltips.
      */
-    SHAPE("assets/shaders/shape", true);
+    SHAPE("assets/shaders/shape", true),
+
+    /**
+     * Shader utilizado para el post-procesado de la imagen en pantalla.
+     */
+    POST_PROCESSING("assets/shaders/post_processing", true);
 
     private final boolean SUPPORTS_INSTANTATION;
     private String vertexShader = null;

@@ -101,8 +101,8 @@ public abstract class JobSite extends Building {
 
         tooltip.addLine(String.format("Trabajadores: %d/%d patos", this.getWorkersCount(), this.workers.length), GameFont.PIXEL_CONTENT, Font.PLAIN, TextTooltip.CONTENT_TEXT_SIZE);
         tooltip.addLine("", GameFont.PIXEL_CONTENT, Font.PLAIN, TextTooltip.CONTENT_TEXT_SIZE);
-        tooltip.addLine(String.format("Coste: %d€", this.getCost()), GameFont.PIXEL_CONTENT, Font.PLAIN, TextTooltip.CONTENT_TEXT_SIZE);
-        tooltip.addLine(String.format("Ingresos: %d€", this.getIncomes()), GameFont.PIXEL_CONTENT, Font.PLAIN, TextTooltip.CONTENT_TEXT_SIZE);
+        tooltip.addLine(String.format("Coste: %d§", this.getCost()), GameFont.PIXEL_CONTENT, Font.PLAIN, TextTooltip.CONTENT_TEXT_SIZE);
+        tooltip.addLine(String.format("Ingresos: %d§", this.getIncomes()), GameFont.PIXEL_CONTENT, Font.PLAIN, TextTooltip.CONTENT_TEXT_SIZE);
 
         return tooltip;
     }

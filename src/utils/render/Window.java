@@ -10,6 +10,7 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL20;
 import org.lwjgl.stb.STBImageWrite;
 import org.lwjgl.system.MemoryUtil;
 import ui.container.Frame;
@@ -120,6 +121,7 @@ public class Window {
         GLFW.glfwWindowHint(GLFW.GLFW_VISIBLE, GLFW.GLFW_FALSE);
         GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, GLFW.GLFW_TRUE);
         GLFW.glfwWindowHint(GLFW.GLFW_MAXIMIZED, GLFW.GLFW_TRUE);
+        GLFW.glfwWindowHint(GLFW.GLFW_SAMPLES, 4);
         GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 3);
         GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 3);
 
@@ -150,10 +152,20 @@ public class Window {
         //Creamos la instancia de OpenGL
         GL.createCapabilities();
 
+        //Activamos las trasparencias
+        GL20.glEnable(GL20.GL_BLEND);
+        GL20.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+
+        //Activamos el MSAA antialaising
+        GL20.glEnable(GL20.GL_MULTISAMPLE);
+
         //Compilamos los shaders
         for (Shader shader: Shader.values()) {
             shader.compile();
         }
+
+        Shader.POST_PROCESSING.use();
+        Shader.POST_PROCESSING.uploadInt("uScreenTexture", 0);
 
         //Establecemos el icono de la ventana
         try {
@@ -193,8 +205,8 @@ public class Window {
         long beginTime = Time.getTimeInNanoseconds(), endTime, dTime = -1;
 
         while (!GLFW.glfwWindowShouldClose(window)) {
-            GLFW.glfwPollEvents();
             GLFW.glfwSwapBuffers(window);
+            GLFW.glfwPollEvents();
 
             if (dTime >= 0) {
                 AnimatedTexture.animate();

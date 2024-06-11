@@ -31,7 +31,7 @@ public class World implements Serializable {
      * Duración de las fases del día, meses y años en ticks.
      */
     public static final int
-            TOTAL_DAY_DURATION = 6000,
+            TOTAL_DAY_DURATION = 4000,
             SUNRISE_START = World.hourToTick(7, 0),
             SUNRISE_END = World.hourToTick(8, 30),
             SUNRISE_DURATION = SUNRISE_END - SUNRISE_START,
@@ -40,7 +40,7 @@ public class World implements Serializable {
             sunsetDuration = SUNSET_END - SUNSET_START,
             MONTH_DURATION_IN_DAYS = 30,
             MAX_MONTH = 12;
-    private static final float MIN_DAYLIGHT = .5f;
+    private static final float MIN_DAYLIGHT = .2f;
 
     private static final int INITIAL_MONEY = 600;
 
@@ -391,15 +391,15 @@ public class World implements Serializable {
      */
     public float getDayLight() {
 
-        if ((0 < this.getDayTime() && this.getDayTime() < SUNRISE_START) || (SUNSET_END < this.getDayTime() && this.getDayTime() < World.TOTAL_DAY_DURATION)) {
+        if ((0 <= this.getDayTime() && this.getDayTime() < SUNRISE_START) || (SUNSET_END <= this.getDayTime() && this.getDayTime() < World.TOTAL_DAY_DURATION)) {
             return World.MIN_DAYLIGHT;
-        } else if (SUNRISE_START < this.getDayTime() && this.getDayTime() < SUNRISE_END) {
+        } else if (SUNRISE_START <= this.getDayTime() && this.getDayTime() < SUNRISE_END) {
             // Durante el amanecer, incrementa la luz gradualmente
             return World.MIN_DAYLIGHT + (1 - World.MIN_DAYLIGHT) * ((float) (this.getDayTime() - SUNRISE_START) / SUNRISE_DURATION);
-        } else if (SUNRISE_END < this.getDayTime() && this.getDayTime() < SUNSET_START) {
+        } else if (SUNRISE_END <= this.getDayTime() && this.getDayTime() < SUNSET_START) {
             // Durante el día, luz máxima
             return 1;
-        } else if (SUNSET_START < this.getDayTime() && this.getDayTime() < SUNSET_END) {
+        } else if (SUNSET_START <= this.getDayTime() && this.getDayTime() <= SUNSET_END) {
             // Durante el atardecer, disminuye la luz gradualmente
             return 1f - (1 - World.MIN_DAYLIGHT) * ((float) (this.getDayTime() - SUNSET_START) / sunsetDuration);
         } else {

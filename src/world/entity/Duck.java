@@ -377,7 +377,7 @@ public class Duck implements Serializable {
                 %s
                 Felicidad: %d%%
                 
-                Impuestos: %d€
+                Impuestos: %d§
                 """, this.state.DESCRIPTION, this.isUnemployed() ? "No encuentra trabajo a una distancia razonable" : "Con trabajo", (int) (this.happiness *100), this.taxes), GameFont.PIXEL_CONTENT, Font.PLAIN, TextTooltip.CONTENT_TEXT_SIZE);
     }
 

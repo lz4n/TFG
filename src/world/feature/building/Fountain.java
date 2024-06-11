@@ -34,7 +34,7 @@ public class Fountain extends Building {
     public Tooltip getTooltip() {
         TextTooltip tooltip = new TextTooltip();
 
-        tooltip.addLine(String.format("Coste: %d€", this.getIncomes()), GameFont.PIXEL_CONTENT, Font.PLAIN, TextTooltip.CONTENT_TEXT_SIZE);
+        tooltip.addLine(String.format("Coste: %d§", this.getIncomes()), GameFont.PIXEL_CONTENT, Font.PLAIN, TextTooltip.CONTENT_TEXT_SIZE);
 
         return tooltip;
     }
