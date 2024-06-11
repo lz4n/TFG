@@ -47,6 +47,8 @@ import world.terrain.Terrain;
 
 import java.awt.*;
 import java.io.*;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.*;
 import java.util.List;
 
@@ -98,17 +100,17 @@ public class Player {
         this.put(Player.SERVICES_TAB, List.of(
                 Arrays.asList(
                         new FeatureItem(Textures.HOSPITAL, Hospital::new, "Hospital", "Incrementa la salud de un máximo de 75 patos.", 15000),
-                        new FeatureItem(Textures.POLICE_STATION, PoliceStation::new, "Estación de Policía", "Comisaría para dar servicio a 40 patos.", 10000)
+                        new FeatureItem(Textures.POLICE_STATION, PoliceStation::new, "Estación de Policia", "Comisaría para dar servicio a 40 patos.", 10000)
                 )
         ));
         this.put(Player.NATURE_TAB, Arrays.asList(
                 Arrays.asList(
                         new FeatureItem(Textures.BUSH, Bush::new, "Hierba", null, 25),
                         new FeatureItem(Textures.TREE1, location -> new Tree(location, 0), "Arbol de roble", null, 50),
-                        new FeatureItem(Textures.TREE2, location -> new Tree(location, 1), "Árbol de abedúl", null, 50)),
+                        new FeatureItem(Textures.TREE2, location -> new Tree(location, 1), "arbol de abedúl", null, 50)),
                 Arrays.asList(
                         new FeatureItem(Textures.TULIP, location -> new Flower(location, 0), "Tulipanes", null, 75),
-                        new FeatureItem(Textures.TULIP_2, location -> new Flower(location, 1), "Más tulipanes", null, 75),
+                        new FeatureItem(Textures.TULIP_2, location -> new Flower(location, 1), "Mas tulipanes", null, 75),
                         new FeatureItem(Textures.BLUE_ORCHID, location -> new Flower(location, 2), "Orquidea azul", null, 75),
                         new FeatureItem(Textures.DANDELION, location -> new Flower(location, 3), "Diente de león", null, 75),
                         new FeatureItem(Textures.RED_LILY, location -> new Flower(location, 4), "Lirio rojo", null, 75)),
@@ -117,7 +119,7 @@ public class Player {
         ));
         this.put(Player.SPECIAL_TAB, List.of(
                 List.of(
-                        new FeatureItem(Textures.FOUNTAIN, Fountain::new, "La fuente", "Hace bonito.", 25000))
+                        new FeatureItem(Textures.FOUNTAIN, Fountain::new, "La fuente", "Hace bonito.", 100000))
         ));
 
     }};
@@ -429,7 +431,8 @@ public class Player {
                     }
 
                     if (item.getPrice() != 0) {
-                        tooltip.addLine("-" +item.getPrice() +"§", GameFont.PIXEL_CONTENT, Font.PLAIN, TextTooltip.CONTENT_TEXT_SIZE, Colors.RED);
+                        String priceString = new DecimalFormat("###,###,###.##§", DecimalFormatSymbols.getInstance(Locale.GERMAN)).format(item.getPrice());
+                        tooltip.addLine("-" +priceString, GameFont.PIXEL_CONTENT, Font.PLAIN, TextTooltip.CONTENT_TEXT_SIZE, Colors.RED);
                     }
 
                     slotWidget.setTooltip(tooltip);

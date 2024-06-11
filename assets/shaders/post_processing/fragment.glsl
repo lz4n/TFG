@@ -50,6 +50,10 @@ void main()
     //Aplicamos la luz del sol.
     color = color *uDaylight;
 
+    //Aplicamos la desaturación en funcion de la felicidad.
+    vec3 grayScale = vec3(dot(color.rgb, vec3(0.2126, 0.7152, 0.0722)));
+    color = mix(color, grayScale, 1 -uHappiness);
+
     //Colocamos un foco de luz en el ratón
     float distanceToLight = length(textureCoords - uLightPos);
     float attenuation = 1 -smoothstep(0.0, 0.1, distanceToLight);
