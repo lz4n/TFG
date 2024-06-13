@@ -18,14 +18,14 @@
 
 ---------------  S U M M A R Y ------------
 
-Command Line: -agentlib:jdwp=transport=dt_socket,address=127.0.0.1:62992,suspend=y,server=n -javaagent:C:\Users\izan\AppData\Local\JetBrains\IntelliJIdea2023.2\captureAgent\debugger-agent.jar -Dfile.encoding=UTF-8 -Dsun.stdout.encoding=UTF-8 -Dsun.stderr.encoding=UTF-8 main.Main --activeDebug
+Command Line: -agentlib:jdwp=transport=dt_socket,address=127.0.0.1:62992,suspend=y,server=n -javaagent:C:\Users\izan\AppData\Local\JetBrains\IntelliJIdea2023.2\captureAgent\debugger-agent.jar -Dfile.encoding=UTF-8 -Dsun.stdout.encoding=UTF-8 -Dsun.stderr.encoding=UTF-8 java.Main --activeDebug
 
 Host: AMD Ryzen 5 3600 6-Core Processor              , 12 cores, 15G,  Windows 10 , 64 bit Build 19041 (10.0.19041.3636)
 Time: Thu May 30 22:57:36 2024 Hora de verano romance elapsed time: 21.987666 seconds (0d 0h 0m 21s)
 
 ---------------  T H R E A D  ---------------
 
-Current thread (0x0000024fce8c0cb0):  JavaThread "main"             [_thread_in_native, id=16472, stack(0x0000009c72200000,0x0000009c72300000) (1024K)]
+Current thread (0x0000024fce8c0cb0):  JavaThread "java.main"             [_thread_in_native, id=16472, stack(0x0000009c72200000,0x0000009c72300000) (1024K)]
 
 Stack: [0x0000009c72200000,0x0000009c72300000],  sp=0x0000009c722ff0b0,  free space=1020k
 Native frames: (J=compiled Java code, j=interpreted, Vv=VM code, C=native code)
@@ -35,11 +35,11 @@ Java frames: (J=compiled Java code, j=interpreted, Vv=VM code)
 j  org.lwjgl.opengl.GL11C.nglDrawElements(IIIJ)V+0
 j  org.lwjgl.opengl.GL11C.glDrawElements(IIIJ)V+4
 j  org.lwjgl.opengl.GL11.glDrawElements(IIIJ)V+4
-j  utils.render.mesh.Mesh.draw()V+38
-j  utils.render.scene.WorldScene.update(J)V+665
-j  utils.render.Window.loop()V+78
-j  utils.render.Window.run()V+129
-j  main.Main.main([Ljava/lang/String;)V+336
+j  java.utils.render.mesh.Mesh.draw()V+38
+j  java.utils.render.scene.WorldScene.update(J)V+665
+j  java.utils.render.Window.loop()V+78
+j  java.utils.render.Window.run()V+129
+j  java.Main.java.main([Ljava/lang/String;)V+336
 v  ~StubRoutines::call_stub 0x0000024fe03e100d
 
 siginfo: EXCEPTION_ACCESS_VIOLATION (0xc0000005), reading address 0x0000000000000014
@@ -165,7 +165,7 @@ _java_thread_list=0x0000024ff543a650, length=18, elements={
 }
 
 Java Threads: ( => current thread )
-=>0x0000024fce8c0cb0 JavaThread "main"                              [_thread_in_native, id=16472, stack(0x0000009c72200000,0x0000009c72300000) (1024K)]
+=>0x0000024fce8c0cb0 JavaThread "java.main"                              [_thread_in_native, id=16472, stack(0x0000009c72200000,0x0000009c72300000) (1024K)]
   0x0000024ff001bab0 JavaThread "Reference Handler"          daemon [_thread_blocked, id=20684, stack(0x0000009c72a00000,0x0000009c72b00000) (1024K)]
   0x0000024ff001d880 JavaThread "Finalizer"                  daemon [_thread_blocked, id=39484, stack(0x0000009c72b00000,0x0000009c72c00000) (1024K)]
   0x0000024ff0020320 JavaThread "Signal Dispatcher"          daemon [_thread_blocked, id=1524, stack(0x0000009c72c00000,0x0000009c72d00000) (1024K)]
@@ -593,26 +593,26 @@ Event: 2.120 Thread 0x0000024fce8c0cb0 DEOPT PACKING pc=0x0000024fe09fc1b0 sp=0x
 Event: 2.120 Thread 0x0000024fce8c0cb0 DEOPT UNPACKING pc=0x0000024fe04346a2 sp=0x0000009c722ff210 mode 2
 
 Classes loaded (20 events):
-Event: 2.120 Loading class world/duck/Entity
-Event: 2.120 Loading class world/duck/Entity done
-Event: 2.120 Loading class world/particle/Particle
-Event: 2.120 Loading class world/particle/Particle done
-Event: 2.120 Loading class world/particle/Particle
-Event: 2.120 Loading class world/particle/Particle done
+Event: 2.120 Loading class java.world/duck/Entity
+Event: 2.120 Loading class java.world/duck/Entity done
+Event: 2.120 Loading class java.world/particle/Particle
+Event: 2.120 Loading class java.world/particle/Particle done
+Event: 2.120 Loading class java.world/particle/Particle
+Event: 2.120 Loading class java.world/particle/Particle done
 Event: 10.660 Loading class java/util/IdentityHashMap$ValueIterator
-Event: 10.660 Loading class utils/render/scene/WorldScene$1
-Event: 10.660 Loading class utils/render/scene/WorldScene$1 done
+Event: 10.660 Loading class java.utils/render/scene/WorldScene$1
+Event: 10.660 Loading class java.utils/render/scene/WorldScene$1 done
 Event: 10.660 Loading class java/util/IdentityHashMap$ValueIterator done
 Event: 10.661 Loading class sun/awt/AppContext$PostShutdownEventRunnable
 Event: 10.661 Loading class sun/awt/AppContext$PostShutdownEventRunnable done
 Event: 10.661 Loading class sun/awt/AWTAutoShutdown$1
 Event: 10.661 Loading class sun/awt/AWTAutoShutdown$1 done
-Event: 10.661 Loading class utils/render/mesh/ShapeMesh
-Event: 10.661 Loading class utils/render/mesh/ShapeMesh done
-Event: 16.163 Loading class utils/render/scene/WorldScene$1
-Event: 16.163 Loading class utils/render/scene/WorldScene$1 done
-Event: 16.163 Loading class utils/render/scene/WorldScene$1
-Event: 16.163 Loading class utils/render/scene/WorldScene$1 done
+Event: 10.661 Loading class java.utils/render/mesh/ShapeMesh
+Event: 10.661 Loading class java.utils/render/mesh/ShapeMesh done
+Event: 16.163 Loading class java.utils/render/scene/WorldScene$1
+Event: 16.163 Loading class java.utils/render/scene/WorldScene$1 done
+Event: 16.163 Loading class java.utils/render/scene/WorldScene$1
+Event: 16.163 Loading class java.utils/render/scene/WorldScene$1 done
 
 Classes unloaded (0 events):
 No events
@@ -832,7 +832,7 @@ symbol engine: initialized successfully - sym options: 0x614 - pdb path: .;C:\Us
 
 VM Arguments:
 jvm_args: -agentlib:jdwp=transport=dt_socket,address=127.0.0.1:62992,suspend=y,server=n -javaagent:C:\Users\izan\AppData\Local\JetBrains\IntelliJIdea2023.2\captureAgent\debugger-agent.jar -Dfile.encoding=UTF-8 -Dsun.stdout.encoding=UTF-8 -Dsun.stderr.encoding=UTF-8 
-java_command: main.Main --activeDebug
+java_command: java.Main --activeDebug
 java_class_path (initial): C:\Users\izan\Documents\GitHub\TFG\out\production\TFG;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl-opengl-javadoc.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl-opengl.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl-assimp-sources.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl-openal-natives-windows.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl-sources.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl-assimp-javadoc.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl-openal.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl-javadoc.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl-openal-javadoc.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl-openal-sources.jar;C:\Users\izan\Documents\GitHub\TFG\lib\gson-2.10.1-javadoc.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl-glfw.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl-glfw-natives-windows.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl-assimp-natives-windows.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl-stb-natives-windows.jar;C:\Users\izan\Documents\GitHub\TFG\lib\gson-2.10.1.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl-opengl-natives-windows.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl.jar;C:\Users\izan\Documents\GitHub\TFG\lib\joml-1.10.5.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl-stb.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl-stb-javadoc.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl-assimp.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl-natives-windows.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl-glfw-javadoc.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl-stb-sources.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl-opengl-sources.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl-glfw-sources.jar;C:\Program Files\JetBrains\IntelliJ IDEA 2023.2.4\lib\idea_rt.jar
 Launcher Type: SUN_STANDARD
 

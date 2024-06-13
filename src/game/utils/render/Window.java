@@ -1,0 +1,378 @@
+package game.utils.render;
+
+import game.listener.KeyListener;
+import game.listener.MouseListener;
+import game.listener.WindowListener;
+import game.Main;
+import game.ui.container.Frame;
+import game.ui.container.Inventory;
+import game.utils.KeyBind;
+import game.utils.Logger;
+import game.utils.Setting;
+import game.utils.Time;
+import game.utils.sounds.SoundCategory;
+import game.utils.sounds.SoundEffect;
+import org.joml.Vector2f;
+import org.joml.Vector2i;
+import org.lwjgl.BufferUtils;
+import org.lwjgl.glfw.*;
+import org.lwjgl.opengl.GL;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL20;
+import org.lwjgl.stb.STBImageWrite;
+import org.lwjgl.system.MemoryUtil;
+import game.utils.render.scene.WorldScene;
+import game.utils.render.texture.AnimatedTexture;
+import game.utils.render.texture.CacheTexture;
+import game.utils.render.texture.Texture;
+import game.utils.render.texture.Textures;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.util.Date;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+/**
+ * Representa la ventana en la que se ejecuta el juego.
+ *
+ * @author Izan
+ */
+public class Window {
+    private final static int WIDTH = 1920, HEIGHT = 1080;
+    private static int initialWidth, initialHeight;
+
+    /**
+     * Identificador numérico de la ventana.
+     */
+    public static long window;
+
+    /**
+     * Escena actual de la ventana.
+     */
+    public static WorldScene currentScene = new WorldScene();
+    private static ExecutorService screenshotExecutor = Executors.newCachedThreadPool();
+
+
+    /**
+     * Inicia la ventana: inicializa sus componentes y genera el loop principal. Cuando el loop termina libera memoria
+     * y desactiva GLSL.
+     */
+    public static void run() {
+        Window.init();
+        currentScene.init();
+        Main.PLAYER.init();
+
+        //Cargamos las texturas a la caché de texuras
+        Texture texture;
+        for (Field field: Textures.class.getDeclaredFields()) {
+            try {
+                texture = (Texture) field.get(new Object());
+                if (texture instanceof CacheTexture) {
+                    ((CacheTexture) texture).init();
+                    Logger.sendMessage("Se ha generado la textura %s: %s.", Logger.LogMessageType.INFO, texture.getTextureId(), texture);
+                }
+            } catch (IllegalAccessException | ClassCastException ignore) {}
+        }
+
+        Window.initialWidth = Window.getWidth();
+        Window.initialHeight = Window.getHeight();
+
+        Window.loop();
+
+        //Guardamos las opciones
+        Setting.save();
+
+        //Cerramos los servicios
+        Window.screenshotExecutor.shutdown();
+
+        //Liberamos memoria
+        Callbacks.glfwFreeCallbacks(window);
+        GLFW.glfwDestroyWindow(window);
+        GLFW.glfwTerminate();
+        GLFW.glfwSetErrorCallback(null).free();
+
+        for (Field field: Textures.class.getDeclaredFields()) {
+            try {
+                texture = (Texture) field.get(new Object());
+                if (texture instanceof CacheTexture) {
+                    ((CacheTexture) texture).remove();
+                    Logger.sendMessage("Se ha eliminado la textura %s: %s.", Logger.LogMessageType.INFO, texture.getTextureId(), texture);
+                }
+            } catch (IllegalAccessException | ClassCastException exception) {}
+        }
+    }
+
+    private static void init() {
+        //Generamos el ErrorCallback
+        GLFWErrorCallback.createPrint(System.err).set();
+
+        //Inicializamos GLFW
+        if (!GLFW.glfwInit()) {
+            throw new RuntimeException("No se ha podido inicializar GLFW");
+        }
+
+        //Congiguramos GLFW
+        GLFW.glfwDefaultWindowHints();
+        GLFW.glfwWindowHint(GLFW.GLFW_VISIBLE, GLFW.GLFW_FALSE);
+        GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, GLFW.GLFW_TRUE);
+        GLFW.glfwWindowHint(GLFW.GLFW_MAXIMIZED, GLFW.GLFW_TRUE);
+        GLFW.glfwWindowHint(GLFW.GLFW_SAMPLES, 4);
+        GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 3);
+        GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 3);
+
+        //Creamos la ventana
+        window = GLFW.glfwCreateWindow(Window.WIDTH, Window.HEIGHT, "El pato juego", MemoryUtil.NULL, MemoryUtil.NULL);
+        if (window == MemoryUtil.NULL) {
+            throw new RuntimeException("No se ha podido crear la ventana.");
+        }
+
+        GLFW.glfwMaximizeWindow(window);
+
+        //Generamos los eventos de teclado, ratón y pantalla
+        GLFW.glfwSetCursorPosCallback(window, MouseListener::mousePosCallback);
+        GLFW.glfwSetMouseButtonCallback(window, MouseListener::mouseButtonCallback);
+        GLFW.glfwSetScrollCallback(window, MouseListener::mouseScrollCallback);
+        GLFW.glfwSetKeyCallback(window, KeyListener::keyCallback);
+        GLFW.glfwSetWindowSizeCallback(window, WindowListener::windowCallback);
+
+        //Establecemos OpenGL como el contexto actual
+        GLFW.glfwMakeContextCurrent(window);
+
+        //Activamos v-sync
+        GLFW.glfwSwapInterval(1);
+
+        //Hacemos la ventana visible
+        GLFW.glfwShowWindow(window);
+
+        //Creamos la instancia de OpenGL
+        GL.createCapabilities();
+
+        //Activamos las trasparencias
+        GL20.glEnable(GL20.GL_BLEND);
+        GL20.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+
+        //Activamos el MSAA antialaising
+        GL20.glEnable(GL20.GL_MULTISAMPLE);
+
+        //Compilamos los shaders
+        for (Shader shader: Shader.values()) {
+            shader.compile();
+        }
+
+        Shader.POST_PROCESSING.use();
+        Shader.POST_PROCESSING.uploadInt("uScreenTexture", 0);
+
+        //Establecemos el icono de la ventana
+        try {
+            BufferedImage bufferedImage = ImageIO.read(Window.class.getClassLoader().getResourceAsStream("resources/textures/icon.png"));
+            byte[] iconData = ((DataBufferByte) bufferedImage.getRaster().getDataBuffer()).getData();
+            ByteBuffer appIconBuffer = BufferUtils.createByteBuffer(iconData.length);
+            appIconBuffer.order(ByteOrder.nativeOrder());
+
+            //Cambiamos los canales de la imagen, para que esté en formato RGBA en vez de ABGR.
+            byte alpha, red, green, blue;
+            for (int i = 0; i < iconData.length; i += 4) {
+                alpha = iconData[i];
+                blue = iconData[i + 1];
+                green = iconData[i + 2];
+                red = iconData[i + 3];
+                appIconBuffer.put(red).put(green).put(blue).put(alpha);
+            }
+            appIconBuffer.flip();
+
+
+            GLFWImage.Buffer glfwImage = GLFWImage.create(1);
+            GLFWImage iconGI = GLFWImage.create().set(bufferedImage.getWidth(), bufferedImage.getHeight(), appIconBuffer);
+            glfwImage.put(0, iconGI);
+            GLFW.glfwSetWindowIcon(window, glfwImage);
+        } catch (IOException exception) {
+            throw new RuntimeException(exception);
+        }
+
+        //Si la opción FULLSCREEN está en true lo ponemos en pantalla completa.
+        if (Setting.FULLSCREEN.getValue()) {
+            Window.setFullScreen(true);
+        }
+
+        SoundEffect.BACKGROUND_MUSIC.play(SoundCategory.MUSIC);
+    }
+
+    private static void loop() {
+        long beginTime = Time.getTimeInNanoseconds(), endTime, dTime = -1;
+
+        while (!GLFW.glfwWindowShouldClose(window)) {
+            GLFW.glfwSwapBuffers(window);
+            GLFW.glfwPollEvents();
+
+            if (dTime >= 0) {
+                AnimatedTexture.animate();
+                Main.world.onTick(Main.PLAYER.isPaused());
+                Main.PLAYER.onTick();
+                Window.currentScene.update(dTime);
+            }
+
+            if (!Main.PLAYER.isPaused()) {
+                if (KeyBind.MOVE_UP.isPressed()) {
+                    Main.PLAYER.getCamera().moveCamera(new Vector2f(0, (KeyListener.isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT) ? 2 : 1) * 10 * (float) Main.PLAYER.getCamera().getZoom()));
+                }
+
+                if (KeyBind.MOVE_LEFT.isPressed()) {
+                    Main.PLAYER.getCamera().moveCamera(new Vector2f((KeyListener.isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT) ? 2 : 1) * -10 * (float) Main.PLAYER.getCamera().getZoom(), 0));
+                }
+
+                if (KeyBind.MOVE_DOWN.isPressed()) {
+                    Main.PLAYER.getCamera().moveCamera(new Vector2f(0, (KeyListener.isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT) ? 2 : 1) * -10 * (float) Main.PLAYER.getCamera().getZoom()));
+                }
+
+                if (KeyBind.MOVE_RIGHT.isPressed()) {
+                    Main.PLAYER.getCamera().moveCamera(new Vector2f((KeyListener.isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT) ? 2 : 1) * 10 * (float) Main.PLAYER.getCamera().getZoom(), 0));
+                }
+
+                if (currentScene instanceof WorldScene && Main.PLAYER.getContainer() instanceof Inventory inventory) {
+                    if (KeyListener.isKeyPressed(GLFW.GLFW_KEY_RIGHT)) {
+                        inventory.moveScroll((KeyListener.isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT) ? 2 : 1) * -.7f);
+                    }
+
+                    if (KeyListener.isKeyPressed(GLFW.GLFW_KEY_LEFT)) {
+                        inventory.moveScroll((KeyListener.isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT) ? 2 : 1) * .7f);
+                    }
+                }
+            } else {
+                if (currentScene instanceof WorldScene && Main.PLAYER.getContainer() instanceof Frame frame) {
+                    if (KeyListener.isKeyPressed(GLFW.GLFW_KEY_DOWN)) {
+                        frame.moveScroll((KeyListener.isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT) ? 2 : 1) * -.7f);
+                    }
+
+                    if (KeyListener.isKeyPressed(GLFW.GLFW_KEY_UP)) {
+                        frame.moveScroll((KeyListener.isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT) ? 2 : 1) * .7f);
+                    }
+                }
+            }
+
+            endTime = Time.getTimeInNanoseconds();
+            dTime = endTime - beginTime;
+            beginTime = endTime;
+        }
+    }
+
+    private static Vector2i getDimensions() {
+        try {
+            int[] width = new int[1], height = new int[1];
+            GLFW.glfwGetFramebufferSize(Window.window, width, height);
+            if (width[0] <= 0) {
+                width[0] = Window.WIDTH;
+            }
+            if (height[0] <= 0) {
+                height[0] = Window.HEIGHT;
+            }
+            return new Vector2i(width[0], height[0]);
+        } catch (NullPointerException exception) {
+            return new Vector2i(Window.WIDTH, Window.HEIGHT);
+        }
+    }
+
+    /**
+     * @return Ancho de la ventana.
+     */
+    public static int getWidth() {
+        return Window.getDimensions().x();
+    }
+
+    /**
+     * @return Alto de la ventana.
+     */
+    public static int getHeight() {
+        return Window.getDimensions().y();
+    }
+
+    /**
+     * @return Ancho inicial de la ventana.
+     */
+    public static int getInitialWidth() {
+        return Window.initialWidth;
+    }
+
+    /**
+     * @return Alto inicial de la ventana.
+     */
+    public static int getInitialHeight() {
+        return Window.initialHeight;
+    }
+
+    /**
+     * Pone o quita la ventana en pantalla completa. Si deja de estar en pantalla completa se maximizará la pantalla.
+     * @param fullScreen Si se va a poner a pantalla completa o no.
+     */
+    public static void setFullScreen(boolean fullScreen) {
+        long monitor = GLFW.glfwGetPrimaryMonitor();
+        GLFWVidMode vidmode = GLFW.glfwGetVideoMode(monitor);
+        GLFW.glfwSetWindowMonitor(Window.window, fullScreen?monitor:MemoryUtil.NULL, 0, 0, vidmode.width(), vidmode.height(), vidmode.refreshRate());
+
+        if (!fullScreen) {
+            GLFW.glfwMaximizeWindow(Window.window);
+        }
+    }
+
+    /**
+     * Alterna la pantalla completa.
+     */
+    public static void toggleFullscreen() {
+        boolean fullScreen = !Setting.FULLSCREEN.getValue();
+        setFullScreen(fullScreen);
+        Setting.FULLSCREEN.setValue(fullScreen);
+    }
+
+    /**
+     * Captura una imagen de la pantalla actual y la guarda como un archivo PNG.
+     * La operación de captura e inversión de la imagen se realiza de manera asíncrona en un hilo separado.
+     * Se utiliza OpenGL para realizar la captura y se invierte la imagen verticalmente antes de guardarla.
+     * El archivo de captura se guarda en el directorio de instalación de la aplicación bajo la carpeta "screenshots".
+     * El nombre del archivo se genera basado en la fecha y hora actual del sistema.
+     */
+    public static void createScreenshot() {
+        //Creamos un buffer para almecenar los bytes de la pantalla: ancho *alto *4 (canales de color, RGBA)
+        ByteBuffer screenBuffer = BufferUtils.createByteBuffer(Window.getWidth() *Window.getHeight() *4);
+
+        //Capturamos la pantalla y la guardamos en el buffer.
+        GL11.glReadBuffer(GL11.GL_FRONT);
+        GL11.glReadPixels(0, 0, Window.getWidth(), Window.getHeight(), GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, screenBuffer);
+
+        //Crear la captura e invertir la imagen pixel a pixel lleva tiempo, así que lo ejecutamos en un servicio propio.
+        Window.screenshotExecutor.submit(() -> {
+            //Invertimos la imagen verticalmente (OpenGL almacena los píxeles de abajo hasta arriba).
+            ByteBuffer flippedBuffer = BufferUtils.createByteBuffer(Window.getWidth() *Window.getHeight() *4);
+            for (int y = 0; y < Window.getHeight(); y++) {
+                for (int x = 0; x < Window.getWidth(); x++) {
+                    int pixel = (x + (Window.getHeight() - y - 1) * Window.getWidth()) * 4;
+                    int flippedPixel = (x + y * Window.getWidth()) * 4;
+                    flippedBuffer.put(flippedPixel, screenBuffer.get(pixel));
+                    flippedBuffer.put(flippedPixel + 1, screenBuffer.get(pixel + 1));
+                    flippedBuffer.put(flippedPixel + 2, screenBuffer.get(pixel + 2));
+                    flippedBuffer.put(flippedPixel + 3, screenBuffer.get(pixel + 3));
+                }
+            }
+
+            //Guardamos el buffer en un png
+            File screenshotFile = new File(Main.installDirectory, "screenshots/" +new Date().toString().replace(" ", "_").replace(":", "_") +".png");
+            try {
+                screenshotFile.getParentFile().mkdirs();
+                screenshotFile.createNewFile();
+                STBImageWrite.stbi_write_png(screenshotFile.getAbsolutePath(), Window.getWidth(), Window.getHeight(), 4, flippedBuffer, Window.getWidth() * 4);
+                Logger.sendMessage("Se ha creado la captura de pantalla '%s' correcetamente.", Logger.LogMessageType.INFO, screenshotFile.getAbsolutePath());
+            } catch (IOException exception) {
+                Logger.sendMessage("Error creando la captura de pantalla '%s': %s.", Logger.LogMessageType.WARNING, screenshotFile.getAbsolutePath(), exception.getMessage());
+            }
+
+            //Limpiamos los buffers.
+            screenBuffer.clear();
+            flippedBuffer.clear();
+        });
+    }
+}

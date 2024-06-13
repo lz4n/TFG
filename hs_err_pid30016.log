@@ -18,14 +18,14 @@
 
 ---------------  S U M M A R Y ------------
 
-Command Line: -javaagent:C:\Program Files\JetBrains\IntelliJ IDEA 2023.2.4\lib\idea_rt.jar=50808:C:\Program Files\JetBrains\IntelliJ IDEA 2023.2.4\bin -Dfile.encoding=UTF-8 -Dsun.stdout.encoding=UTF-8 -Dsun.stderr.encoding=UTF-8 main.Main --activeDebug
+Command Line: -javaagent:C:\Program Files\JetBrains\IntelliJ IDEA 2023.2.4\lib\idea_rt.jar=50808:C:\Program Files\JetBrains\IntelliJ IDEA 2023.2.4\bin -Dfile.encoding=UTF-8 -Dsun.stdout.encoding=UTF-8 -Dsun.stderr.encoding=UTF-8 java.Main --activeDebug
 
 Host: AMD Ryzen 5 3600 6-Core Processor              , 12 cores, 15G,  Windows 10 , 64 bit Build 19041 (10.0.19041.3636)
 Time: Tue Jun 11 20:12:19 2024 Hora de verano romance elapsed time: 1.459416 seconds (0d 0h 0m 1s)
 
 ---------------  T H R E A D  ---------------
 
-Current thread (0x000002510f5a20c0):  JavaThread "main"             [_thread_in_native, id=11548, stack(0x000000e3e2400000,0x000000e3e2500000) (1024K)]
+Current thread (0x000002510f5a20c0):  JavaThread "java.main"             [_thread_in_native, id=11548, stack(0x000000e3e2400000,0x000000e3e2500000) (1024K)]
 
 Stack: [0x000000e3e2400000,0x000000e3e2500000],  sp=0x000000e3e24ff388,  free space=1020k
 Native frames: (J=compiled Java code, j=interpreted, Vv=VM code, C=native code)
@@ -34,9 +34,9 @@ C  [lwjgl_opengl.dll+0xc53a]
 Java frames: (J=compiled Java code, j=interpreted, Vv=VM code)
 j  org.lwjgl.opengl.GL11C.glEnable(I)V+0
 j  org.lwjgl.opengl.GL11.glEnable(I)V+1
-j  utils.render.Window.init()V+68
-j  utils.render.Window.run()V+0
-j  main.Main.main([Ljava/lang/String;)V+336
+j  java.utils.render.Window.init()V+68
+j  java.utils.render.Window.run()V+0
+j  java.Main.java.main([Ljava/lang/String;)V+336
 v  ~StubRoutines::call_stub 0x000002512113100d
 
 siginfo: EXCEPTION_ACCESS_VIOLATION (0xc0000005), reading address 0x0000000000000000
@@ -395,7 +395,7 @@ _java_thread_list=0x0000025176d09250, length=13, elements={
 }
 
 Java Threads: ( => current thread )
-=>0x000002510f5a20c0 JavaThread "main"                              [_thread_in_native, id=11548, stack(0x000000e3e2400000,0x000000e3e2500000) (1024K)]
+=>0x000002510f5a20c0 JavaThread "java.main"                              [_thread_in_native, id=11548, stack(0x000000e3e2400000,0x000000e3e2500000) (1024K)]
   0x0000025130c655d0 JavaThread "Reference Handler"          daemon [_thread_blocked, id=42984, stack(0x000000e3e2c00000,0x000000e3e2d00000) (1024K)]
   0x0000025130c677a0 JavaThread "Finalizer"                  daemon [_thread_blocked, id=28816, stack(0x000000e3e2d00000,0x000000e3e2e00000) (1024K)]
   0x0000025130c6a350 JavaThread "Signal Dispatcher"          daemon [_thread_blocked, id=40544, stack(0x000000e3e2e00000,0x000000e3e2f00000) (1024K)]
@@ -917,7 +917,7 @@ symbol engine: initialized successfully - sym options: 0x614 - pdb path: .;C:\Us
 
 VM Arguments:
 jvm_args: -javaagent:C:\Program Files\JetBrains\IntelliJ IDEA 2023.2.4\lib\idea_rt.jar=50808:C:\Program Files\JetBrains\IntelliJ IDEA 2023.2.4\bin -Dfile.encoding=UTF-8 -Dsun.stdout.encoding=UTF-8 -Dsun.stderr.encoding=UTF-8 
-java_command: main.Main --activeDebug
+java_command: java.Main --activeDebug
 java_class_path (initial): C:\Users\izan\Documents\GitHub\TFG\out\production\TFG;C:\Users\izan\Documents\GitHub\TFG\lib\gson-2.10.1.jar;C:\Users\izan\Documents\GitHub\TFG\lib\joml-1.10.5.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl-assimp-natives-windows.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl-assimp.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl-glfw-natives-windows.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl-glfw.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl-natives-windows.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl-openal-natives-windows.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl-openal.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl-opengl-natives-windows.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl-opengl.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl-stb-natives-windows.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl-stb.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl.jar;C:\Users\izan\Documents\GitHub\TFG\lib\NoiseGenerator.jar
 Launcher Type: SUN_STANDARD
 

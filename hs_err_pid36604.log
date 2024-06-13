@@ -18,14 +18,14 @@
 
 ---------------  S U M M A R Y ------------
 
-Command Line: -javaagent:C:\Program Files\JetBrains\IntelliJ IDEA 2023.2.4\lib\idea_rt.jar=62966:C:\Program Files\JetBrains\IntelliJ IDEA 2023.2.4\bin -Dfile.encoding=UTF-8 -Dsun.stdout.encoding=UTF-8 -Dsun.stderr.encoding=UTF-8 main.Main --activeDebug
+Command Line: -javaagent:C:\Program Files\JetBrains\IntelliJ IDEA 2023.2.4\lib\idea_rt.jar=62966:C:\Program Files\JetBrains\IntelliJ IDEA 2023.2.4\bin -Dfile.encoding=UTF-8 -Dsun.stdout.encoding=UTF-8 -Dsun.stderr.encoding=UTF-8 java.Main --activeDebug
 
 Host: AMD Ryzen 5 3600 6-Core Processor              , 12 cores, 15G,  Windows 10 , 64 bit Build 19041 (10.0.19041.3636)
 Time: Thu May 30 22:56:25 2024 Hora de verano romance elapsed time: 2.053084 seconds (0d 0h 0m 2s)
 
 ---------------  T H R E A D  ---------------
 
-Current thread (0x00000154c7a624b0):  JavaThread "main"             [_thread_in_native, id=20420, stack(0x0000002a74400000,0x0000002a74500000) (1024K)]
+Current thread (0x00000154c7a624b0):  JavaThread "java.main"             [_thread_in_native, id=20420, stack(0x0000002a74400000,0x0000002a74500000) (1024K)]
 
 Stack: [0x0000002a74400000,0x0000002a74500000],  sp=0x0000002a744ff190,  free space=1020k
 Native frames: (J=compiled Java code, j=interpreted, Vv=VM code, C=native code)
@@ -35,11 +35,11 @@ Java frames: (J=compiled Java code, j=interpreted, Vv=VM code)
 j  org.lwjgl.opengl.GL11C.nglDrawElements(IIIJ)V+0
 j  org.lwjgl.opengl.GL11C.glDrawElements(IIIJ)V+4
 j  org.lwjgl.opengl.GL11.glDrawElements(IIIJ)V+4
-j  utils.render.mesh.Mesh.draw()V+38
-j  utils.render.scene.WorldScene.update(J)V+665
-j  utils.render.Window.loop()V+78
-j  utils.render.Window.run()V+129
-j  main.Main.main([Ljava/lang/String;)V+336
+j  java.utils.render.mesh.Mesh.draw()V+38
+j  java.utils.render.scene.WorldScene.update(J)V+665
+j  java.utils.render.Window.loop()V+78
+j  java.utils.render.Window.run()V+129
+j  java.Main.java.main([Ljava/lang/String;)V+336
 v  ~StubRoutines::call_stub 0x00000154d95f100d
 
 siginfo: EXCEPTION_ACCESS_VIOLATION (0xc0000005), reading address 0x0000000000000014
@@ -149,7 +149,7 @@ stack at sp + 2 slots: 0x0 is null
 stack at sp + 3 slots: 0x00000154000a0101 is an unknown value
 stack at sp + 4 slots: 0x00000154c7a624b0 is a thread
 stack at sp + 5 slots: 0x00007ffdb01f7536 jvm.dll
-stack at sp + 6 slots: {method} {0x00000154ea46af88} 'draw' '()V' in 'utils/render/mesh/Mesh'
+stack at sp + 6 slots: {method} {0x00000154ea46af88} 'draw' '()V' in 'java.utils/render/mesh/Mesh'
 stack at sp + 7 slots: 0x00000154c9c69570 points into unknown readable memory: 0x000000070ad92fd0 | d0 2f d9 0a 07 00 00 00
 
 
@@ -165,7 +165,7 @@ _java_thread_list=0x00000154f1f392b0, length=17, elements={
 }
 
 Java Threads: ( => current thread )
-=>0x00000154c7a624b0 JavaThread "main"                              [_thread_in_native, id=20420, stack(0x0000002a74400000,0x0000002a74500000) (1024K)]
+=>0x00000154c7a624b0 JavaThread "java.main"                              [_thread_in_native, id=20420, stack(0x0000002a74400000,0x0000002a74500000) (1024K)]
   0x00000154e923ad60 JavaThread "Reference Handler"          daemon [_thread_blocked, id=18164, stack(0x0000002a74c00000,0x0000002a74d00000) (1024K)]
   0x00000154e923cce0 JavaThread "Finalizer"                  daemon [_thread_blocked, id=32504, stack(0x0000002a74d00000,0x0000002a74e00000) (1024K)]
   0x00000154e923f310 JavaThread "Signal Dispatcher"          daemon [_thread_blocked, id=39356, stack(0x0000002a74e00000,0x0000002a74f00000) (1024K)]
@@ -849,7 +849,7 @@ symbol engine: initialized successfully - sym options: 0x614 - pdb path: .;C:\Us
 
 VM Arguments:
 jvm_args: -javaagent:C:\Program Files\JetBrains\IntelliJ IDEA 2023.2.4\lib\idea_rt.jar=62966:C:\Program Files\JetBrains\IntelliJ IDEA 2023.2.4\bin -Dfile.encoding=UTF-8 -Dsun.stdout.encoding=UTF-8 -Dsun.stderr.encoding=UTF-8 
-java_command: main.Main --activeDebug
+java_command: java.Main --activeDebug
 java_class_path (initial): C:\Users\izan\Documents\GitHub\TFG\out\production\TFG;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl-opengl-javadoc.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl-opengl.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl-assimp-sources.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl-openal-natives-windows.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl-sources.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl-assimp-javadoc.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl-openal.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl-javadoc.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl-openal-javadoc.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl-openal-sources.jar;C:\Users\izan\Documents\GitHub\TFG\lib\gson-2.10.1-javadoc.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl-glfw.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl-glfw-natives-windows.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl-assimp-natives-windows.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl-stb-natives-windows.jar;C:\Users\izan\Documents\GitHub\TFG\lib\gson-2.10.1.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl-opengl-natives-windows.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl.jar;C:\Users\izan\Documents\GitHub\TFG\lib\joml-1.10.5.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl-stb.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl-stb-javadoc.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl-assimp.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl-natives-windows.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl-glfw-javadoc.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl-stb-sources.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl-opengl-sources.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl-glfw-sources.jar
 Launcher Type: SUN_STANDARD
 

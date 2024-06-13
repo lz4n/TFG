@@ -27,7 +27,7 @@
 
 ---------------  S U M M A R Y ------------
 
-Command Line: -javaagent:C:\Program Files\JetBrains\IntelliJ IDEA 2023.2.4\lib\idea_rt.jar=53008:C:\Program Files\JetBrains\IntelliJ IDEA 2023.2.4\bin -Dfile.encoding=UTF-8 -Dsun.stdout.encoding=UTF-8 -Dsun.stderr.encoding=UTF-8 main.Main --activeDebug
+Command Line: -javaagent:C:\Program Files\JetBrains\IntelliJ IDEA 2023.2.4\lib\idea_rt.jar=53008:C:\Program Files\JetBrains\IntelliJ IDEA 2023.2.4\bin -Dfile.encoding=UTF-8 -Dsun.stdout.encoding=UTF-8 -Dsun.stderr.encoding=UTF-8 java.Main --activeDebug
 
 Host: AMD Ryzen 5 3600 6-Core Processor              , 12 cores, 15G,  Windows 10 , 64 bit Build 19041 (10.0.19041.3636)
 Time: Tue Jun 11 20:56:17 2024 Hora de verano romance elapsed time: 9.009949 seconds (0d 0h 0m 9s)
@@ -105,7 +105,7 @@ _java_thread_list=0x0000028aea5c20e0, length=132, elements={
 }
 
 Java Threads: ( => current thread )
-  0x0000028a83790180 JavaThread "main"                              [_thread_in_native, id=17604, stack(0x000000f539000000,0x000000f539100000) (1024K)]
+  0x0000028a83790180 JavaThread "java.main"                              [_thread_in_native, id=17604, stack(0x000000f539000000,0x000000f539100000) (1024K)]
   0x0000028aa4ea5910 JavaThread "Reference Handler"          daemon [_thread_blocked, id=29752, stack(0x000000f539800000,0x000000f539900000) (1024K)]
   0x0000028aa4ea76e0 JavaThread "Finalizer"                  daemon [_thread_blocked, id=41204, stack(0x000000f539900000,0x000000f539a00000) (1024K)]
   0x0000028aa4ea9a40 JavaThread "Signal Dispatcher"          daemon [_thread_blocked, id=40752, stack(0x000000f539a00000,0x000000f539b00000) (1024K)]
@@ -397,9 +397,9 @@ Event: 8.941 Thread 0x0000028aa4ec3dd0 3062       3       java.util.stream.Spine
 Event: 8.941 Thread 0x0000028aa4ec3dd0 nmethod 3062 0x0000028a8e1b7310 code [0x0000028a8e1b74c0, 0x0000028a8e1b76c8]
 Event: 8.941 Thread 0x0000028aa4ec3dd0 3063       3       java.util.stream.Nodes$SpinedNodeBuilder::end (29 bytes)
 Event: 8.941 Thread 0x0000028aa4ec3dd0 nmethod 3063 0x0000028a8e04f790 code [0x0000028a8e04f920, 0x0000028a8e04fa40]
-Event: 8.941 Thread 0x0000028aa4ec3dd0 3064       3       ui.widget.textWidgets.DateTimeTextBox::getTexture (4 bytes)
+Event: 8.941 Thread 0x0000028aa4ec3dd0 3064       3       java.ui.widget.textWidgets.DateTimeTextBox::getTexture (4 bytes)
 Event: 8.941 Thread 0x0000028aa4ec3dd0 nmethod 3064 0x0000028a8e1b7810 code [0x0000028a8e1b79a0, 0x0000028a8e1b7ab8]
-Event: 8.941 Thread 0x0000028aa4ec3dd0 3065       3       ui.widget.textWidgets.DateTimeTextBox::draw (35 bytes)
+Event: 8.941 Thread 0x0000028aa4ec3dd0 3065       3       java.ui.widget.textWidgets.DateTimeTextBox::draw (35 bytes)
 Event: 8.942 Thread 0x0000028aa4ec3dd0 nmethod 3065 0x0000028a8e1b7b90 code [0x0000028a8e1b7da0, 0x0000028a8e1b8508]
 Event: 8.957 Thread 0x0000028aa4ec3dd0 3066       3       java.lang.Double::valueOf (9 bytes)
 Event: 8.957 Thread 0x0000028aa4ec3dd0 nmethod 3066 0x0000028a8e1b8810 code [0x0000028a8e1b89c0, 0x0000028a8e1b8c28]
@@ -585,11 +585,11 @@ Event: 8.524 Thread 0x0000028a83790180 Uncommon trap: reason=profile_predicate a
 Event: 8.524 Thread 0x0000028a83790180 DEOPT PACKING pc=0x0000028a958fb914 sp=0x000000f5390feb70
 Event: 8.524 Thread 0x0000028a83790180 DEOPT UNPACKING pc=0x0000028a952b46a2 sp=0x000000f5390feb10 mode 2
 Event: 8.559 Thread 0x0000028a83790180 Uncommon trap: trap_request=0xffffffde fr.pc=0x0000028a958d55a4 relative=0x0000000000000104
-Event: 8.559 Thread 0x0000028a83790180 Uncommon trap: reason=class_check action=maybe_recompile pc=0x0000028a958d55a4 method=world.location.Location.equals(Ljava/lang/Object;)Z @ 25 c2
+Event: 8.559 Thread 0x0000028a83790180 Uncommon trap: reason=class_check action=maybe_recompile pc=0x0000028a958d55a4 method=java.world.location.Location.equals(Ljava/lang/Object;)Z @ 25 c2
 Event: 8.559 Thread 0x0000028a83790180 DEOPT PACKING pc=0x0000028a958d55a4 sp=0x000000f5390fe2e0
 Event: 8.559 Thread 0x0000028a83790180 DEOPT UNPACKING pc=0x0000028a952b46a2 sp=0x000000f5390fe278 mode 2
 Event: 8.674 Thread 0x0000028a83790180 Uncommon trap: trap_request=0xffffffde fr.pc=0x0000028a958d55a4 relative=0x0000000000000104
-Event: 8.674 Thread 0x0000028a83790180 Uncommon trap: reason=class_check action=maybe_recompile pc=0x0000028a958d55a4 method=world.location.Location.equals(Ljava/lang/Object;)Z @ 25 c2
+Event: 8.674 Thread 0x0000028a83790180 Uncommon trap: reason=class_check action=maybe_recompile pc=0x0000028a958d55a4 method=java.world.location.Location.equals(Ljava/lang/Object;)Z @ 25 c2
 Event: 8.674 Thread 0x0000028a83790180 DEOPT PACKING pc=0x0000028a958d55a4 sp=0x000000f5390fe2e0
 Event: 8.674 Thread 0x0000028a83790180 DEOPT UNPACKING pc=0x0000028a952b46a2 sp=0x000000f5390fe278 mode 2
 
@@ -832,7 +832,7 @@ symbol engine: initialized successfully - sym options: 0x614 - pdb path: .;C:\Us
 
 VM Arguments:
 jvm_args: -javaagent:C:\Program Files\JetBrains\IntelliJ IDEA 2023.2.4\lib\idea_rt.jar=53008:C:\Program Files\JetBrains\IntelliJ IDEA 2023.2.4\bin -Dfile.encoding=UTF-8 -Dsun.stdout.encoding=UTF-8 -Dsun.stderr.encoding=UTF-8 
-java_command: main.Main --activeDebug
+java_command: java.Main --activeDebug
 java_class_path (initial): C:\Users\izan\Documents\GitHub\TFG\out\production\TFG;C:\Users\izan\Documents\GitHub\TFG\lib\gson-2.10.1.jar;C:\Users\izan\Documents\GitHub\TFG\lib\joml-1.10.5.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl-assimp-natives-windows.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl-assimp.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl-glfw-natives-windows.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl-glfw.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl-natives-windows.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl-openal-natives-windows.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl-openal.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl-opengl-natives-windows.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl-opengl.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl-stb-natives-windows.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl-stb.jar;C:\Users\izan\Documents\GitHub\TFG\lib\lwjgl.jar;C:\Users\izan\Documents\GitHub\TFG\lib\NoiseGenerator.jar
 Launcher Type: SUN_STANDARD
 

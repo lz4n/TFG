@@ -6,7 +6,7 @@ JvmtiExport can_post_on_exceptions 0
 instanceKlass java/util/jar/JarFile
 ciInstanceKlass java/lang/Cloneable 1 0 7 100 1 100 1 1 1
 instanceKlass java/lang/Thread$ThreadNumbering
-instanceKlass  @bci world/terrain/Terrain$TerrainType updateMesh ()V 13 <appendix> member <vmtarget> ; # world/terrain/Terrain$TerrainType$$Lambda+0x0000028aa61037c8
+instanceKlass  @bci java.world/terrain/Terrain$TerrainType updateMesh ()V 13 <appendix> member <vmtarget> ; # java.world/terrain/Terrain$TerrainType$$Lambda+0x0000028aa61037c8
 instanceKlass com/sun/media/sound/EventDispatcher
 instanceKlass javax/sound/sampled/LineEvent$Type
 instanceKlass com/sun/media/sound/AutoClosingClip
@@ -40,24 +40,24 @@ instanceKlass javax/sound/sampled/spi/MixerProvider
 instanceKlass com/sun/media/sound/JDK13Services
 instanceKlass javax/sound/sampled/spi/AudioFileReader
 instanceKlass javax/sound/sampled/AudioSystem
-instanceKlass  @bci utils/player/Player lambda$addFeaturesWidgetToTab$6 (Lui/widget/SlotWidget;Lutils/player/inventory/Item;)V 84 <appendix> member <vmtarget> ; # utils/player/Player$$Lambda+0x0000028aa6103178
+instanceKlass  @bci java.utils/player/Player lambda$addFeaturesWidgetToTab$6 (Lui/widget/SlotWidget;Lutils/player/inventory/Item;)V 84 <appendix> member <vmtarget> ; # java.utils/player/Player$$Lambda+0x0000028aa6103178
 instanceKlass sun/awt/AppContext$PostShutdownEventRunnable
 instanceKlass java/util/IdentityHashMap$IdentityHashMapIterator
 instanceKlass  @bci java/util/Comparator comparingDouble (Ljava/util/function/ToDoubleFunction;)Ljava/util/Comparator; 6 <appendix> member <vmtarget> ; # java/util/Comparator$$Lambda+0x0000028aa6143fe8
 instanceKlass  @cpi java/util/Comparator 268 form vmentry <vmtarget> ; # java/lang/invoke/LambdaForm$DMH+0x0000028aa6110000
-instanceKlass  @bci npc/Pathfinding findPath (Lworld/location/Location;Lworld/location/Location;)Ljava/util/List; 291 <appendix> argL0 ; # npc/Pathfinding$$Lambda+0x0000028aa6102f60
-instanceKlass npc/Pathfinding$1
-instanceKlass npc/Pathfinding
+instanceKlass  @bci java.npc/Pathfinding findPath (Lworld/location/Location;Lworld/location/Location;)Ljava/util/List; 291 <appendix> argL0 ; # java.npc/Pathfinding$$Lambda+0x0000028aa6102f60
+instanceKlass java.npc/Pathfinding$1
+instanceKlass java.npc/Pathfinding
 instanceKlass java/util/stream/ReduceOps$5ReducingSink
 instanceKlass  @bci java/util/stream/IntPipeline sum ()I 2 <appendix> argL0 ; # java/util/stream/IntPipeline$$Lambda+0x0000028aa6143528
 instanceKlass java/util/function/IntBinaryOperator
-instanceKlass  @bci world/World updateIncomes ()V 41 <appendix> argL0 ; # world/World$$Lambda+0x0000028aa610fbc8
+instanceKlass  @bci java.world/World updateIncomes ()V 41 <appendix> argL0 ; # java.world/World$$Lambda+0x0000028aa610fbc8
 instanceKlass java/util/function/ToIntFunction
 instanceKlass java/util/ArrayList$ArrayListSpliterator
 instanceKlass  @bci java/util/stream/DoublePipeline sum ()D 11 <appendix> argL0 ; # java/util/stream/DoublePipeline$$Lambda+0x0000028aa6142c08
 instanceKlass  @bci java/util/stream/DoublePipeline sum ()D 6 <appendix> argL0 ; # java/util/stream/DoublePipeline$$Lambda+0x0000028aa61429f0
 instanceKlass  @bci java/util/stream/DoublePipeline sum ()D 1 <appendix> argL0 ; # java/util/stream/DoublePipeline$$Lambda+0x0000028aa61427d8
-instanceKlass  @bci world/World updateIncomes ()V 8 <appendix> argL0 ; # world/World$$Lambda+0x0000028aa610f9b0
+instanceKlass  @bci java.world/World updateIncomes ()V 8 <appendix> argL0 ; # java.world/World$$Lambda+0x0000028aa610f9b0
 instanceKlass java/util/OptionalDouble
 instanceKlass java/util/stream/Sink$OfDouble
 instanceKlass java/util/function/DoubleConsumer
@@ -68,8 +68,8 @@ instanceKlass  @cpi java/util/stream/DoublePipeline 596 form vmentry <vmtarget> 
 instanceKlass java/util/function/ObjDoubleConsumer
 instanceKlass  @bci java/util/stream/DoublePipeline average ()Ljava/util/OptionalDouble; 1 <appendix> argL0 ; # java/util/stream/DoublePipeline$$Lambda+0x0000028aa61410b0
 instanceKlass java/util/stream/DoubleStream
-instanceKlass  @bci world/World updateHappiness ()V 7 <appendix> argL0 ; # world/World$$Lambda+0x0000028aa610f798
-instanceKlass  @cpi npc/Pathfinding 184 form vmentry <vmtarget> ; # java/lang/invoke/LambdaForm$DMH+0x0000028aa6101800
+instanceKlass  @bci java.world/World updateHappiness ()V 7 <appendix> argL0 ; # java.world/World$$Lambda+0x0000028aa610f798
+instanceKlass  @cpi java.npc/Pathfinding 184 form vmentry <vmtarget> ; # java/lang/invoke/LambdaForm$DMH+0x0000028aa6101800
 instanceKlass java/util/function/ToDoubleFunction
 instanceKlass java/util/stream/AbstractSpinedBuffer
 instanceKlass java/util/stream/Node$Builder
@@ -84,8 +84,8 @@ instanceKlass  @bci java/util/stream/ReferencePipeline toArray ()[Ljava/lang/Obj
 instanceKlass java/util/ImmutableCollections$Access$1
 instanceKlass jdk/internal/access/JavaUtilCollectionAccess
 instanceKlass java/util/ImmutableCollections$Access
-instanceKlass  @bci utils/render/scene/WorldScene update (J)V 904 <appendix> argL0 ; # utils/render/scene/WorldScene$$Lambda+0x0000028aa610f550
-instanceKlass  @cpi utils/render/scene/WorldScene 800 form vmentry <vmtarget> ; # java/lang/invoke/LambdaForm$DMH+0x0000028aa6101400
+instanceKlass  @bci java.utils/render/scene/WorldScene update (J)V 904 <appendix> argL0 ; # java.utils/render/scene/WorldScene$$Lambda+0x0000028aa610f550
+instanceKlass  @cpi java.utils/render/scene/WorldScene 800 form vmentry <vmtarget> ; # java/lang/invoke/LambdaForm$DMH+0x0000028aa6101400
 instanceKlass java/util/LinkedList$LLSpliterator
 instanceKlass org/joml/Quaternionf
 instanceKlass org/joml/Quaternionfc
@@ -112,26 +112,26 @@ instanceKlass java/text/FieldPosition
 instanceKlass org/joml/Options
 instanceKlass org/joml/Math
 instanceKlass org/joml/Vector3f
-instanceKlass utils/Time
+instanceKlass java.utils/Time
 instanceKlass  @bci org/lwjgl/stb/LibSTB <clinit> ()V 11 <appendix> argL0 ; # org/lwjgl/stb/LibSTB$$Lambda+0x0000028aa60af740
 instanceKlass  @bci org/lwjgl/stb/LibSTB <clinit> ()V 6 <appendix> argL0 ; # org/lwjgl/stb/LibSTB$$Lambda+0x0000028aa60af518
 # instanceKlass org/lwjgl/stb/LibSTB$$InjectedInvoker+0x0000028aa6101000
 instanceKlass org/lwjgl/stb/LibSTB
 instanceKlass org/lwjgl/stb/STBImage
-instanceKlass  @bci utils/player/Player updateIncomes (I)V 18 <appendix> form vmentry <vmtarget> ; # java/lang/invoke/LambdaForm$MH+0x0000028aa6100c00
+instanceKlass  @bci java.utils/player/Player updateIncomes (I)V 18 <appendix> form vmentry <vmtarget> ; # java/lang/invoke/LambdaForm$MH+0x0000028aa6100c00
 # instanceKlass java/lang/invoke/LambdaForm$MH+0x0000028aa6100800
-instanceKlass  @bci utils/player/Player updateIncomes (I)V 18 <appendix> argL3 form vmentry <vmtarget> ; # java/lang/invoke/LambdaForm$MH+0x0000028aa6100400
+instanceKlass  @bci java.utils/player/Player updateIncomes (I)V 18 <appendix> argL3 form vmentry <vmtarget> ; # java/lang/invoke/LambdaForm$MH+0x0000028aa6100400
 # instanceKlass java/lang/invoke/LambdaForm$MH+0x0000028aa6100000
 # instanceKlass java/lang/invoke/LambdaForm$MH+0x0000028aa60abc00
 # instanceKlass java/lang/invoke/LambdaForm$MH+0x0000028aa60ab800
 # instanceKlass java/lang/invoke/LambdaForm$MH+0x0000028aa60ab400
-instanceKlass  @bci utils/player/Player updateIncomes (I)V 18 <appendix> argL1 form vmentry <vmtarget> ; # java/lang/invoke/LambdaForm$MH+0x0000028aa60ab000
+instanceKlass  @bci java.utils/player/Player updateIncomes (I)V 18 <appendix> argL1 form vmentry <vmtarget> ; # java/lang/invoke/LambdaForm$MH+0x0000028aa60ab000
 # instanceKlass java/lang/invoke/LambdaForm$MH+0x0000028aa60aac00
 # instanceKlass java/lang/invoke/LambdaForm$MH+0x0000028aa60aa800
 # instanceKlass java/lang/invoke/LambdaForm$MH+0x0000028aa60aa400
-instanceKlass  @bci utils/player/Player createAudioMenu ()V 167 <appendix> argL0 ; # utils/player/Player$$Lambda+0x0000028aa60aeef0
-instanceKlass  @bci utils/player/Player createAudioMenu ()V 111 <appendix> argL0 ; # utils/player/Player$$Lambda+0x0000028aa60aecc8
-instanceKlass  @bci utils/player/Player createAudioMenu ()V 58 <appendix> argL0 ; # utils/player/Player$$Lambda+0x0000028aa60aeaa0
+instanceKlass  @bci java.utils/player/Player createAudioMenu ()V 167 <appendix> argL0 ; # java.utils/player/Player$$Lambda+0x0000028aa60aeef0
+instanceKlass  @bci java.utils/player/Player createAudioMenu ()V 111 <appendix> argL0 ; # java.utils/player/Player$$Lambda+0x0000028aa60aecc8
+instanceKlass  @bci java.utils/player/Player createAudioMenu ()V 58 <appendix> argL0 ; # java.utils/player/Player$$Lambda+0x0000028aa60aeaa0
 instanceKlass  @bci com/sun/media/sound/Platform loadLibraries ()V 4 <bsm> form vmentry <vmtarget> ; # java/lang/invoke/LambdaForm$DMH+0x0000028aa60aa000
 instanceKlass java/lang/StringUTF16$CharsSpliterator
 instanceKlass java/util/stream/Sink$ChainedInt
@@ -156,24 +156,24 @@ instanceKlass  @bci sun/util/locale/provider/JRELocaleProviderAdapter getDecimal
 instanceKlass java/text/DecimalFormatSymbols
 instanceKlass jdk/internal/math/DoubleToDecimal
 instanceKlass jdk/internal/math/FormattedFPDecimal
-instanceKlass  @bci utils/player/Player createAudioMenu ()V 5 <appendix> member <vmtarget> ; # utils/player/Player$$Lambda+0x0000028aa60ae880
-instanceKlass  @bci utils/player/Player createVideoMenu ()V 197 <appendix> member <vmtarget> ; # utils/player/Player$$Lambda+0x0000028aa60ae650
-instanceKlass  @bci utils/player/Player createVideoMenu ()V 131 <appendix> member <vmtarget> ; # utils/player/Player$$Lambda+0x0000028aa60adec0
-instanceKlass  @bci utils/player/Player createVideoMenu ()V 42 <appendix> argL0 ; # utils/player/Player$$Lambda+0x0000028aa60ad748
-instanceKlass  @bci utils/player/Player createVideoMenu ()V 5 <appendix> member <vmtarget> ; # utils/player/Player$$Lambda+0x0000028aa60ad528
-instanceKlass  @bci utils/player/Player createConfigMenu ()V 80 <appendix> member <vmtarget> ; # utils/player/Player$$Lambda+0x0000028aa60ad308
-instanceKlass  @bci utils/player/Player createConfigMenu ()V 43 <appendix> member <vmtarget> ; # utils/player/Player$$Lambda+0x0000028aa60ad0e8
-instanceKlass  @bci utils/player/Player createConfigMenu ()V 5 <appendix> member <vmtarget> ; # utils/player/Player$$Lambda+0x0000028aa60acec8
-instanceKlass  @bci utils/player/Player createGameMenu ()V 163 <appendix> argL0 ; # utils/player/Player$$Lambda+0x0000028aa60accb0
-instanceKlass  @bci utils/player/Player createGameMenu ()V 122 <appendix> member <vmtarget> ; # utils/player/Player$$Lambda+0x0000028aa60aca90
-instanceKlass  @bci utils/player/Player createGameMenu ()V 82 <appendix> member <vmtarget> ; # utils/player/Player$$Lambda+0x0000028aa60ac870
-instanceKlass  @bci utils/player/Player createGameMenu ()V 44 <appendix> member <vmtarget> ; # utils/player/Player$$Lambda+0x0000028aa60ac650
-instanceKlass ui/container/Frame$FrameLayoutBuilder
-instanceKlass  @bci utils/player/Player createGameMenu ()V 5 <appendix> member <vmtarget> ; # utils/player/Player$$Lambda+0x0000028aa60ac220
-instanceKlass  @bci utils/player/Player addBulldozerToInventory (ILui/widget/Tab;)V 62 <appendix> member <vmtarget> ; # utils/player/Player$$Lambda+0x0000028aa60ac000
-instanceKlass  @cpi utils/player/Player 1142 form vmentry <vmtarget> ; # java/lang/invoke/LambdaForm$DMH+0x0000028aa60a9400
-instanceKlass  @bci utils/player/Player addFeaturesWidgetToTab (ILui/widget/Tab;)V 279 <appendix> member <vmtarget> ; # utils/player/Player$$Lambda+0x0000028aa60a7d58
-instanceKlass utils/render/texture/Colors
+instanceKlass  @bci java.utils/player/Player createAudioMenu ()V 5 <appendix> member <vmtarget> ; # java.utils/player/Player$$Lambda+0x0000028aa60ae880
+instanceKlass  @bci java.utils/player/Player createVideoMenu ()V 197 <appendix> member <vmtarget> ; # java.utils/player/Player$$Lambda+0x0000028aa60ae650
+instanceKlass  @bci java.utils/player/Player createVideoMenu ()V 131 <appendix> member <vmtarget> ; # java.utils/player/Player$$Lambda+0x0000028aa60adec0
+instanceKlass  @bci java.utils/player/Player createVideoMenu ()V 42 <appendix> argL0 ; # java.utils/player/Player$$Lambda+0x0000028aa60ad748
+instanceKlass  @bci java.utils/player/Player createVideoMenu ()V 5 <appendix> member <vmtarget> ; # java.utils/player/Player$$Lambda+0x0000028aa60ad528
+instanceKlass  @bci java.utils/player/Player createConfigMenu ()V 80 <appendix> member <vmtarget> ; # java.utils/player/Player$$Lambda+0x0000028aa60ad308
+instanceKlass  @bci java.utils/player/Player createConfigMenu ()V 43 <appendix> member <vmtarget> ; # java.utils/player/Player$$Lambda+0x0000028aa60ad0e8
+instanceKlass  @bci java.utils/player/Player createConfigMenu ()V 5 <appendix> member <vmtarget> ; # java.utils/player/Player$$Lambda+0x0000028aa60acec8
+instanceKlass  @bci java.utils/player/Player createGameMenu ()V 163 <appendix> argL0 ; # java.utils/player/Player$$Lambda+0x0000028aa60accb0
+instanceKlass  @bci java.utils/player/Player createGameMenu ()V 122 <appendix> member <vmtarget> ; # java.utils/player/Player$$Lambda+0x0000028aa60aca90
+instanceKlass  @bci java.utils/player/Player createGameMenu ()V 82 <appendix> member <vmtarget> ; # java.utils/player/Player$$Lambda+0x0000028aa60ac870
+instanceKlass  @bci java.utils/player/Player createGameMenu ()V 44 <appendix> member <vmtarget> ; # java.utils/player/Player$$Lambda+0x0000028aa60ac650
+instanceKlass java.ui/container/Frame$FrameLayoutBuilder
+instanceKlass  @bci java.utils/player/Player createGameMenu ()V 5 <appendix> member <vmtarget> ; # java.utils/player/Player$$Lambda+0x0000028aa60ac220
+instanceKlass  @bci java.utils/player/Player addBulldozerToInventory (ILui/widget/Tab;)V 62 <appendix> member <vmtarget> ; # java.utils/player/Player$$Lambda+0x0000028aa60ac000
+instanceKlass  @cpi java.utils/player/Player 1142 form vmentry <vmtarget> ; # java/lang/invoke/LambdaForm$DMH+0x0000028aa60a9400
+instanceKlass  @bci java.utils/player/Player addFeaturesWidgetToTab (ILui/widget/Tab;)V 279 <appendix> member <vmtarget> ; # java.utils/player/Player$$Lambda+0x0000028aa60a7d58
+instanceKlass java.utils/render/texture/Colors
 instanceKlass java/lang/Class$AnnotationData
 instanceKlass java/lang/annotation/Target
 # instanceKlass java/lang/invoke/LambdaForm$MH+0x0000028aa60a9000
@@ -215,8 +215,8 @@ instanceKlass sun/reflect/generics/tree/TypeArgument
 instanceKlass sun/reflect/generics/tree/TypeTree
 instanceKlass sun/reflect/generics/tree/Tree
 instanceKlass sun/reflect/generics/parser/SignatureParser
-instanceKlass ui/widget/widgetUtils/IgnoreScrollMovement
-instanceKlass  @bci utils/player/Player init ()V 206 <appendix> argL0 ; # utils/player/Player$$Lambda+0x0000028aa60a7500
+instanceKlass java.ui/widget/widgetUtils/IgnoreScrollMovement
+instanceKlass  @bci java.utils/player/Player init ()V 206 <appendix> argL0 ; # java.utils/player/Player$$Lambda+0x0000028aa60a7500
 instanceKlass org/lwjgl/opengl/GL$ICDStatic$WriteOnce
 instanceKlass sun/java2d/loops/FontInfo
 instanceKlass sun/font/StrikeCache$DisposableStrike
@@ -410,8 +410,8 @@ instanceKlass java/awt/geom/AffineTransform
 instanceKlass sun/font/FontAccess
 instanceKlass java/awt/Font
 instanceKlass org/lwjgl/opengl/ARBVertexArrayObject
-instanceKlass  @bci world/feature/Feature$FeatureType updateMesh ()V 9 <appendix> member <vmtarget> ; # world/feature/Feature$FeatureType$$Lambda+0x0000028aa60a3a88
-instanceKlass world/WorldGenerator
+instanceKlass  @bci java.world/feature/Feature$FeatureType updateMesh ()V 9 <appendix> member <vmtarget> ; # java.world/feature/Feature$FeatureType$$Lambda+0x0000028aa60a3a88
+instanceKlass java.world/WorldGenerator
 instanceKlass  @bci org/lwjgl/glfw/GLFW nglfwSetWindowIcon (JIJ)V 27 <appendix> argL0 ; # org/lwjgl/glfw/GLFW$$Lambda+0x0000028aa60a3668
 instanceKlass  @cpi org/lwjgl/glfw/GLFW 1429 form vmentry <vmtarget> ; # java/lang/invoke/LambdaForm$DMH+0x0000028aa60a4400
 instanceKlass org/lwjgl/system/Struct$StructValidation
@@ -435,26 +435,26 @@ instanceKlass  @bci org/lwjgl/opengl/GL <clinit> ()V 21 <appendix> argL0 ; # org
 instanceKlass org/lwjgl/opengl/GL$ICDStatic
 instanceKlass org/lwjgl/opengl/GL$ICD
 instanceKlass org/lwjgl/opengl/GL
-instanceKlass  @bci utils/render/Window init ()V 156 <appendix> argL0 ; # utils/render/Window$$Lambda+0x0000028aa609bce0
-instanceKlass  @cpi utils/render/Window 697 form vmentry <vmtarget> ; # java/lang/invoke/LambdaForm$DMH+0x0000028aa609e800
+instanceKlass  @bci java.utils/render/Window init ()V 156 <appendix> argL0 ; # java.utils/render/Window$$Lambda+0x0000028aa609bce0
+instanceKlass  @cpi java.utils/render/Window 697 form vmentry <vmtarget> ; # java/lang/invoke/LambdaForm$DMH+0x0000028aa609e800
 # instanceKlass java/lang/invoke/LambdaForm$DMH+0x0000028aa609e400
-instanceKlass listener/WindowListener
+instanceKlass java.listener/WindowListener
 instanceKlass org/lwjgl/glfw/GLFWWindowSizeCallbackI
-instanceKlass  @bci utils/render/Window init ()V 144 <appendix> argL0 ; # utils/render/Window$$Lambda+0x0000028aa609b0b0
-instanceKlass  @cpi utils/render/Window 691 form vmentry <vmtarget> ; # java/lang/invoke/LambdaForm$DMH+0x0000028aa609e000
+instanceKlass  @bci java.utils/render/Window init ()V 144 <appendix> argL0 ; # java.utils/render/Window$$Lambda+0x0000028aa609b0b0
+instanceKlass  @cpi java.utils/render/Window 691 form vmentry <vmtarget> ; # java/lang/invoke/LambdaForm$DMH+0x0000028aa609e000
 # instanceKlass java/lang/invoke/LambdaForm$DMH+0x0000028aa609dc00
-instanceKlass listener/KeyListener
+instanceKlass java.listener/KeyListener
 instanceKlass org/lwjgl/glfw/GLFWKeyCallbackI
-instanceKlass  @bci utils/render/Window init ()V 132 <appendix> argL0 ; # utils/render/Window$$Lambda+0x0000028aa609a480
+instanceKlass  @bci java.utils/render/Window init ()V 132 <appendix> argL0 ; # java.utils/render/Window$$Lambda+0x0000028aa609a480
 instanceKlass org/lwjgl/glfw/GLFWScrollCallbackI
-instanceKlass  @bci utils/render/Window init ()V 120 <appendix> argL0 ; # utils/render/Window$$Lambda+0x0000028aa6099a50
-instanceKlass  @cpi utils/render/Window 681 form vmentry <vmtarget> ; # java/lang/invoke/LambdaForm$DMH+0x0000028aa609d800
+instanceKlass  @bci java.utils/render/Window init ()V 120 <appendix> argL0 ; # java.utils/render/Window$$Lambda+0x0000028aa6099a50
+instanceKlass  @cpi java.utils/render/Window 681 form vmentry <vmtarget> ; # java/lang/invoke/LambdaForm$DMH+0x0000028aa609d800
 # instanceKlass java/lang/invoke/LambdaForm$DMH+0x0000028aa609d400
 instanceKlass org/lwjgl/glfw/GLFWMouseButtonCallbackI
-instanceKlass  @bci utils/render/Window init ()V 108 <appendix> argL0 ; # utils/render/Window$$Lambda+0x0000028aa6099020
-instanceKlass  @cpi utils/render/Window 673 form vmentry <vmtarget> ; # java/lang/invoke/LambdaForm$DMH+0x0000028aa609d000
+instanceKlass  @bci java.utils/render/Window init ()V 108 <appendix> argL0 ; # java.utils/render/Window$$Lambda+0x0000028aa6099020
+instanceKlass  @cpi java.utils/render/Window 673 form vmentry <vmtarget> ; # java/lang/invoke/LambdaForm$DMH+0x0000028aa609d000
 # instanceKlass java/lang/invoke/LambdaForm$DMH+0x0000028aa609c400
-instanceKlass listener/MouseListener
+instanceKlass java.listener/MouseListener
 instanceKlass org/lwjgl/glfw/GLFWCursorPosCallbackI
 instanceKlass  @bci java/util/Map$Entry comparingByKey ()Ljava/util/Comparator; 0 <appendix> argL0 ; # java/util/Map$Entry$$Lambda+0x0000028aa60d4278
 instanceKlass sun/util/cldr/CLDRBaseLocaleDataMetaInfo$TZCanonicalIDMapHolder
@@ -520,20 +520,20 @@ instanceKlass org/lwjgl/system/CallbackI
 instanceKlass jdk/internal/math/FDBigInteger
 instanceKlass jdk/internal/math/MathUtils
 instanceKlass jdk/internal/math/FloatToDecimal
-instanceKlass  @bci utils/Setting load ()V 62 <adapter> ; # java/lang/invoke/LambdaForm$MH+0x0000028aa6094800
+instanceKlass  @bci java.utils/Setting load ()V 62 <adapter> ; # java/lang/invoke/LambdaForm$MH+0x0000028aa6094800
 # instanceKlass java/lang/invoke/LambdaForm$DMH+0x0000028aa6094400
-instanceKlass  @bci utils/Setting load ()V 62 <appendix> form vmentry <vmtarget> ; # java/lang/invoke/LambdaForm$MH+0x0000028aa6094000
-instanceKlass  @bci utils/Setting load ()V 62 <appendix> form names 4 function resolvedHandle form vmentry <vmtarget> ; # java/lang/invoke/LambdaForm$DMH+0x0000028aa6093c00
-instanceKlass  @bci utils/Setting load ()V 62 <appendix> argL4 form vmentry <vmtarget> ; # java/lang/invoke/LambdaForm$MH+0x0000028aa6093800
+instanceKlass  @bci java.utils/Setting load ()V 62 <appendix> form vmentry <vmtarget> ; # java/lang/invoke/LambdaForm$MH+0x0000028aa6094000
+instanceKlass  @bci java.utils/Setting load ()V 62 <appendix> form names 4 function resolvedHandle form vmentry <vmtarget> ; # java/lang/invoke/LambdaForm$DMH+0x0000028aa6093c00
+instanceKlass  @bci java.utils/Setting load ()V 62 <appendix> argL4 form vmentry <vmtarget> ; # java/lang/invoke/LambdaForm$MH+0x0000028aa6093800
 # instanceKlass java/lang/invoke/LambdaForm$DMH+0x0000028aa6093400
 instanceKlass java/lang/invoke/ClassSpecializer$Factory$1Var
-instanceKlass  @bci utils/Setting load ()V 62 <appendix> argL4 form names 4 function resolvedHandle form vmentry <vmtarget> ; # java/lang/invoke/LambdaForm$DMH+0x0000028aa6093000
+instanceKlass  @bci java.utils/Setting load ()V 62 <appendix> argL4 form names 4 function resolvedHandle form vmentry <vmtarget> ; # java/lang/invoke/LambdaForm$DMH+0x0000028aa6093000
 # instanceKlass java/lang/invoke/LambdaForm$MH+0x0000028aa6092c00
 # instanceKlass java/lang/invoke/LambdaForm$MH+0x0000028aa6092800
-instanceKlass  @bci utils/Setting load ()V 62 <appendix> argL1 form vmentry <vmtarget> ; # java/lang/invoke/LambdaForm$MH+0x0000028aa6092400
-instanceKlass  @bci utils/Setting load ()V 62 <appendix> form names 9 function resolvedHandle form vmentry <vmtarget> ; # java/lang/invoke/LambdaForm$DMH+0x0000028aa6092000
+instanceKlass  @bci java.utils/Setting load ()V 62 <appendix> argL1 form vmentry <vmtarget> ; # java/lang/invoke/LambdaForm$MH+0x0000028aa6092400
+instanceKlass  @bci java.utils/Setting load ()V 62 <appendix> form names 9 function resolvedHandle form vmentry <vmtarget> ; # java/lang/invoke/LambdaForm$DMH+0x0000028aa6092000
 # instanceKlass java/lang/invoke/LambdaForm$MH+0x0000028aa6091c00
-instanceKlass  @bci utils/Setting load ()V 62 <appendix> argL0 form vmentry <vmtarget> ; # java/lang/invoke/LambdaForm$MH+0x0000028aa6091800
+instanceKlass  @bci java.utils/Setting load ()V 62 <appendix> argL0 form vmentry <vmtarget> ; # java/lang/invoke/LambdaForm$MH+0x0000028aa6091800
 # instanceKlass java/lang/invoke/LambdaForm$MH+0x0000028aa6091400
 # instanceKlass java/lang/invoke/LambdaForm$DMH+0x0000028aa6091000
 instanceKlass java/lang/invoke/MethodHandleImpl$TableSwitchCacheKey
@@ -550,8 +550,8 @@ instanceKlass jdk/internal/org/objectweb/asm/Edge
 instanceKlass java/lang/invoke/MethodHandleImpl$Makers$2
 instanceKlass java/lang/invoke/MethodHandleImpl$Makers$1
 instanceKlass java/lang/invoke/MethodHandleImpl$Makers
-instanceKlass  @bci utils/Setting load ()V 62 <appendix> form names 11 function resolvedHandle form vmentry <vmtarget> ; # java/lang/invoke/LambdaForm$MH+0x0000028aa608f000
-instanceKlass  @bci utils/Setting load ()V 62 <appendix> form names 11 function resolvedHandle form names 5 function resolvedHandle form vmentry <vmtarget> ; # java/lang/invoke/LambdaForm$DMH+0x0000028aa608ec00
+instanceKlass  @bci java.utils/Setting load ()V 62 <appendix> form names 11 function resolvedHandle form vmentry <vmtarget> ; # java/lang/invoke/LambdaForm$MH+0x0000028aa608f000
+instanceKlass  @bci java.utils/Setting load ()V 62 <appendix> form names 11 function resolvedHandle form names 5 function resolvedHandle form vmentry <vmtarget> ; # java/lang/invoke/LambdaForm$DMH+0x0000028aa608ec00
 # instanceKlass java/lang/invoke/LambdaForm$DMH+0x0000028aa608e800
 # instanceKlass java/lang/invoke/LambdaForm$MH+0x0000028aa608e400
 instanceKlass java/util/ReverseOrderListView
@@ -574,7 +574,7 @@ instanceKlass  @bci java/lang/invoke/BootstrapMethodInvoker invoke (Ljava/lang/C
 # instanceKlass java/lang/invoke/LambdaForm$DMH+0x0000028aa608b400
 instanceKlass java/lang/runtime/SwitchBootstraps
 instanceKlass java/util/LinkedList$ListItr
-instanceKlass utils/Setting
+instanceKlass java.utils/Setting
 # instanceKlass java/lang/invoke/LambdaForm$DMH+0x0000028aa608a800
 instanceKlass java/lang/invoke/MethodHandle$1
 # instanceKlass java/lang/invoke/LambdaForm$MH+0x0000028aa6089800
@@ -642,7 +642,7 @@ instanceKlass  @bci java/util/stream/Collectors joining (Ljava/lang/CharSequence
 instanceKlass  @bci java/util/stream/Collectors joining (Ljava/lang/CharSequence;Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Ljava/util/stream/Collector; 7 <appendix> member <vmtarget> ; # java/util/stream/Collectors$$Lambda+0x800000047
 instanceKlass java/util/StringJoiner
 instanceKlass  @bci java/lang/Class methodToString (Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/String; 42 <appendix> argL0 ; # java/lang/Class$$Lambda+0x0000028aa603f220
-instanceKlass world/entity/Duck
+instanceKlass java.world/entity/Duck
 instanceKlass java/io/ObjectOutput
 instanceKlass jdk/internal/reflect/ClassDefiner$1
 instanceKlass jdk/internal/reflect/ClassDefiner
@@ -686,7 +686,7 @@ instanceKlass  @cpi java/io/ObjectInputStream 1214 form vmentry <vmtarget> ; # j
 instanceKlass jdk/internal/access/JavaObjectInputStreamAccess
 instanceKlass java/io/ObjectStreamConstants
 instanceKlass java/io/ObjectInput
-instanceKlass utils/Logger
+instanceKlass java.utils/Logger
 instanceKlass java/lang/ProcessEnvironment$CheckedEntry
 instanceKlass java/lang/ProcessEnvironment$CheckedEntrySet$1
 instanceKlass java/lang/ProcessEnvironment$EntryComparator
@@ -694,7 +694,7 @@ instanceKlass java/lang/ProcessEnvironment$NameComparator
 instanceKlass org/joml/Matrix4f
 instanceKlass org/joml/Matrix4fc
 instanceKlass org/joml/Vector3fc
-instanceKlass utils/render/Camera
+instanceKlass java.utils/render/Camera
 instanceKlass org/joml/Vector2f
 instanceKlass org/lwjgl/glfw/GLFW$Functions
 instanceKlass org/lwjgl/system/ThreadLocalUtil
@@ -787,7 +787,7 @@ instanceKlass  @bci org/lwjgl/system/Library loadSystem (Ljava/lang/String;Ljava
 # instanceKlass org/lwjgl/system/Library$$InjectedInvoker+0x0000028aa6026400
 instanceKlass java/lang/invoke/MethodHandleImpl$BindCaller$InjectedInvokerHolder
 # instanceKlass java/lang/invoke/LambdaForm$MH+0x0000028aa6026000
-instanceKlass  @bci utils/Setting load ()V 62 <appendix> argL0 form names 4 function resolvedHandle form vmentry <vmtarget> ; # java/lang/invoke/LambdaForm$DMH+0x0000028aa6025c00
+instanceKlass  @bci java.utils/Setting load ()V 62 <appendix> argL0 form names 4 function resolvedHandle form vmentry <vmtarget> ; # java/lang/invoke/LambdaForm$DMH+0x0000028aa6025c00
 # instanceKlass java/lang/invoke/LambdaForm$MH+0x0000028aa6025800
 # instanceKlass java/lang/invoke/LambdaForm$DMH+0x0000028aa6025400
 # instanceKlass java/lang/invoke/LambdaForm$DMH+0x0000028aa6025000
@@ -820,49 +820,49 @@ instanceKlass java/util/concurrent/BlockingQueue
 instanceKlass java/util/concurrent/ThreadPoolExecutor$AbortPolicy
 instanceKlass java/util/concurrent/RejectedExecutionHandler
 instanceKlass java/util/concurrent/Executors
-instanceKlass utils/render/scene/WorldScene
+instanceKlass java.utils/render/scene/WorldScene
 instanceKlass org/lwjgl/system/NativeResource
 instanceKlass org/lwjgl/system/Pointer$Default
 instanceKlass org/lwjgl/system/Pointer
-instanceKlass utils/render/Window
-instanceKlass  @bci utils/player/Player$1 <init> ()V 893 <appendix> argL0 ; # utils/player/Player$1$$Lambda+0x0000028aa601b2d8
-instanceKlass  @bci utils/player/Player$1 <init> ()V 858 <appendix> argL0 ; # utils/player/Player$1$$Lambda+0x0000028aa601ade0
-instanceKlass  @bci utils/player/Player$1 <init> ()V 830 <appendix> argL0 ; # utils/player/Player$1$$Lambda+0x0000028aa601ab90
-instanceKlass  @bci utils/player/Player$1 <init> ()V 806 <appendix> argL0 ; # utils/player/Player$1$$Lambda+0x0000028aa601a940
-instanceKlass  @bci utils/player/Player$1 <init> ()V 782 <appendix> argL0 ; # utils/player/Player$1$$Lambda+0x0000028aa601a6f0
-instanceKlass  @bci utils/player/Player$1 <init> ()V 758 <appendix> argL0 ; # utils/player/Player$1$$Lambda+0x0000028aa601a4a0
-instanceKlass  @bci utils/player/Player$1 <init> ()V 734 <appendix> argL0 ; # utils/player/Player$1$$Lambda+0x0000028aa601a250
-instanceKlass  @bci utils/player/Player$1 <init> ()V 700 <appendix> argL0 ; # utils/player/Player$1$$Lambda+0x0000028aa601a000
-instanceKlass  @bci utils/player/Player$1 <init> ()V 677 <appendix> argL0 ; # utils/player/Player$1$$Lambda+0x0000028aa601fbf8
-instanceKlass  @bci utils/player/Player$1 <init> ()V 654 <appendix> argL0 ; # utils/player/Player$1$$Lambda+0x0000028aa601f9a8
-instanceKlass  @bci utils/player/Player$1 <init> ()V 605 <appendix> argL0 ; # utils/player/Player$1$$Lambda+0x0000028aa601f758
-instanceKlass  @bci utils/player/Player$1 <init> ()V 580 <appendix> argL0 ; # utils/player/Player$1$$Lambda+0x0000028aa601f258
-instanceKlass  @bci utils/player/Player$1 <init> ()V 537 <appendix> argL0 ; # utils/player/Player$1$$Lambda+0x0000028aa601ed58
+instanceKlass java.utils/render/Window
+instanceKlass  @bci java.utils/player/Player$1 <init> ()V 893 <appendix> argL0 ; # java.utils/player/Player$1$$Lambda+0x0000028aa601b2d8
+instanceKlass  @bci java.utils/player/Player$1 <init> ()V 858 <appendix> argL0 ; # java.utils/player/Player$1$$Lambda+0x0000028aa601ade0
+instanceKlass  @bci java.utils/player/Player$1 <init> ()V 830 <appendix> argL0 ; # java.utils/player/Player$1$$Lambda+0x0000028aa601ab90
+instanceKlass  @bci java.utils/player/Player$1 <init> ()V 806 <appendix> argL0 ; # java.utils/player/Player$1$$Lambda+0x0000028aa601a940
+instanceKlass  @bci java.utils/player/Player$1 <init> ()V 782 <appendix> argL0 ; # java.utils/player/Player$1$$Lambda+0x0000028aa601a6f0
+instanceKlass  @bci java.utils/player/Player$1 <init> ()V 758 <appendix> argL0 ; # java.utils/player/Player$1$$Lambda+0x0000028aa601a4a0
+instanceKlass  @bci java.utils/player/Player$1 <init> ()V 734 <appendix> argL0 ; # java.utils/player/Player$1$$Lambda+0x0000028aa601a250
+instanceKlass  @bci java.utils/player/Player$1 <init> ()V 700 <appendix> argL0 ; # java.utils/player/Player$1$$Lambda+0x0000028aa601a000
+instanceKlass  @bci java.utils/player/Player$1 <init> ()V 677 <appendix> argL0 ; # java.utils/player/Player$1$$Lambda+0x0000028aa601fbf8
+instanceKlass  @bci java.utils/player/Player$1 <init> ()V 654 <appendix> argL0 ; # java.utils/player/Player$1$$Lambda+0x0000028aa601f9a8
+instanceKlass  @bci java.utils/player/Player$1 <init> ()V 605 <appendix> argL0 ; # java.utils/player/Player$1$$Lambda+0x0000028aa601f758
+instanceKlass  @bci java.utils/player/Player$1 <init> ()V 580 <appendix> argL0 ; # java.utils/player/Player$1$$Lambda+0x0000028aa601f258
+instanceKlass  @bci java.utils/player/Player$1 <init> ()V 537 <appendix> argL0 ; # java.utils/player/Player$1$$Lambda+0x0000028aa601ed58
 instanceKlass org/joml/Vector2fc
-instanceKlass  @bci utils/player/Player$1 <init> ()V 512 <appendix> argL0 ; # utils/player/Player$1$$Lambda+0x0000028aa601e650
-instanceKlass  @bci utils/player/Player$1 <init> ()V 487 <appendix> argL0 ; # utils/player/Player$1$$Lambda+0x0000028aa601e400
-instanceKlass  @bci utils/player/Player$1 <init> ()V 462 <appendix> argL0 ; # utils/player/Player$1$$Lambda+0x0000028aa601e1b0
-instanceKlass  @bci utils/player/Player$1 <init> ()V 437 <appendix> argL0 ; # utils/player/Player$1$$Lambda+0x0000028aa601df60
-instanceKlass  @bci utils/player/Player$1 <init> ()V 412 <appendix> argL0 ; # utils/player/Player$1$$Lambda+0x0000028aa601dd10
-instanceKlass  @bci utils/player/Player$1 <init> ()V 368 <appendix> argL0 ; # utils/player/Player$1$$Lambda+0x0000028aa601dac0
-instanceKlass  @bci utils/player/Player$1 <init> ()V 342 <appendix> argL0 ; # utils/player/Player$1$$Lambda+0x0000028aa601d870
-instanceKlass  @bci utils/player/Player$1 <init> ()V 317 <appendix> argL0 ; # utils/player/Player$1$$Lambda+0x0000028aa601d620
-instanceKlass  @bci utils/player/Player$1 <init> ()V 292 <appendix> argL0 ; # utils/player/Player$1$$Lambda+0x0000028aa601d3d0
-instanceKlass  @bci utils/player/Player$1 <init> ()V 267 <appendix> argL0 ; # utils/player/Player$1$$Lambda+0x0000028aa601d180
-instanceKlass  @bci utils/player/Player$1 <init> ()V 242 <appendix> argL0 ; # utils/player/Player$1$$Lambda+0x0000028aa601cf30
-instanceKlass  @bci utils/player/Player$1 <init> ()V 218 <appendix> argL0 ; # utils/player/Player$1$$Lambda+0x0000028aa601cce0
-instanceKlass world/location/Location
-instanceKlass utils/player/inventory/FeaturePlacer
-instanceKlass  @bci world/terrain/Terrain$TerrainType createMesh ()Lutils/render/mesh/WorldMesh; 35 <appendix> argL0 ; # world/terrain/Terrain$TerrainType$$Lambda+0x0000028aa601c218
-instanceKlass  @cpi world/terrain/Terrain$TerrainType 252 form vmentry <vmtarget> ; # java/lang/invoke/LambdaForm$DMH+0x0000028aa6018400
-instanceKlass  @bci utils/render/mesh/WorldMesh <init> (I[I)V 3 <appendix> argL0 ; # utils/render/mesh/WorldMesh$$Lambda+0x0000028aa601c000
-instanceKlass  @cpi utils/render/mesh/WorldMesh 90 form vmentry <vmtarget> ; # java/lang/invoke/LambdaForm$DMH+0x0000028aa6018000
-instanceKlass utils/render/mesh/WorldMesh$UVCoordsGenerator
-instanceKlass utils/render/mesh/Mesh
-instanceKlass utils/player/inventory/Item
-instanceKlass  @bci ui/widget/Widget <init> (FFLutils/BoundingBox;)V 19 <appendix> argL0 ; # ui/widget/Widget$$Lambda+0x0000028aa600e650
-instanceKlass  @bci ui/widget/Widget <init> (FFLutils/BoundingBox;)V 10 <appendix> argL0 ; # ui/widget/Widget$$Lambda+0x0000028aa600e438
-instanceKlass ui/widget/widgetUtils/WidgetEvent
+instanceKlass  @bci java.utils/player/Player$1 <init> ()V 512 <appendix> argL0 ; # java.utils/player/Player$1$$Lambda+0x0000028aa601e650
+instanceKlass  @bci java.utils/player/Player$1 <init> ()V 487 <appendix> argL0 ; # java.utils/player/Player$1$$Lambda+0x0000028aa601e400
+instanceKlass  @bci java.utils/player/Player$1 <init> ()V 462 <appendix> argL0 ; # java.utils/player/Player$1$$Lambda+0x0000028aa601e1b0
+instanceKlass  @bci java.utils/player/Player$1 <init> ()V 437 <appendix> argL0 ; # java.utils/player/Player$1$$Lambda+0x0000028aa601df60
+instanceKlass  @bci java.utils/player/Player$1 <init> ()V 412 <appendix> argL0 ; # java.utils/player/Player$1$$Lambda+0x0000028aa601dd10
+instanceKlass  @bci java.utils/player/Player$1 <init> ()V 368 <appendix> argL0 ; # java.utils/player/Player$1$$Lambda+0x0000028aa601dac0
+instanceKlass  @bci java.utils/player/Player$1 <init> ()V 342 <appendix> argL0 ; # java.utils/player/Player$1$$Lambda+0x0000028aa601d870
+instanceKlass  @bci java.utils/player/Player$1 <init> ()V 317 <appendix> argL0 ; # java.utils/player/Player$1$$Lambda+0x0000028aa601d620
+instanceKlass  @bci java.utils/player/Player$1 <init> ()V 292 <appendix> argL0 ; # java.utils/player/Player$1$$Lambda+0x0000028aa601d3d0
+instanceKlass  @bci java.utils/player/Player$1 <init> ()V 267 <appendix> argL0 ; # java.utils/player/Player$1$$Lambda+0x0000028aa601d180
+instanceKlass  @bci java.utils/player/Player$1 <init> ()V 242 <appendix> argL0 ; # java.utils/player/Player$1$$Lambda+0x0000028aa601cf30
+instanceKlass  @bci java.utils/player/Player$1 <init> ()V 218 <appendix> argL0 ; # java.utils/player/Player$1$$Lambda+0x0000028aa601cce0
+instanceKlass java.world/location/Location
+instanceKlass java.utils/player/inventory/FeaturePlacer
+instanceKlass  @bci java.world/terrain/Terrain$TerrainType createMesh ()Lutils/render/mesh/WorldMesh; 35 <appendix> argL0 ; # java.world/terrain/Terrain$TerrainType$$Lambda+0x0000028aa601c218
+instanceKlass  @cpi java.world/terrain/Terrain$TerrainType 252 form vmentry <vmtarget> ; # java/lang/invoke/LambdaForm$DMH+0x0000028aa6018400
+instanceKlass  @bci java.utils/render/mesh/WorldMesh <init> (I[I)V 3 <appendix> argL0 ; # java.utils/render/mesh/WorldMesh$$Lambda+0x0000028aa601c000
+instanceKlass  @cpi java.utils/render/mesh/WorldMesh 90 form vmentry <vmtarget> ; # java/lang/invoke/LambdaForm$DMH+0x0000028aa6018000
+instanceKlass java.utils/render/mesh/WorldMesh$UVCoordsGenerator
+instanceKlass java.utils/render/mesh/Mesh
+instanceKlass java.utils/player/inventory/Item
+instanceKlass  @bci java.ui/widget/Widget <init> (FFLutils/BoundingBox;)V 19 <appendix> argL0 ; # java.ui/widget/Widget$$Lambda+0x0000028aa600e650
+instanceKlass  @bci java.ui/widget/Widget <init> (FFLutils/BoundingBox;)V 10 <appendix> argL0 ; # java.ui/widget/Widget$$Lambda+0x0000028aa600e438
+instanceKlass java.ui/widget/widgetUtils/WidgetEvent
 instanceKlass java/util/Formatter$Flags
 instanceKlass java/util/Formattable
 instanceKlass java/util/Formatter$FixedString
@@ -1066,21 +1066,21 @@ instanceKlass javax/imageio/spi/ServiceRegistry
 instanceKlass javax/imageio/ImageIO
 instanceKlass org/joml/Vector2i
 instanceKlass org/joml/Vector2ic
-instanceKlass utils/render/texture/CacheTexture
-instanceKlass utils/render/texture/Texture
-instanceKlass utils/render/texture/Textures
-instanceKlass utils/BoundingBox
-instanceKlass ui/widget/widgetUtils/OnMouseMoveEvent
-instanceKlass ui/widget/widgetUtils/OnMouseDragEvent
-instanceKlass ui/widget/widgetUtils/OnResizeWindowEvent
-instanceKlass ui/widget/Widget
-instanceKlass ui/widget/widgetUtils/CustomDrawWidget
-instanceKlass ui/tooltip/Tooltip
-instanceKlass ui/container/Container
-instanceKlass utils/player/Player
+instanceKlass java.utils/render/texture/CacheTexture
+instanceKlass java.utils/render/texture/Texture
+instanceKlass java.utils/render/texture/Textures
+instanceKlass java.utils/BoundingBox
+instanceKlass java.ui/widget/widgetUtils/OnMouseMoveEvent
+instanceKlass java.ui/widget/widgetUtils/OnMouseDragEvent
+instanceKlass java.ui/widget/widgetUtils/OnResizeWindowEvent
+instanceKlass java.ui/widget/Widget
+instanceKlass java.ui/widget/widgetUtils/CustomDrawWidget
+instanceKlass java.ui/tooltip/Tooltip
+instanceKlass java.ui/container/Container
+instanceKlass java.utils/player/Player
 instanceKlass org/abrun/fastNoise/NoiseGenerator
-instanceKlass world/worldBuilder/WorldBuilder
-instanceKlass world/terrain/Terrain
+instanceKlass java.world/worldBuilder/WorldBuilder
+instanceKlass java.world/terrain/Terrain
 instanceKlass java/time/chrono/AbstractChronology
 instanceKlass java/time/chrono/Chronology
 instanceKlass java/time/LocalDate$1
@@ -1183,13 +1183,13 @@ instanceKlass sun/nio/ch/Net$1
 instanceKlass java/net/ProtocolFamily
 instanceKlass sun/nio/ch/Net
 instanceKlass java/net/SocksConsts
-instanceKlass world/particle/Particle
+instanceKlass java.world/particle/Particle
 instanceKlass sun/nio/ch/IOUtil
 instanceKlass sun/nio/ch/NativeDispatcher
 instanceKlass sun/net/PlatformSocketImpl
 instanceKlass java/net/SocketImpl
 instanceKlass java/net/SocketOptions
-instanceKlass world/feature/Feature
+instanceKlass java.world/feature/Feature
 instanceKlass java/net/InetSocketAddress$InetSocketAddressHolder
 instanceKlass java/net/InetAddress$PlatformResolver
 instanceKlass java/net/spi/InetAddressResolver
@@ -1203,12 +1203,12 @@ instanceKlass java/util/concurrent/ConcurrentNavigableMap
 instanceKlass java/net/InetAddress$InetAddressHolder
 instanceKlass java/net/InetAddress$1
 instanceKlass jdk/internal/access/JavaNetInetAddressAccess
-instanceKlass world/World
+instanceKlass java.world/World
 instanceKlass java/net/InetAddress
 instanceKlass java/net/SocketAddress
 instanceKlass jdk/internal/misc/PreviewFeatures
 instanceKlass jdk/internal/misc/MainMethodFinder
-instanceKlass main/Main
+instanceKlass java.main/Main
 instanceKlass java/io/FileInputStream$1
 instanceKlass java/lang/invoke/VarForm
 instanceKlass java/lang/invoke/VarHandleGuards
@@ -2045,31 +2045,31 @@ ciInstanceKlass java/lang/ref/Finalizer 1 1 155 9 7 12 1 1 1 10 7 12 1 1 1 9 12 
 staticfield java/lang/ref/Finalizer lock Ljava/lang/Object; java/lang/Object
 staticfield java/lang/ref/Finalizer ENABLED Z 1
 staticfield java/lang/ref/Finalizer $assertionsDisabled Z 1
-instanceKlass utils/sounds/SoundCategory
-instanceKlass utils/KeyBind
+instanceKlass java.utils/sounds/SoundCategory
+instanceKlass java.utils/KeyBind
 instanceKlass java/math/RoundingMode
 instanceKlass java/lang/reflect/ProxyGenerator$PrimitiveTypeInfo
 instanceKlass java/lang/annotation/RetentionPolicy
 instanceKlass java/awt/desktop/UserSessionEvent$Reason
 instanceKlass sun/awt/OSInfo$OSType
 instanceKlass sun/font/EAttribute
-instanceKlass utils/render/GameFont
-instanceKlass utils/render/Shader
+instanceKlass java.utils/render/GameFont
+instanceKlass java.utils/render/Shader
 instanceKlass sun/util/locale/provider/LocaleProviderAdapter$Type
-instanceKlass world/entity/Duck$DuckVariant
-instanceKlass world/entity/Duck$Animation
-instanceKlass world/entity/Duck$ActivityType
-instanceKlass utils/sounds/SoundEffect
-instanceKlass world/feature/Feature$FeatureType
+instanceKlass java.world/entity/Duck$DuckVariant
+instanceKlass java.world/entity/Duck$Animation
+instanceKlass java.world/entity/Duck$ActivityType
+instanceKlass java.utils/sounds/SoundEffect
+instanceKlass java.world/feature/Feature$FeatureType
 instanceKlass sun/security/util/KnownOIDs
-instanceKlass world/worldBuilder/Biome
-instanceKlass utils/Logger$LogMessageType
+instanceKlass java.world/worldBuilder/Biome
+instanceKlass java.utils/Logger$LogMessageType
 instanceKlass java/nio/file/AccessMode
 instanceKlass org/lwjgl/Version$BuildType
 instanceKlass org/lwjgl/system/Platform$Architecture
 instanceKlass java/lang/invoke/MethodHandleImpl$ArrayAccess
 instanceKlass org/lwjgl/system/Platform
-instanceKlass world/terrain/Terrain$TerrainType
+instanceKlass java.world/terrain/Terrain$TerrainType
 instanceKlass java/util/Locale$Category
 instanceKlass java/util/regex/Pattern$Qtype
 instanceKlass sun/java2d/StateTrackable$State

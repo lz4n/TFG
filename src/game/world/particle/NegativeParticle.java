@@ -1,0 +1,42 @@
+package game.world.particle;
+
+import game.utils.render.texture.Texture;
+import game.utils.render.texture.Textures;
+import game.world.location.Location;
+
+/**
+ * Partícula utilizada para dar un input negativo al jugador.
+ */
+public class NegativeParticle extends Particle {
+
+    /**
+     * @param location Posición donde se va a generar la partícula.
+     */
+    public NegativeParticle(Location location) {
+        super(location.add(0, -1));
+
+        super.scale = 0;
+    }
+
+    @Override
+    public void onTick() {
+        super.onTick();
+
+        //Vamos aumentando la escala en cada tick.
+        if (super.scale < 1) {
+            super.scale += 0.1f;
+        } else {
+            super.scale = 1;
+        }
+    }
+
+    @Override
+    public Texture getTexture() {
+        return Textures.NEGATIVE_PARTICLE;
+    }
+
+    @Override
+    protected int getMaxLifeTime() {
+        return 60;
+    }
+}
