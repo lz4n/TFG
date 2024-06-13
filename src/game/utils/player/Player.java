@@ -2,11 +2,11 @@ package game.utils.player;
 
 import game.listener.MouseListener;
 import game.Main;
-import game.ui.container.Container;
-import game.ui.container.Inventory;
-import game.ui.widget.*;
-import game.ui.widget.buttonWidget.AbstractButtonWidget;
-import game.ui.widget.buttonWidget.FrameButtonWidget;
+import game.utils.player.ui.container.Container;
+import game.utils.player.ui.container.Inventory;
+import game.utils.player.ui.widget.*;
+import game.utils.player.ui.widget.buttonWidget.AbstractButtonWidget;
+import game.utils.player.ui.widget.buttonWidget.FrameButtonWidget;
 import game.utils.BoundingBox;
 import game.utils.Logger;
 import game.utils.Setting;
@@ -18,15 +18,15 @@ import game.world.feature.building.Hospital;
 import game.world.feature.building.jobSite.Industry;
 import org.joml.Vector2f;
 import org.lwjgl.glfw.GLFW;
-import game.ui.widget.buttonWidget.OptionsFrameButtonWidgets;
+import game.utils.player.ui.widget.buttonWidget.OptionsFrameButtonWidgets;
 import game.utils.sounds.SoundCategory;
 import game.utils.sounds.SoundEffect;
-import game.ui.tooltip.TextTooltip;
-import game.ui.tooltip.Tooltip;
-import game.ui.widget.*;
+import game.utils.player.ui.tooltip.TextTooltip;
+import game.utils.player.ui.tooltip.Tooltip;
+import game.utils.player.ui.widget.*;
 
-import game.ui.widget.textWidgets.DateTimeTextBox;
-import game.ui.widget.textWidgets.SmallTextBox;
+import game.utils.player.ui.widget.textWidgets.DateTimeTextBox;
+import game.utils.player.ui.widget.textWidgets.SmallTextBox;
 import game.utils.render.Camera;
 import game.utils.render.GameFont;
 import game.utils.render.Window;
@@ -134,13 +134,13 @@ public class Player {
         HEALTH_TEXT_BOX = new SmallTextBox(90, 24);
 
     private final Inventory INVENTORY = new Inventory();
-    private final game.ui.container.Frame GAME_MENU = new game.ui.container.Frame("Menu");
-    private final game.ui.container.Frame CONFIG_MENU = new game.ui.container.Frame("Config");
-    private final game.ui.container.Frame AUDIO_MENU = new game.ui.container.Frame("Audio");
-    private final game.ui.container.Frame VIDEO_MENU = new game.ui.container.Frame("Video");
+    private final game.utils.player.ui.container.Frame GAME_MENU = new game.utils.player.ui.container.Frame("Menu");
+    private final game.utils.player.ui.container.Frame CONFIG_MENU = new game.utils.player.ui.container.Frame("Config");
+    private final game.utils.player.ui.container.Frame AUDIO_MENU = new game.utils.player.ui.container.Frame("Audio");
+    private final game.utils.player.ui.container.Frame VIDEO_MENU = new game.utils.player.ui.container.Frame("Video");
     private final HashMap<Item, SlotWidget> MENU_ITEMS_BY_SLOT = new HashMap<>();
     private final Camera CAMERA = new Camera(new Vector2f(0, 0)); //Iniciamos la cámara en 0,0
-    private game.ui.container.Container container = this.INVENTORY;
+    private game.utils.player.ui.container.Container container = this.INVENTORY;
     private DateTimeTextBox timeTextBox;
     private AbstractButtonWidget gameSpeedButton;
     private ScreenIndicatorWidget bulldozerIndicator;
@@ -260,7 +260,7 @@ public class Player {
     private void createGameMenu() {
         this.GAME_MENU.setOnBackClickEvent(this::openInventory);
 
-        game.ui.container.Frame.FrameLayoutBuilder layoutBuilder = new game.ui.container.Frame.FrameLayoutBuilder(16);
+        game.utils.player.ui.container.Frame.FrameLayoutBuilder layoutBuilder = new game.utils.player.ui.container.Frame.FrameLayoutBuilder(16);
 
         FrameButtonWidget returnGameButton = new FrameButtonWidget(8, layoutBuilder.nextTo(), "Volver");
         returnGameButton.setOnClickEvent(this::openInventory);
@@ -314,7 +314,7 @@ public class Player {
     private void createConfigMenu() {
         this.CONFIG_MENU.setOnBackClickEvent(this::openMenu);
 
-        game.ui.container.Frame.FrameLayoutBuilder layoutBuilder = new game.ui.container.Frame.FrameLayoutBuilder(16);
+        game.utils.player.ui.container.Frame.FrameLayoutBuilder layoutBuilder = new game.utils.player.ui.container.Frame.FrameLayoutBuilder(16);
 
         FrameButtonWidget videoConfigButton = new FrameButtonWidget(8, layoutBuilder.nextTo(), "Video");
         videoConfigButton.setOnClickEvent(this::openVideoConfig);
@@ -328,7 +328,7 @@ public class Player {
     private void createVideoMenu() {
         this.VIDEO_MENU.setOnBackClickEvent(this::openConfig);
 
-        game.ui.container.Frame.FrameLayoutBuilder layoutBuilder = new game.ui.container.Frame.FrameLayoutBuilder(4);
+        game.utils.player.ui.container.Frame.FrameLayoutBuilder layoutBuilder = new game.utils.player.ui.container.Frame.FrameLayoutBuilder(4);
 
         FrameButtonWidget fullscreenButton = new FrameButtonWidget(8, layoutBuilder.nextTo(), "Pantalla\ncompleta");
         fullscreenButton.setOnClickEvent(Window::toggleFullscreen);
@@ -357,7 +357,7 @@ public class Player {
     private void createAudioMenu() {
         this.AUDIO_MENU.setOnBackClickEvent(this::openConfig);
 
-        game.ui.container.Frame.FrameLayoutBuilder layoutBuilder = new game.ui.container.Frame.FrameLayoutBuilder(4);
+        game.utils.player.ui.container.Frame.FrameLayoutBuilder layoutBuilder = new game.utils.player.ui.container.Frame.FrameLayoutBuilder(4);
 
         SliderWidget volumeSlider = new SliderWidget(8, layoutBuilder.nextTo(), "Volumen general");
         volumeSlider.setValue(Setting.GENERAL_VOLUME.getValue());

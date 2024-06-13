@@ -1,9 +1,9 @@
 package game.world.entity;
 
 import game.Main;
-import game.npc.Pathfinding;
-import game.ui.tooltip.TextTooltip;
-import game.ui.tooltip.Tooltip;
+import game.utils.npc.Pathfinding;
+import game.utils.player.ui.tooltip.TextTooltip;
+import game.utils.player.ui.tooltip.Tooltip;
 import game.utils.BoundingBox;
 import game.utils.render.GameFont;
 import game.utils.render.scene.WorldScene;

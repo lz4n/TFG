@@ -1,7 +1,7 @@
 package game.listener;
 
 import game.Main;
-import game.ui.container.Frame;
+import game.utils.player.ui.container.Frame;
 import game.utils.KeyBind;
 import game.utils.render.Window;
 import game.utils.render.scene.WorldScene;
@@ -25,12 +25,6 @@ public class MouseListener {
 
     /**
      * Actualiza la ubicación en el juego del cursor del ratón según su posición actual en la pantalla.
-     * @param posX la posición X del cursor en la pantalla.
-     * @param posY la posición Y del cursor en la pantalla.
-     * @param windowWidth el ancho de la ventana.
-     * @param windowHeight la altura de la ventana.
-     * @param camera la cámara que se utiliza para obtener las matrices de proyección y vista.
-     * @param spriteSize el tamaño del sprite en la escena del mundo.
      */
     public static void updateInGameLocationMousePosition() {
         //Calculamos las coordenadas normalizadas del cursor en pantalla (de -1 a 1)

@@ -2,8 +2,8 @@ package game.utils.render.scene;
 
 import game.listener.MouseListener;
 import game.Main;
-import game.ui.container.Inventory;
-import game.ui.tooltip.Tooltip;
+import game.utils.player.ui.container.Inventory;
+import game.utils.player.ui.tooltip.Tooltip;
 import game.utils.Setting;
 import game.utils.Time;
 import game.utils.render.GameFont;

@@ -99,9 +99,9 @@ public class Terrain implements Serializable {
         WATER(Textures.WATER, false, 1, false, false),
         STONE_TILE(Textures.STONE_TILE, true, -1, false, false),
         PATH(Textures.PATH, true, -1,true, true),
-        SAND(Textures.SAND, true, 1,true, true),
+        SAND(Textures.SAND, true, 1,false, true),
         GRAVEL(Textures.GRAVEL, true, 2,true, true),
-        GRASS(Textures.GRASS, true, 2,true, true),
+        GRASS(Textures.GRASS, true, 2,false, true),
         STONE(Textures.STONE, true, 3,true, true),
         SNOW(Textures.SNOW, false, 5,true, true);
 

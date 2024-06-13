@@ -1,7 +1,7 @@
 package game.listener;
 
 import game.Main;
-import game.ui.container.Inventory;
+import game.utils.player.ui.container.Inventory;
 import game.utils.KeyBind;
 import game.utils.render.Window;
 import org.lwjgl.glfw.GLFW;

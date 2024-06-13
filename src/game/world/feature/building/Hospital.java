@@ -2,8 +2,8 @@ package game.world.feature.building;
 
 import game.Main;
 import org.joml.Vector2f;
-import game.ui.tooltip.TextTooltip;
-import game.ui.tooltip.Tooltip;
+import game.utils.player.ui.tooltip.TextTooltip;
+import game.utils.player.ui.tooltip.Tooltip;
 import game.utils.render.GameFont;
 import game.utils.render.scene.WorldScene;
 import game.world.location.Location;

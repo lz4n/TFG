@@ -1,7 +1,7 @@
 package game.world.feature.building;
 
 import game.Main;
-import game.ui.tooltip.Tooltip;
+import game.utils.player.ui.tooltip.Tooltip;
 import game.world.feature.Feature;
 import org.joml.Vector2f;
 import game.world.location.Location;
