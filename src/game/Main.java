@@ -90,7 +90,7 @@ public class Main {
         Logger.sendMessage("Direcctorio de juego: %s", Logger.LogMessageType.DEBUG, Main.installDirectory.getAbsolutePath());
 
         //Leemos el mundo "game.world.dat". Si no existe se creará un nuevo mundo por defecto.
-        try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(new File(Main.installDirectory, "worlds/game.world.dat")))) {
+        try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(new File(Main.installDirectory, "worlds/world.dat")))) {
             Main.world = (World) inputStream.readObject();
         } catch (IOException | ClassNotFoundException exception) {
             Logger.sendMessage("No se ha podido leer el mundo: %s", Logger.LogMessageType.WARNING, exception.getMessage());

@@ -56,8 +56,8 @@ void main()
 
     //Colocamos un foco de luz en el ratón
     float distanceToLight = length(textureCoords - uLightPos);
-    float attenuation = 1 -smoothstep(0.0, 0.1, distanceToLight);
-    color += vec3(0.035, 0.03, 0.02) * attenuation;
+    float attenuation = 1 -smoothstep(0.0, 0.2, distanceToLight);
+    color += vec3(0.065, 0.06, 0.04) * attenuation;
 
     //Calculamos desde el pixel al centro de la pantalla y aplicamos la niebla.
     vec2 windowCenter = vec2(1920 / 2.0, 1080 / 2.0);
