@@ -1,6 +1,7 @@
 package game.utils.render.mesh;
 
 import game.utils.render.scene.WorldScene;
+import org.lwjgl.opengl.GL20;
 
 import java.util.Arrays;
 
@@ -12,8 +13,7 @@ import java.util.Arrays;
  */
 public class WorldMesh extends Mesh {
     private final UVCoordsGenerator UV_COORDS_RANDOMIZER;
-    private int elementsCount = 0;
-    private int previousVertexArrayPos = 0, previousElementArrayPos = 0;
+    private int previousVertexArrayPos = 0;
 
     /**
      * @param capacity Número de vértices que va a tener el mesh.
@@ -23,8 +23,7 @@ public class WorldMesh extends Mesh {
     public WorldMesh(int capacity, int[] attributesSize, UVCoordsGenerator uvCoordsGenerator) {
         super(attributesSize);
         this.UV_COORDS_RANDOMIZER = uvCoordsGenerator;
-        this.vertexArray = new float[this.vertexSize *capacity *4];
-        this.elementArray = new int[capacity *2 *3];
+        this.vertexArray = new float[this.vertexSize *capacity *6];
     }
 
     /**
@@ -33,7 +32,7 @@ public class WorldMesh extends Mesh {
      * @param attributesSize Tamaños de los atributos, en bytes.
      */
     public WorldMesh(int capacity, int... attributesSize) {
-        this(capacity, attributesSize, (posX, posY) -> new int[]{1, 1, 0, 0, 1, 0, 0, 1});
+        this(capacity, attributesSize, (posX, posY) -> new int[]{0, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1});
     }
 
     /**
@@ -51,74 +50,74 @@ public class WorldMesh extends Mesh {
         if (this.previousVertexArrayPos >= this.vertexArray.length) {
             this.vertexArray = Arrays.copyOf(this.vertexArray, this.previousVertexArrayPos +this.vertexSize *4);
         }
-        if (this.previousElementArrayPos >= this.elementArray.length) {
-            this.elementArray = Arrays.copyOf(this.elementArray, this.previousElementArrayPos +6);
-        }
 
-        //Primer vértice: abajo derecha
-        //Posición
-        this.vertexArray[this.previousVertexArrayPos++] = screenPosX + WorldScene.SPRITE_SIZE * sizeX;
+        //1er vértice: arriba izquierda
+        this.addVertex(
+                screenPosX,
+                screenPosY + WorldScene.SPRITE_SIZE *sizeY,
+                uvCoords[0],
+                uvCoords[1],
+                attributes
+        );
+
+        //2º vértice: abajo derecha
+        this.addVertex(
+                screenPosX + WorldScene.SPRITE_SIZE *sizeX,
+                screenPosY,
+                uvCoords[2],
+                uvCoords[3],
+                attributes
+        );
+
+        //3er vértice: abajo izquierda
+        this.addVertex(
+                screenPosX,
+                screenPosY,
+                uvCoords[4],
+                uvCoords[5],
+                attributes
+        );
+
+        //4º vértice: arriba izquierda
+        this.addVertex(
+                screenPosX,
+                screenPosY + WorldScene.SPRITE_SIZE *sizeY,
+                uvCoords[6],
+                uvCoords[7],
+                attributes
+        );
+
+        //5º vértice: arriba derecha
+        this.addVertex(
+                screenPosX + WorldScene.SPRITE_SIZE *sizeX,
+                screenPosY + WorldScene.SPRITE_SIZE *sizeY,
+                uvCoords[8],
+                uvCoords[9],
+                attributes
+        );
+
+        //6º vértice: abajo derecha
+        this.addVertex(
+                screenPosX + WorldScene.SPRITE_SIZE * sizeX,
+                screenPosY,
+                uvCoords[10],
+                uvCoords[11],
+                attributes
+        );
+
+    }
+
+    private void addVertex(float screenPosX, float screenPosY, int uvCoordsX, int uvCoordsY, float[] attributes) {
+        this.vertexArray[this.previousVertexArrayPos++] = screenPosX;
         this.vertexArray[this.previousVertexArrayPos++] = screenPosY;
 
         //Coordenadas UV
-        this.vertexArray[this.previousVertexArrayPos++] = uvCoords[0];
-        this.vertexArray[this.previousVertexArrayPos++] = uvCoords[1];
+        this.vertexArray[this.previousVertexArrayPos++] = uvCoordsX;
+        this.vertexArray[this.previousVertexArrayPos++] = uvCoordsY;
 
         for (float attribute: attributes) {
             this.vertexArray[this.previousVertexArrayPos++] = attribute;
         }
-
-        //Segundo vértice: arriba izquierda
-        //Posición
-        this.vertexArray[this.previousVertexArrayPos++] = screenPosX;
-        this.vertexArray[this.previousVertexArrayPos++] = screenPosY + WorldScene.SPRITE_SIZE * sizeY;
-
-        //Coordenadas UV
-        this.vertexArray[this.previousVertexArrayPos++] = uvCoords[2];
-        this.vertexArray[this.previousVertexArrayPos++] = uvCoords[3];
-
-        for (float attribute: attributes) {
-            this.vertexArray[this.previousVertexArrayPos++] = attribute;
-        }
-
-        //Tercer vértice: arriba derecha
-        //Posición
-        this.vertexArray[this.previousVertexArrayPos++] = screenPosX + WorldScene.SPRITE_SIZE * sizeX;
-        this.vertexArray[this.previousVertexArrayPos++] = screenPosY + WorldScene.SPRITE_SIZE * sizeY;
-
-        //Coordenadas UV
-        this.vertexArray[this.previousVertexArrayPos++] = uvCoords[4];
-        this.vertexArray[this.previousVertexArrayPos++] = uvCoords[5];
-
-        for (float attribute: attributes) {
-            this.vertexArray[this.previousVertexArrayPos++] = attribute;
-        }
-
-        //cuarto vértice: abajo izquierda
-        //Posición
-        this.vertexArray[this.previousVertexArrayPos++] = screenPosX;
-        this.vertexArray[this.previousVertexArrayPos++] = screenPosY;
-
-        //Coordenadas UV
-        this.vertexArray[this.previousVertexArrayPos++] = uvCoords[6];
-        this.vertexArray[this.previousVertexArrayPos++] = uvCoords[7];
-
-        for (float attribute: attributes) {
-            this.vertexArray[this.previousVertexArrayPos++] = attribute;
-        }
-
-        //Añadir elementos
-        //Primer triangulo
-        this.elementArray[this.previousElementArrayPos++] = this.elementsCount +2;
-        this.elementArray[this.previousElementArrayPos++] = this.elementsCount +1;
-        this.elementArray[this.previousElementArrayPos++] = this.elementsCount;
-
-        //Segundo triangulo
-        this.elementArray[this.previousElementArrayPos++] = this.elementsCount;
-        this.elementArray[this.previousElementArrayPos++] = this.elementsCount +1;
-        this.elementArray[this.previousElementArrayPos++] = this.elementsCount +3;
-
-        this.elementsCount += 4;
     }
 
     /**
@@ -126,7 +125,7 @@ public class WorldMesh extends Mesh {
      * @return Si el Mesh tiene elementos o no.
      */
     public boolean isEmpty() {
-        return this.elementsCount == 0;
+        return this.previousVertexArrayPos == 0;
     }
 
     /**
@@ -136,7 +135,6 @@ public class WorldMesh extends Mesh {
      */
     public void adjust() {
         this.vertexArray = Arrays.copyOf(this.vertexArray, this.previousVertexArrayPos);
-        this.elementArray = Arrays.copyOf(this.elementArray, this.previousElementArrayPos);
     }
 
     /**
@@ -145,7 +143,15 @@ public class WorldMesh extends Mesh {
     public interface UVCoordsGenerator {
         /**
          * @return Array que contiene las coordenadas UV de los 4 vértices.
+         *
+         * @param posX Posición en el eje X en el mundo del objeto a renderizar.
+         * @param posX Posición en el eje X en el mundo del objeto a renderizar.
          */
         int[] getUVCoords(int posX, int posY);
+    }
+
+    @Override
+    protected int getRenderMode() {
+        return GL20.GL_TRIANGLES;
     }
 }

@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 public class ShapeMesh extends Mesh {
     private int elementsCount = 0;
-    private int previousVertexArrayPos = 0, previousElementArrayPos = 0;
+    private int previousVertexArrayPos = 0;
 
     /**
      * Constructor de la clase ShapeMesh. Inicializa el arreglo de vértices y el arreglo de elementos del mesh.
@@ -12,7 +12,6 @@ public class ShapeMesh extends Mesh {
     public ShapeMesh() {
         super(2);
         this.vertexArray = new float[this.vertexSize *1 *4];
-        this.elementArray = new int[1 *2 *3];
     }
 
     /**
@@ -28,9 +27,6 @@ public class ShapeMesh extends Mesh {
         
         if (this.previousVertexArrayPos >= this.vertexArray.length) {
             this.vertexArray = Arrays.copyOf(this.vertexArray, this.previousVertexArrayPos +this.vertexSize *4);
-        }
-        if (this.previousElementArrayPos >= this.elementArray.length) {
-            this.elementArray = Arrays.copyOf(this.elementArray, this.previousElementArrayPos +6);
         }
 
         //Primer vértice: abajo derecha
@@ -48,17 +44,6 @@ public class ShapeMesh extends Mesh {
         //cuarto vértice: abajo izquierda
         this.vertexArray[this.previousVertexArrayPos++] = x *pixelSize;
         this.vertexArray[this.previousVertexArrayPos++] = y *pixelSize;
-
-        //Añadir elementos
-        //Primer triangulo
-        this.elementArray[this.previousElementArrayPos++] = this.elementsCount +2;
-        this.elementArray[this.previousElementArrayPos++] = this.elementsCount +1;
-        this.elementArray[this.previousElementArrayPos++] = this.elementsCount;
-
-        //Segundo triangulo
-        this.elementArray[this.previousElementArrayPos++] = this.elementsCount;
-        this.elementArray[this.previousElementArrayPos++] = this.elementsCount +1;
-        this.elementArray[this.previousElementArrayPos++] = this.elementsCount +3;
 
         this.elementsCount += 4;
     }

@@ -3,8 +3,6 @@ package game.utils.render.mesh;
 /**
  * <code>Mesh</code> utilizado para renderizar objetos de forma individual, independientemente del tamaño o de si hay otros objetos.
  * @see Mesh
- *
- * @author Izan
  */
 public class SingleObjectMesh extends Mesh {
     /**
@@ -16,14 +14,10 @@ public class SingleObjectMesh extends Mesh {
     private SingleObjectMesh() {
         super(2);
         this.vertexArray = new float[]{
-                0f, 0f,
-                1f, 0f,
-                1f, 1f,
-                0f, 1f
-        };
-        this.elementArray = new int[]{
-                0, 1, 2,
-                2, 3, 0
+                0, 0,  // Vértice inferior izquierdo
+                1, 0,  // Vértice inferior derecho
+                0, 1,  // Vértice superior izquierdo
+                1, 1   // Vértice superior derecho
         };
     }
 }

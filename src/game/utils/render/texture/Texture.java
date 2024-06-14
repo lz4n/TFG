@@ -89,11 +89,7 @@ public abstract class Texture {
             shader.upload2f("uSize", sizeX, sizeY);
 
             this.bind();
-            ARBVertexArrayObject.glBindVertexArray(SingleObjectMesh.SINGLE_OBJECT_MESH.getVaoId());
-            GL20.glEnableVertexAttribArray(0);
-            GL20.glDrawElements(GL20.GL_TRIANGLES, SingleObjectMesh.SINGLE_OBJECT_MESH.getElementCount(), GL11.GL_UNSIGNED_INT, 0);
-            GL20.glDisableVertexAttribArray(0);
-            ARBVertexArrayObject.glBindVertexArray(0);
+            SingleObjectMesh.SINGLE_OBJECT_MESH.draw();
         } else {
             Logger.sendMessage("El shader %s no puede dibujar (la textura %d) mediante instanciación.", Logger.LogMessageType.FATAL, shader, this.getTextureId());
         }

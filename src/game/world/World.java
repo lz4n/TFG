@@ -45,7 +45,7 @@ public class World implements Serializable {
     private static final float MIN_DAYLIGHT = .2f;
 
     private static final int INITIAL_MONEY = 600;
-
+    
     private final int SEED;
 
     private final int WORLD_SIZE;

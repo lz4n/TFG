@@ -143,10 +143,10 @@ public class Terrain implements Serializable {
             if (this.HAS_RANDOM_UV) {
                 return new WorldMesh(Main.world.getSize() * Main.world.getSize(), new int[]{2, 2},
                         (posX, posY) -> switch (new Random((long) Main.world.getSeed() *Main.world.mapCoordinatesToIndex(posX, posY)).nextInt(4)) {
-                            case 0 -> new int[]{1, 1, 0, 0, 1, 0, 0, 1};
-                            case 1 -> new int[]{1, 1, 0, 0, 0, 1, 1, 0};
-                            case 2 -> new int[]{0, 0, 1, 1, 1, 0, 0, 1};
-                            default -> new int[]{0, 0, 1, 1, 0, 1, 1, 0};
+                            case 0 -> new int[]{0, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1};
+                            case 1 -> new int[]{1, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1};
+                            case 2 -> new int[]{0, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0};
+                            default -> new int[]{1, 1, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0};
                         });
             }
             return new WorldMesh(Main.world.getSize() * Main.world.getSize(), 2, 2);
