@@ -6,6 +6,7 @@ import java.io.*;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 /**
  * Contiene la configuración general del juego.
@@ -47,6 +48,8 @@ public class Setting<T> {
      */
     public static final Setting<Float> SOUND_EFFECTS_VOLUME = new Setting<>("SOUND_EFFECTS_VOLUME", 1f);
 
+    public static final Setting<Integer> LAST_PLAYED_WORLD = new Setting<>("LAST_PLAYED_WORLD", -1);
+
     private final String ID;
     private T value;
     private Setting(String name, T defaultValue) {
@@ -73,6 +76,9 @@ public class Setting<T> {
                         }
                         case Float floatValue -> {
                             value = Float.parseFloat(Setting.PROPERTIES.getProperty(setting.ID, floatValue.toString()));
+                        }
+                        case Integer intValue -> {
+                            value = Integer.parseInt(Setting.PROPERTIES.getProperty(setting.ID, intValue.toString()));
                         }
                         default ->
                                 Logger.sendMessage("El tipo de datos de la opción %s no está soportado para lectura.", Logger.LogMessageType.WARNING);

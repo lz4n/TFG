@@ -1,5 +1,7 @@
 package game.utils;
 
+import game.Main;
+
 /**
  * Clase que se utiliza para enviar mensajes a la consola de manera unificada.
  */
@@ -17,6 +19,10 @@ public class Logger {
      * @param messageType Tipo de mensaje.
      */
     public static void sendMessage(String content, LogMessageType messageType) {
+        if (!Main.isDebugging && messageType.equals(LogMessageType.DEBUG)) {
+            return;
+        }
+
         System.out.printf("%s[%s]: %s%s",  messageType.COLOR, messageType, content, Logger.RESET);
         System.out.println();
     }

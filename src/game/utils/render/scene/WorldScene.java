@@ -21,16 +21,13 @@ import game.world.particle.Particle;
 import org.joml.Matrix4f;
 import org.lwjgl.glfw.GLFW;
 
-import game.utils.render.mesh.*;
 import org.lwjgl.opengl.*;
 
-import game.utils.render.texture.*;
 import game.world.WorldGenerator;
 import game.world.entity.Duck;
 import game.world.feature.Feature;
 import game.world.feature.building.Building;
 import game.world.location.Location;
-import game.world.particle.*;
 import game.world.terrain.Terrain;
 
 import java.awt.*;
@@ -49,7 +46,7 @@ public class WorldScene {
     public static final int SPRITE_SIZE = 16;
 
     private static final int DEBUGGING_REFRESH_DELAY = 5;
-    private final WorldMesh WORLD_BORDER_MESH = new WorldMesh(1, 2, 2);
+    private WorldMesh worldBorderMesh;
     private int debuggingRefreshDelay = 30;
     private int textureColorbuffer, framebuffer;
     private Graphics2dTexture debugScreen;
@@ -76,8 +73,9 @@ public class WorldScene {
 
         SingleObjectMesh.SINGLE_OBJECT_MESH.load();
 
-        this.WORLD_BORDER_MESH.addVertex(-1, -1, Main.world.getSize() +2,  Main.world.getSize() +2);
-        this.WORLD_BORDER_MESH.load();
+        this.worldBorderMesh = new WorldMesh(1, 2, 2);
+        this.worldBorderMesh.addVertex(-1, -1, Main.world.getSize() +2,  Main.world.getSize() +2);
+        this.worldBorderMesh.load();
 
         this.reloadPostProcessingBuffers();
 
@@ -135,16 +133,16 @@ public class WorldScene {
         }
 
         //Dibujamos el inventario.
-        Main.PLAYER.updateDateTime(Main.world.getFormattedDayTime(), String.format("%d-%d-%d", Main.world.getDay(), Main.world.getMonth(), Main.world.getYear()));
-        if (!Main.PLAYER.isHidingUi() || !(Main.PLAYER.getContainer() instanceof Inventory)) {
-            Main.PLAYER.getContainer().onHoverEvent();
-            Main.PLAYER.getContainer().draw();
+        Main.player.updateDateTime(Main.world.getFormattedDayTime(), String.format("%d-%d-%d", Main.world.getDay(), Main.world.getMonth(), Main.world.getYear()));
+        if (!Main.player.isHidingUi() || !(Main.player.getContainer() instanceof Inventory)) {
+            Main.player.getContainer().onHoverEvent();
+            Main.player.getContainer().draw();
         }
 
         //Dibujamos el selector del ratón.
-        if (!Main.PLAYER.isHidingUi() && !Main.PLAYER.isPaused() && MouseListener.getInGameLocation() != null && !MouseListener.getInGameLocation().isOutOfTheWorld() && !Main.PLAYER.isMouseOnInventory()) {
+        if (!Main.player.isHidingUi() && !Main.player.isPaused() && MouseListener.getInGameLocation() != null && !MouseListener.getInGameLocation().isOutOfTheWorld() && !Main.player.isMouseOnInventory()) {
             Feature selectedFeature;
-            if ((selectedFeature = MouseListener.getInGameLocation().getFeature()) != null && !Main.PLAYER.isSelectingTerrain()) {
+            if ((selectedFeature = MouseListener.getInGameLocation().getFeature()) != null && !Main.player.isSelectingTerrain()) {
                 for (int x = 1; x <= selectedFeature.getBlockSize().x(); x++) for (int y = 1; y <= selectedFeature.getBlockSize().y(); y++) {
                     Main.world.addParticle(new CursorParticle(selectedFeature.getLocation().add(x -1, y -1)));
                 }
@@ -163,8 +161,8 @@ public class WorldScene {
         }
 
         //Dibujamos el tooltip del inventario del jugador.
-        if (Main.PLAYER.getTooltip() != null) {
-            Main.PLAYER.getTooltip().showAtMouse();
+        if (Main.player.getTooltip() != null) {
+            Main.player.getTooltip().showAtMouse();
         }
     }
 
@@ -181,8 +179,8 @@ public class WorldScene {
             }
 
             Shader.SHAPE.use();
-            Shader.SHAPE.uploadMatrix4f("uProjection", Main.PLAYER.getCamera().getProjectionMatrix());
-            Shader.SHAPE.uploadMatrix4f("uView", Main.PLAYER.getCamera().getViewMatrix());
+            Shader.SHAPE.uploadMatrix4f("uProjection", Main.player.getCamera().getProjectionMatrix());
+            Shader.SHAPE.uploadMatrix4f("uView", Main.player.getCamera().getViewMatrix());
             Shader.SHAPE.upload2f("uPosition", 0, 0);
 
 
@@ -234,7 +232,7 @@ public class WorldScene {
         float daylight = Setting.DIURNAL_CYCLE.getValue() ? Main.world.getDayLight() : 1f;
         Shader.POST_PROCESSING.use();
         Shader.POST_PROCESSING.uploadInt("uScreenTexture", 0);
-        Shader.POST_PROCESSING.uploadInt("uIsPaused", Main.PLAYER.isPaused() ? 1 : 0);
+        Shader.POST_PROCESSING.uploadInt("uIsPaused", Main.player.isPaused() ? 1 : 0);
         Shader.POST_PROCESSING.uploadFloat("uDaylight", daylight);
         Shader.POST_PROCESSING.uploadFloat("uHappiness", Main.world.getHappiness());
 
@@ -253,8 +251,8 @@ public class WorldScene {
     private void drawWorld() {
         //Activamos el shader y subimos variables uniform al shader .glsl
         Shader.WORLD.use();
-        Shader.WORLD.uploadMatrix4f("uProjection", Main.PLAYER.getCamera().getProjectionMatrix());
-        Shader.WORLD.uploadMatrix4f("uView", Main.PLAYER.getCamera().getViewMatrix());
+        Shader.WORLD.uploadMatrix4f("uProjection", Main.player.getCamera().getProjectionMatrix());
+        Shader.WORLD.uploadMatrix4f("uView", Main.player.getCamera().getViewMatrix());
         for (int samplerId = 0; samplerId < Texture.SAMPLERS_COUNT; samplerId++) {
             Shader.WORLD.uploadInt("textureSamplers[" + samplerId + "]", samplerId);
         }
@@ -263,7 +261,7 @@ public class WorldScene {
         Shader.WORLD.uploadInt("uCustomTextureUnit", 0);
         Shader.WORLD.uploadInt("uRepeatingTimes", Main.world.getSize() +2);
         Textures.WORLD_BORDER.bind();
-        this.WORLD_BORDER_MESH.draw();
+        this.worldBorderMesh.draw();
         Texture.unbind();
 
         Shader.WORLD.uploadInt("uRepeatingTimes", 1);
@@ -290,8 +288,8 @@ public class WorldScene {
 
         //Dibujamos las entidades y partículas.
         Shader.ENTITY.use();
-        Shader.ENTITY.uploadMatrix4f("uProjection", Main.PLAYER.getCamera().getProjectionMatrix());
-        Shader.ENTITY.uploadMatrix4f("uView", Main.PLAYER.getCamera().getViewMatrix());
+        Shader.ENTITY.uploadMatrix4f("uProjection", Main.player.getCamera().getProjectionMatrix());
+        Shader.ENTITY.uploadMatrix4f("uView", Main.player.getCamera().getViewMatrix());
         Shader.ENTITY.uploadFloat("uRotationAngle", 0);
         Shader.ENTITY.uploadFloat("uScale", 1);
         Shader.ENTITY.uploadFloat("uTime", (float) GLFW.glfwGetTime());
@@ -355,10 +353,10 @@ public class WorldScene {
                 ((float) runtime.freeMemory() /runtime.totalMemory()) *100,
                 runtime.availableProcessors(),
                 Main.tickSpeed,
-                Main.PLAYER.isPaused(),
-                Main.PLAYER.isHidingUi(),
-                Main.PLAYER.isUsingBulldozer(),
-                Main.PLAYER.isMouseOnInventory(),
+                Main.player.isPaused(),
+                Main.player.isHidingUi(),
+                Main.player.isUsingBulldozer(),
+                Main.player.isMouseOnInventory(),
                 MouseListener.getInGameLocation().getX(),
                 MouseListener.getInGameLocation().getY(),
                 MouseListener.getInGameLocation().isOutOfTheWorld() ? "    OutOfTheWorld" : String.format("""
@@ -377,9 +375,9 @@ public class WorldScene {
                         MouseListener.getInGameLocation().getTerrain().getContinentalityNoise(),
                         MouseListener.getInGameLocation().getTerrain().getWeirdnessNoise(),
                         MouseListener.getInGameLocation().getTerrain().getRiversNoise()),
-                Main.PLAYER.getCamera().getCameraPosition().x(),
-                Main.PLAYER.getCamera().getCameraPosition().y(),
-                Main.PLAYER.getCamera().getZoom(),
+                Main.player.getCamera().getCameraPosition().x(),
+                Main.player.getCamera().getCameraPosition().y(),
+                Main.player.getCamera().getZoom(),
                 Main.world.getSeed(),
                 Main.world.getDayTime(),
                 Main.world.getFormattedDayTime(),
@@ -426,7 +424,7 @@ public class WorldScene {
      * Redimensiona la ventana del juego, ajustando el contenedor del jugador según las nuevas dimensiones.
      */
     public void resizeWindow() {
-        Main.PLAYER.getContainer().onResizeWindowEvent(game.utils.render.Window.getWidth(), Window.getHeight());
+        Main.player.getContainer().onResizeWindowEvent(game.utils.render.Window.getWidth(), Window.getHeight());
 
         this.reloadPostProcessingBuffers();
     }
@@ -439,8 +437,8 @@ public class WorldScene {
      * @param mouseY Posición Y del mouse.
      */
     public void click(float mouseX, float mouseY) {
-        if (!Main.PLAYER.isHidingUi() && Main.PLAYER.isMouseOnInventory()) {
-            Main.PLAYER.getContainer().onClickEvent(mouseX, mouseY);
+        if (!Main.player.isHidingUi() && Main.player.isMouseOnInventory()) {
+            Main.player.getContainer().onClickEvent(mouseX, mouseY);
         }
     }
 
@@ -452,8 +450,8 @@ public class WorldScene {
      * @param mouseY Posición Y del mouse.
      */
     public void moveMouse(float mouseX, float mouseY) {
-        if (!Main.PLAYER.isHidingUi()) {
-            Main.PLAYER.setMouseOnInventory(Main.PLAYER.getContainer().onMouseMoveEvent(mouseX, mouseY));
+        if (!Main.player.isHidingUi()) {
+            Main.player.setMouseOnInventory(Main.player.getContainer().onMouseMoveEvent(mouseX, mouseY));
         }
     }
 }

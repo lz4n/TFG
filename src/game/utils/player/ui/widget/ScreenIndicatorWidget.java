@@ -50,7 +50,7 @@ public class ScreenIndicatorWidget extends Widget implements OnResizeWindowEvent
     @Override
     public void onMouseClickEvent() {
         //Al clicar se cierra el indicador.
-        if (Main.PLAYER.getContainer() instanceof Inventory inventory) {
+        if (Main.player.getContainer() instanceof Inventory inventory) {
             inventory.removeWidget(this);
         }
         super.onMouseClickEvent();

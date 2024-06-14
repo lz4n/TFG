@@ -23,7 +23,6 @@ import game.utils.sounds.SoundCategory;
 import game.utils.sounds.SoundEffect;
 import game.utils.player.ui.tooltip.TextTooltip;
 import game.utils.player.ui.tooltip.Tooltip;
-import game.utils.player.ui.widget.*;
 
 import game.utils.player.ui.widget.textWidgets.DateTimeTextBox;
 import game.utils.player.ui.widget.textWidgets.SmallTextBox;
@@ -34,7 +33,6 @@ import game.utils.render.texture.Colors;
 import game.utils.render.texture.Texture;
 import game.utils.render.texture.Textures;
 import game.world.World;
-import game.world.feature.*;
 import game.world.feature.building.Fountain;
 import game.world.feature.building.House;
 import game.world.feature.building.PoliceStation;
@@ -138,6 +136,7 @@ public class Player {
     private final game.utils.player.ui.container.Frame CONFIG_MENU = new game.utils.player.ui.container.Frame("Config");
     private final game.utils.player.ui.container.Frame AUDIO_MENU = new game.utils.player.ui.container.Frame("Audio");
     private final game.utils.player.ui.container.Frame VIDEO_MENU = new game.utils.player.ui.container.Frame("Video");
+    private  game.utils.player.ui.container.Frame worldsMenu = new game.utils.player.ui.container.Frame("Mundos");
     private final HashMap<Item, SlotWidget> MENU_ITEMS_BY_SLOT = new HashMap<>();
     private final Camera CAMERA = new Camera(new Vector2f(0, 0)); //Iniciamos la cámara en 0,0
     private game.utils.player.ui.container.Container container = this.INVENTORY;
@@ -260,46 +259,53 @@ public class Player {
     private void createGameMenu() {
         this.GAME_MENU.setOnBackClickEvent(this::openInventory);
 
-        game.utils.player.ui.container.Frame.FrameLayoutBuilder layoutBuilder = new game.utils.player.ui.container.Frame.FrameLayoutBuilder(16);
+        game.utils.player.ui.container.Frame.FrameLayoutBuilder layoutBuilder = new game.utils.player.ui.container.Frame.FrameLayoutBuilder(8);
 
         FrameButtonWidget returnGameButton = new FrameButtonWidget(8, layoutBuilder.nextTo(), "Volver");
         returnGameButton.setOnClickEvent(this::openInventory);
         this.GAME_MENU.addWidget(returnGameButton);
 
-        FrameButtonWidget newWorldButton = new FrameButtonWidget(8, layoutBuilder.nextTo(returnGameButton), "Nuevo mundo");
-        newWorldButton.setOnClickEvent(this::openNewWorld);
+        FrameButtonWidget newWorldButton = new FrameButtonWidget(8, layoutBuilder.nextTo(returnGameButton), "Abrir mundo");
+        newWorldButton.setOnClickEvent(this::openWorldsMenu);
         this.GAME_MENU.addWidget(newWorldButton);
 
         FrameButtonWidget configButton = new FrameButtonWidget(8, layoutBuilder.nextTo(newWorldButton), "Configuracion");
         configButton.setOnClickEvent(this::openConfig);
         this.GAME_MENU.addWidget(configButton);
 
-        FrameButtonWidget leaveGameButton = new FrameButtonWidget(8, layoutBuilder.nextTo(configButton), "Guardar y salir");
-        leaveGameButton.setOnClickEvent(() -> {
-            File worldFile = new File(Main.installDirectory, "worlds/world.dat");
-            worldFile.getParentFile().mkdirs();
-            try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(worldFile))) {
-                outputStream.writeObject(Main.world);
-                outputStream.writeUTF("world.dat");
-            } catch (IOException exception) {
-                Logger.sendMessage("Error guardando el mundo: %s.\n", Logger.LogMessageType.FATAL, exception.getMessage());
-            }
-            GLFW.glfwSetWindowShouldClose(Window.window, true);
-        });
+        FrameButtonWidget saveWorldGameButton = new FrameButtonWidget(8, layoutBuilder.nextTo(configButton), "Guardar");
+        saveWorldGameButton.setOnClickEvent(this::saveWorld);
+        this.GAME_MENU.addWidget(saveWorldGameButton);
+
+        FrameButtonWidget leaveGameButton = new FrameButtonWidget(8, layoutBuilder.nextTo(configButton), "Salir");
+        leaveGameButton.setOnClickEvent(() -> GLFW.glfwSetWindowShouldClose(Window.window, true));
         this.GAME_MENU.addWidget(leaveGameButton);
     }
 
+    private void saveWorld() {
+        Setting.LAST_PLAYED_WORLD.setValue(Main.world.getIndex());
+
+        File worldFile = new File(Main.installDirectory, String.format("worlds/%d.dat", Main.world.getIndex()));
+        worldFile.getParentFile().mkdirs();
+        try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(worldFile))) {
+            outputStream.writeObject(Main.world);
+            outputStream.writeUTF("world.dat");
+        } catch (IOException exception) {
+            Logger.sendMessage("Error guardando el mundo: %s.\n", Logger.LogMessageType.FATAL, exception.getMessage());
+        }
+    }
+
     private void openNewWorld() {
-        Main.world = new World(new Random().nextInt(100000000), 100);
+        Main.world = new World();
+        this.reloadWorld();
+    }
 
-        for (Terrain.TerrainType terrainType : Terrain.TerrainType.values()) {
-            terrainType.updateMesh();
-        }
+    private void openWorld(File worldFile) {
+        Main.world = World.getWorldFromFile(worldFile);
+        this.reloadWorld();
+    }
 
-        for (Feature.FeatureType featureType : Feature.FeatureType.values()) {
-            featureType.updateMesh();
-        }
-
+    private void reloadWorld() {
         this.updateMoney(Main.world.getMoney());
         this.updateIncomes(Main.world.getIncomes());
         this.updatePopulation(Main.world.getPopulation());
@@ -307,6 +313,8 @@ public class Player {
         this.updateUnemployment(Main.world.getUnemployment());
         this.updateSecurity(Main.world.getSecurity());
         this.updateHealth(Main.world.getHealth());
+
+        this.openInventory();
 
         Window.currentScene.init();
     }
@@ -386,6 +394,31 @@ public class Player {
             SoundCategory.SOUND_EFFECTS.setVolume(value);
         });
         this.AUDIO_MENU.addWidget(soundEffectsSlider);
+    }
+
+    private void createWorldsMenu() {
+        this.worldsMenu = new game.utils.player.ui.container.Frame("Mundos");
+
+        this.worldsMenu.setOnBackClickEvent(this::openMenu);
+
+        game.utils.player.ui.container.Frame.FrameLayoutBuilder layoutBuilder = new game.utils.player.ui.container.Frame.FrameLayoutBuilder(4);
+
+        FrameButtonWidget newWorldButton = new FrameButtonWidget(8, layoutBuilder.nextTo(), "Nuevo mundo");
+        newWorldButton.setOnClickEvent(this::openNewWorld);
+        this.worldsMenu.addWidget(newWorldButton);
+
+        FrameSeparatorWidget separatorWidget = new FrameSeparatorWidget(3, layoutBuilder.nextTo(newWorldButton));
+        this.worldsMenu.addWidget(separatorWidget);
+
+        FrameButtonWidget worldButton;
+        Widget previousWidget = separatorWidget;
+        for (Map.Entry<Integer, File> worldFile : Main.listWorlds().entrySet()) {
+            worldButton = new FrameButtonWidget(8, layoutBuilder.nextTo(previousWidget), String.format("Mundo: #%d", worldFile.getKey()));
+            worldButton.setOnClickEvent(() -> this.openWorld(worldFile.getValue()));
+            this.worldsMenu.addWidget(worldButton);
+
+            previousWidget = worldButton;
+        }
     }
 
     private void addBulldozerToInventory(int posX, Tab tab) {
@@ -777,6 +810,17 @@ public class Player {
      */
     public void openAudioConfig() {
         this.container = this.AUDIO_MENU;
+        this.isPaused = true;
+        this.container.onResizeWindowEvent(Window.getWidth(), Window.getHeight());
+    }
+
+    /**
+     * Cierra el contenedor anterior y abre el menú de seleccion de mundos.
+     */
+    public void openWorldsMenu() {
+        this.createWorldsMenu();
+
+        this.container = this.worldsMenu;
         this.isPaused = true;
         this.container.onResizeWindowEvent(Window.getWidth(), Window.getHeight());
     }

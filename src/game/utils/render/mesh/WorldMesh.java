@@ -48,7 +48,7 @@ public class WorldMesh extends Mesh {
         int[] uvCoords = this.UV_COORDS_RANDOMIZER.getUVCoords((int) posX, (int) posY);
 
         if (this.previousVertexArrayPos >= this.vertexArray.length) {
-            this.vertexArray = Arrays.copyOf(this.vertexArray, this.previousVertexArrayPos +this.vertexSize *4);
+            this.vertexArray = Arrays.copyOf(this.vertexArray, this.previousVertexArrayPos +this.vertexSize *6);
         }
 
         //1er vértice: arriba izquierda

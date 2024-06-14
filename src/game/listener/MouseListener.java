@@ -35,7 +35,7 @@ public class MouseListener {
         Vector4f cursorClip = new Vector4f(normalizedX, normalizedY, -1.0f, 1.0f);
 
         //Calculamos las coordenadas in-game
-        Matrix4f inverseTransform = Main.PLAYER.getCamera().getProjectionMatrix().mul(Main.PLAYER.getCamera().getViewMatrix(), new Matrix4f()).invert();
+        Matrix4f inverseTransform = Main.player.getCamera().getProjectionMatrix().mul(Main.player.getCamera().getViewMatrix(), new Matrix4f()).invert();
         Vector4f cursorView = inverseTransform.transform(cursorClip, new Vector4f());
         cursorView.div(cursorView.w());
         MouseListener.inGameLocation = new Location(cursorView.x() / WorldScene.SPRITE_SIZE, (cursorView.y() / WorldScene.SPRITE_SIZE));
@@ -58,19 +58,19 @@ public class MouseListener {
 
         MouseListener.isDragging = MouseListener.isMouseButtonPressed[0] || MouseListener.isMouseButtonPressed[1] || MouseListener.isMouseButtonPressed[2];
         if (MouseListener.isDragging) {
-            Main.PLAYER.getContainer().onDragEvent((float) posX, (float) posY);
+            Main.player.getContainer().onDragEvent((float) posX, (float) posY);
         }
 
         Window.currentScene.moveMouse((float) posX, (float) posY);
-        Main.PLAYER.getContainer().onMouseMoveEvent();
+        Main.player.getContainer().onMouseMoveEvent();
 
-        if (!Main.PLAYER.isMouseOnInventory() && !Main.PLAYER.isPaused()) {
+        if (!Main.player.isMouseOnInventory() && !Main.player.isPaused()) {
             //Destruir features cuando se mantiene click sobre ellas.
             if (KeyBind.INTERACT.isPressed()) {
-                if (Main.PLAYER.isUsingBulldozer()) {
-                    Main.PLAYER.destroySelectedFeature();
-                } else if (Main.PLAYER.createSelectedTerrain(MouseListener.getInGameLocation()) != null) {
-                    Main.PLAYER.addToTerrainSelection(MouseListener.getInGameLocation());
+                if (Main.player.isUsingBulldozer()) {
+                    Main.player.destroySelectedFeature();
+                } else if (Main.player.createSelectedTerrain(MouseListener.getInGameLocation()) != null) {
+                    Main.player.addToTerrainSelection(MouseListener.getInGameLocation());
                 }
             }
         }
@@ -87,17 +87,17 @@ public class MouseListener {
         if (action == GLFW.GLFW_PRESS) {
             MouseListener.setIsMouseButtonPressed(button, true);
             Window.currentScene.click((float) MouseListener.posX, (float) MouseListener.posY);
-            Main.PLAYER.getContainer().onDragEvent((float) posX, (float) posY);
+            Main.player.getContainer().onDragEvent((float) posX, (float) posY);
 
-            if (!Main.PLAYER.isMouseOnInventory() && !Main.PLAYER.isPaused()) {
+            if (!Main.player.isMouseOnInventory() && !Main.player.isPaused()) {
                 //Colocar/Destruir features cuando se hace click sobre ellas.
                 if (KeyBind.INTERACT.isPressed()) {
-                    if (Main.PLAYER.isUsingBulldozer()) {
-                        if (Main.PLAYER.destroySelectedFeature()) {
+                    if (Main.player.isUsingBulldozer()) {
+                        if (Main.player.destroySelectedFeature()) {
                             return;
                         }
                     } else {
-                        if (Main.PLAYER.placeSelectedItem()) {
+                        if (Main.player.placeSelectedItem()) {
                             return;
                         }
                     }
@@ -120,9 +120,9 @@ public class MouseListener {
             MouseListener.setIsMouseButtonPressed(button, false);
             MouseListener.isDragging = false;
 
-            if (Main.PLAYER.getTerrainSelection() != null) {
-                Main.PLAYER.placeSelectedItem();
-                Main.PLAYER.removeTerrainSelection();
+            if (Main.player.getTerrainSelection() != null) {
+                Main.player.placeSelectedItem();
+                Main.player.removeTerrainSelection();
             }
         }
     }
@@ -134,14 +134,14 @@ public class MouseListener {
      * @param offsetY Movimiento de la rueda del ratón en el eje Y.
      */
     public static void mouseScrollCallback(long window, double offsetX, double offsetY) {
-        if (!Main.PLAYER.isPaused()) {
+        if (!Main.player.isPaused()) {
             if (offsetY >= 1) {
-                Main.PLAYER.getCamera().zoomIn();
+                Main.player.getCamera().zoomIn();
             } else if (offsetY <= -1) {
-                Main.PLAYER.getCamera().zoomOut();
+                Main.player.getCamera().zoomOut();
             }
         } else {
-            if (Window.currentScene instanceof WorldScene && Main.PLAYER.getContainer() instanceof Frame frame) {
+            if (Window.currentScene instanceof WorldScene && Main.player.getContainer() instanceof Frame frame) {
                 if (offsetY <= -1) {
                     frame.moveScroll((KeyListener.isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT) ? 2 : 1) * -3.5f);
                 } else if (offsetY >= 1) {

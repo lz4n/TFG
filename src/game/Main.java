@@ -7,6 +7,9 @@ import game.utils.render.Window;
 import game.world.World;
 
 import java.io.*;
+import java.security.PublicKey;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 import java.util.regex.Pattern;
 
@@ -25,7 +28,7 @@ public class Main {
     /**
      * Mundo de juego. Si no hay ningún mundo guardado se crea uno por defecto.
      */
-    public static World world = new World(new Random().nextInt(100000000), 100);
+    public static World world = new World(0, 0, 0);
 
     /**
      * Velocidad de tick del juego por defecto.
@@ -36,7 +39,7 @@ public class Main {
      * Representa al jugador, independiente del mundo.
      * @see Player
      */
-    public static final Player PLAYER = new Player();
+    public static Player player;
 
     /**
      * Objeto de tipo Random para gestionar los aspectos aleatorios.
@@ -87,16 +90,57 @@ public class Main {
             throw new RuntimeException("No se ha podido iniciar la aplicación: no se ha conseguido establecer ningún directorio de juego (" + Main.installDirectory + ") o no se tienen permisos. Intenta utilizar --directory:<dir>.");
         }
 
-        Logger.sendMessage("Direcctorio de juego: %s", Logger.LogMessageType.DEBUG, Main.installDirectory.getAbsolutePath());
-
-        //Leemos el mundo "game.world.dat". Si no existe se creará un nuevo mundo por defecto.
-        try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(new File(Main.installDirectory, "worlds/game.world.dat")))) {
-            Main.world = (World) inputStream.readObject();
-        } catch (IOException | ClassNotFoundException exception) {
-            Logger.sendMessage("No se ha podido leer el mundo: %s", Logger.LogMessageType.WARNING, exception.getMessage());
-        }
+        Logger.sendMessage("Direcctorio de juego: %s", Logger.LogMessageType.INFO, Main.installDirectory.getAbsolutePath());
 
         Setting.load();
+
+        //Leemos último mundo jugado. Si no existe (-1) o da un error se creará un nuevo mundo por defecto.
+        int lastPlayedWorldIndex = Setting.LAST_PLAYED_WORLD.getValue();
+        if (lastPlayedWorldIndex != -1) {
+            try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(new File(Main.installDirectory, String.format("worlds/%d.dat", lastPlayedWorldIndex))))) {
+                Main.world = (World) inputStream.readObject();
+                Logger.sendMessage("Se ha iniciado el mundo %d.", Logger.LogMessageType.INFO, lastPlayedWorldIndex);
+            } catch (IOException | ClassNotFoundException exception) {
+                Main.world = new World();
+                Logger.sendMessage("No se ha podido leer el último mundo jugado: %s", Logger.LogMessageType.WARNING, exception.getMessage());
+            }
+        } else {
+            Logger.sendMessage("No hay mundo previamente jugado, se va a crear uno nuevo", Logger.LogMessageType.INFO);
+            Main.world = new World();
+        }
+
+        Main.player = new Player();
+
         Window.run();
+    }
+
+    public static Map<Integer, File> listWorlds() {
+        File worldsDirectory = new File(Main.installDirectory, "worlds");
+        Map<Integer, File> worlds = new HashMap<>();
+
+        for (File worldFile : worldsDirectory.listFiles((dir, name) -> Pattern.compile("^\\d+\\.dat$").matcher(name).matches())) {
+            try {
+                worlds.put(Integer.parseInt(worldFile.getName().replace(".dat", "")), worldFile);
+            } catch (NumberFormatException exception) {
+                Logger.sendMessage("No se ha podido leer el archivo de mundo %s: %s", Logger.LogMessageType.WARNING, worldFile.getName(), exception.getMessage());
+            }
+        }
+
+        return worlds;
+    }
+
+    public static int getNewWorldIndex() {
+        File worldsDirectory = new File(Main.installDirectory, "worlds");
+        int newWorldIndex = 0;
+
+        for (File worldFile : worldsDirectory.listFiles((dir, name) -> Pattern.compile("^\\d+\\.dat$").matcher(name).matches())) {
+            try {
+                newWorldIndex = Math.max(Integer.parseInt(worldFile.getName().replace(".dat", "")), newWorldIndex);
+            } catch (NumberFormatException exception) {
+                Logger.sendMessage("No se ha podido leer el número del mundo %s: %s", Logger.LogMessageType.WARNING, worldFile.getName(), exception.getMessage());
+            }
+        }
+
+        return newWorldIndex +1;
     }
 }

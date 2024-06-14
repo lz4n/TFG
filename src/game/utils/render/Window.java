@@ -67,7 +67,7 @@ public class Window {
     public static void run() {
         Window.init();
         currentScene.init();
-        Main.PLAYER.init();
+        Main.player.init();
 
         //Cargamos las texturas a la caché de texuras
         Texture texture;
@@ -76,7 +76,7 @@ public class Window {
                 texture = (Texture) field.get(new Object());
                 if (texture instanceof CacheTexture) {
                     ((CacheTexture) texture).init();
-                    Logger.sendMessage("Se ha generado la textura %s: %s.", Logger.LogMessageType.INFO, texture.getTextureId(), texture);
+                    Logger.sendMessage("Se ha generado la textura %s: %s.", Logger.LogMessageType.DEBUG, texture.getTextureId(), texture);
                 }
             } catch (IllegalAccessException | ClassCastException ignore) {}
         }
@@ -103,7 +103,7 @@ public class Window {
                 texture = (Texture) field.get(new Object());
                 if (texture instanceof CacheTexture) {
                     ((CacheTexture) texture).remove();
-                    Logger.sendMessage("Se ha eliminado la textura %s: %s.", Logger.LogMessageType.INFO, texture.getTextureId(), texture);
+                    Logger.sendMessage("Se ha eliminado la textura %s: %s.", Logger.LogMessageType.DEBUG, texture.getTextureId(), texture);
                 }
             } catch (IllegalAccessException | ClassCastException exception) {}
         }
@@ -213,29 +213,29 @@ public class Window {
 
             if (dTime >= 0) {
                 AnimatedTexture.animate();
-                Main.world.onTick(Main.PLAYER.isPaused());
-                Main.PLAYER.onTick();
+                Main.world.onTick(Main.player.isPaused());
+                Main.player.onTick();
                 Window.currentScene.update(dTime);
             }
 
-            if (!Main.PLAYER.isPaused()) {
+            if (!Main.player.isPaused()) {
                 if (KeyBind.MOVE_UP.isPressed()) {
-                    Main.PLAYER.getCamera().moveCamera(new Vector2f(0, (KeyListener.isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT) ? 2 : 1) * 10 * (float) Main.PLAYER.getCamera().getZoom()));
+                    Main.player.getCamera().moveCamera(new Vector2f(0, (KeyListener.isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT) ? 2 : 1) * 10 * (float) Main.player.getCamera().getZoom()));
                 }
 
                 if (KeyBind.MOVE_LEFT.isPressed()) {
-                    Main.PLAYER.getCamera().moveCamera(new Vector2f((KeyListener.isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT) ? 2 : 1) * -10 * (float) Main.PLAYER.getCamera().getZoom(), 0));
+                    Main.player.getCamera().moveCamera(new Vector2f((KeyListener.isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT) ? 2 : 1) * -10 * (float) Main.player.getCamera().getZoom(), 0));
                 }
 
                 if (KeyBind.MOVE_DOWN.isPressed()) {
-                    Main.PLAYER.getCamera().moveCamera(new Vector2f(0, (KeyListener.isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT) ? 2 : 1) * -10 * (float) Main.PLAYER.getCamera().getZoom()));
+                    Main.player.getCamera().moveCamera(new Vector2f(0, (KeyListener.isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT) ? 2 : 1) * -10 * (float) Main.player.getCamera().getZoom()));
                 }
 
                 if (KeyBind.MOVE_RIGHT.isPressed()) {
-                    Main.PLAYER.getCamera().moveCamera(new Vector2f((KeyListener.isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT) ? 2 : 1) * 10 * (float) Main.PLAYER.getCamera().getZoom(), 0));
+                    Main.player.getCamera().moveCamera(new Vector2f((KeyListener.isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT) ? 2 : 1) * 10 * (float) Main.player.getCamera().getZoom(), 0));
                 }
 
-                if (currentScene instanceof WorldScene && Main.PLAYER.getContainer() instanceof Inventory inventory) {
+                if (currentScene instanceof WorldScene && Main.player.getContainer() instanceof Inventory inventory) {
                     if (KeyListener.isKeyPressed(GLFW.GLFW_KEY_RIGHT)) {
                         inventory.moveScroll((KeyListener.isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT) ? 2 : 1) * -.7f);
                     }
@@ -245,7 +245,7 @@ public class Window {
                     }
                 }
             } else {
-                if (currentScene instanceof WorldScene && Main.PLAYER.getContainer() instanceof Frame frame) {
+                if (currentScene instanceof WorldScene && Main.player.getContainer() instanceof Frame frame) {
                     if (KeyListener.isKeyPressed(GLFW.GLFW_KEY_DOWN)) {
                         frame.moveScroll((KeyListener.isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT) ? 2 : 1) * -.7f);
                     }

@@ -176,6 +176,13 @@ public class Terrain implements Serializable {
         }
 
         /**
+         * Reestablece el valor por defecto del Mesh.
+         */
+        public void resetMesh() {
+            this.mesh = new WorldMesh(Main.world.getSize() * Main.world.getSize(), 2, 2);
+        }
+
+        /**
          * Verifica si se puede construir en este terreno.
          *
          * @return true si se puede construir, false en caso contrario.

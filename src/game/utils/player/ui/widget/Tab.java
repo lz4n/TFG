@@ -84,7 +84,7 @@ public class Tab extends Widget implements CustomDrawWidget {
     @Override
     public void onMouseClickEvent() {
         //Si clicas una pestaña se desseleccionan el resto y se establece la pestaña que acaba de ser clicada como la actual.
-        if (Main.PLAYER.getContainer() instanceof Inventory inventory) {
+        if (Main.player.getContainer() instanceof Inventory inventory) {
             inventory.unselectAllTabs();
             this.isSelected = true;
             inventory.setCurrentTab(this);

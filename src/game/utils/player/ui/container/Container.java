@@ -43,14 +43,14 @@ public abstract class Container {
      * Evento que se llama cuando se llama en cada bucle de renderizado. Redirecciona el evento de hover (pasar el ratón por encima) a los widgets.
      */
     public void onHoverEvent() {
-        Main.PLAYER.setTooltip(null);
+        Main.player.setTooltip(null);
         //Si la bandera hovered está activa es que el ratón está sobre ese widget.
         for (Widget widget : this.widgets) {
             if (widget.isHovered()) {
                 widget.onHoverEvent();
 
                 if (widget.getTooltip() != null) {
-                    Main.PLAYER.setTooltip(widget.getTooltip());
+                    Main.player.setTooltip(widget.getTooltip());
                 }
             }
         }

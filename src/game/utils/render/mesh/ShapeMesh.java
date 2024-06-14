@@ -29,21 +29,18 @@ public class ShapeMesh extends Mesh {
             this.vertexArray = Arrays.copyOf(this.vertexArray, this.previousVertexArrayPos +this.vertexSize *4);
         }
 
-        //Primer vértice: abajo derecha
+        this.vertexArray[this.previousVertexArrayPos++] = x *pixelSize;
+        this.vertexArray[this.previousVertexArrayPos++] = y *pixelSize;
+
         this.vertexArray[this.previousVertexArrayPos++] = (x *pixelSize) + (sizeX *pixelSize);
         this.vertexArray[this.previousVertexArrayPos++] = y *pixelSize;
 
-        //Segundo vértice: arriba izquierda
         this.vertexArray[this.previousVertexArrayPos++] = x *pixelSize;
         this.vertexArray[this.previousVertexArrayPos++] = (y *pixelSize) + (sizeY *pixelSize);
 
-        //Tercer vértice: arriba derecha
         this.vertexArray[this.previousVertexArrayPos++] = (x *pixelSize) + (sizeX *pixelSize);
         this.vertexArray[this.previousVertexArrayPos++] = (y *pixelSize) + (sizeY *pixelSize);
 
-        //cuarto vértice: abajo izquierda
-        this.vertexArray[this.previousVertexArrayPos++] = x *pixelSize;
-        this.vertexArray[this.previousVertexArrayPos++] = y *pixelSize;
 
         this.elementsCount += 4;
     }

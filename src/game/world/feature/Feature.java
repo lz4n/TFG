@@ -290,6 +290,13 @@ public abstract class Feature implements Comparable<Feature>, Serializable {
         }
 
         /**
+         * Reestablece el valor por defecto del Mesh.
+         */
+        public void resetMesh() {
+            this.mesh = new WorldMesh(Main.world.getSize() * Main.world.getSize(), 2, 2, 1, 1);
+        }
+
+        /**
          * @return <code>Mehs</code> encargado de renderizar las features.
          */
         public WorldMesh getMesh() {

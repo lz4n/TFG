@@ -160,7 +160,7 @@ public class Location implements Cloneable, Serializable {
                 1f);
 
         Vector4f clipSpacePos = new Vector4f();
-        Main.PLAYER.getCamera().getProjectionMatrix().mul(Main.PLAYER.getCamera().getViewMatrix(), new Matrix4f()).transform(inGamePos, clipSpacePos);
+        Main.player.getCamera().getProjectionMatrix().mul(Main.player.getCamera().getViewMatrix(), new Matrix4f()).transform(inGamePos, clipSpacePos);
 
         clipSpacePos.div(clipSpacePos.w);
 

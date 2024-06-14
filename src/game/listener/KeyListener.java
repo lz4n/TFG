@@ -31,66 +31,66 @@ public class KeyListener {
                 if (KeyBind.DEBUG_ONLY_CALL_GC.checkKey(key) && Main.isDebugging) {
                     System.gc();
                 }
-                if (Main.PLAYER.isPaused()) {
+                if (Main.player.isPaused()) {
                     if (KeyBind.TOGGLE_GAME_MENU.checkKey(key)) {
-                        Main.PLAYER.openInventory();
+                        Main.player.openInventory();
                     }
                 } else {
                     switch (KeyBind.getKeyBind(key)) {
                         case KeyBind.TOGGLE_HIDING_UI:
-                            Main.PLAYER.toggleIsHidingUi();
+                            Main.player.toggleIsHidingUi();
                             break;
                         case KeyBind.TOGGLE_GAME_SPEED:
-                            Main.PLAYER.toggleGameSpeed();
+                            Main.player.toggleGameSpeed();
                             break;
                         case KeyBind.TOGGLE_PAUSE:
-                            Main.PLAYER.togglePauseGame();
+                            Main.player.togglePauseGame();
                             break;
                         case KeyBind.TOGGLE_GAME_MENU:
-                            Main.PLAYER.openMenu();
+                            Main.player.openMenu();
                             break;
                         case OPEN_TAB_1:
-                            if (Main.PLAYER.getContainer() instanceof Inventory inventory) {
+                            if (Main.player.getContainer() instanceof Inventory inventory) {
                                 inventory.goToTab(1);
                             }
                             break;
                         case OPEN_TAB_2:
-                            if (Main.PLAYER.getContainer() instanceof Inventory inventory) {
+                            if (Main.player.getContainer() instanceof Inventory inventory) {
                                 inventory.goToTab(2);
                             }
                             break;
                         case OPEN_TAB_3:
-                            if (Main.PLAYER.getContainer() instanceof Inventory inventory) {
+                            if (Main.player.getContainer() instanceof Inventory inventory) {
                                 inventory.goToTab(3);
                             }
                             break;
                         case OPEN_TAB_4:
-                            if (Main.PLAYER.getContainer() instanceof Inventory inventory) {
+                            if (Main.player.getContainer() instanceof Inventory inventory) {
                                 inventory.goToTab(4);
                             }
                             break;
                         case OPEN_TAB_5:
-                            if (Main.PLAYER.getContainer() instanceof Inventory inventory) {
+                            if (Main.player.getContainer() instanceof Inventory inventory) {
                                 inventory.goToTab(5);
                             }
                             break;
                         case OPEN_TAB_6:
-                            if (Main.PLAYER.getContainer() instanceof Inventory inventory) {
+                            if (Main.player.getContainer() instanceof Inventory inventory) {
                                 inventory.goToTab(6);
                             }
                             break;
                         case OPEN_TAB_7:
-                            if (Main.PLAYER.getContainer() instanceof Inventory inventory) {
+                            if (Main.player.getContainer() instanceof Inventory inventory) {
                                 inventory.goToTab(7);
                             }
                             break;
                         case OPEN_TAB_8:
-                            if (Main.PLAYER.getContainer() instanceof Inventory inventory) {
+                            if (Main.player.getContainer() instanceof Inventory inventory) {
                                 inventory.goToTab(8);
                             }
                             break;
                         case OPEN_TAB_9:
-                            if (Main.PLAYER.getContainer() instanceof Inventory inventory) {
+                            if (Main.player.getContainer() instanceof Inventory inventory) {
                                 inventory.goToTab(9);
                             }
                             break;

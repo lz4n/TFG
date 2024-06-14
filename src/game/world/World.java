@@ -8,7 +8,6 @@ import game.world.feature.*;
 import game.world.feature.building.Hospital;
 import game.world.feature.building.PoliceStation;
 import game.world.entity.Duck;
-import game.world.feature.*;
 import game.world.feature.building.Building;
 import game.world.feature.building.jobSite.Port;
 import game.world.location.Location;
@@ -18,7 +17,7 @@ import game.world.terrain.Terrain;
 import game.world.worldBuilder.Biome;
 import game.world.worldBuilder.WorldBuilder;
 
-import java.io.Serializable;
+import java.io.*;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -39,13 +38,14 @@ public class World implements Serializable {
             SUNRISE_DURATION = SUNRISE_END - SUNRISE_START,
             SUNSET_START = World.hourToTick(21, 30),
             SUNSET_END = World.hourToTick(22, 0),
-            sunsetDuration = SUNSET_END - SUNSET_START,
+            SUNSET_DURATION = SUNSET_END - SUNSET_START,
             MONTH_DURATION_IN_DAYS = 30,
             MAX_MONTH = 12;
     private static final float MIN_DAYLIGHT = .2f;
 
     private static final int INITIAL_MONEY = 600;
-    
+
+    private final int INDEX;
     private final int SEED;
 
     private final int WORLD_SIZE;
@@ -74,11 +74,19 @@ public class World implements Serializable {
     private int money = World.INITIAL_MONEY, incomes = 0, population = 0;
 
     /**
+     * Instancia un nuevo mundo, con un nuevo indice, seed random y tamaño 100.
+     */
+    public World() {
+        this(Main.getNewWorldIndex(), Main.RANDOM.nextInt(), 100);
+    }
+
+    /**
      * Instancia un mundo, pero no lo genera.
      * @param seed Semilla del mundo.
      * @param worldSize Tamaño del mundo.
      */
-    public World(int seed, int worldSize) {
+    public World(int index, int seed, int worldSize) {
+        this.INDEX = index;
         this.SEED = seed;
         this.WORLD_SIZE = worldSize;
         this.TERRAIN = new Terrain[this.WORLD_SIZE * this.WORLD_SIZE];
@@ -220,6 +228,10 @@ public class World implements Serializable {
             int posX = (int) feature.getLocation().getX(), posY = (int) feature.getLocation().getY();
             for (int x = 0; x < feature.getBlockSize().x(); x++) {
                 for (int y = 0; y < feature.getBlockSize().y(); y++) {
+                    if (new Location(x, y).isOutOfTheWorld()) {
+                        return null;
+                    }
+
                     this.FEATURES[this.mapCoordinatesToIndex(posX + x, posY + y)] = feature;
                     if ((feature instanceof Building) && !(feature instanceof Port)) {
                         Terrain terrain = this.getTerrain(posX +x, posY +y);
@@ -342,6 +354,13 @@ public class World implements Serializable {
     }
 
     /**
+     * @return Devuelve el índice numérico del mundo.
+     */
+    public int getIndex() {
+        return this.INDEX;
+    }
+
+    /**
      * @return Semilla utilizada para generar el mundo.
      */
     public int getSeed() {
@@ -403,7 +422,7 @@ public class World implements Serializable {
             return 1;
         } else if (SUNSET_START <= this.getDayTime() && this.getDayTime() <= SUNSET_END) {
             // Durante el atardecer, disminuye la luz gradualmente
-            return 1f - (1 - World.MIN_DAYLIGHT) * ((float) (this.getDayTime() - SUNSET_START) / sunsetDuration);
+            return 1f - (1 - World.MIN_DAYLIGHT) * ((float) (this.getDayTime() - SUNSET_START) / SUNSET_DURATION);
         } else {
             return -1;
         }
@@ -477,7 +496,7 @@ public class World implements Serializable {
     public void addMoney(int amount) {
         this.money += amount;
 
-        Main.PLAYER.updateMoney(this.money);
+        Main.player.updateMoney(this.money);
     }
 
     /**
@@ -515,7 +534,7 @@ public class World implements Serializable {
     public void addPopulation(int amount) {
         this.population += amount;
 
-        Main.PLAYER.updatePopulation(this.population);
+        Main.player.updatePopulation(this.population);
     }
 
     /**
@@ -556,7 +575,7 @@ public class World implements Serializable {
 
         this.incomes += this.getBuildings().stream().mapToInt(Building::getIncomes).sum();
 
-        Main.PLAYER.updateIncomes(this.getIncomes());
+        Main.player.updateIncomes(this.getIncomes());
     }
 
     /**
@@ -573,7 +592,7 @@ public class World implements Serializable {
 
         this.updateIncomes();
 
-        Main.PLAYER.updateHappiness(this.happiness);
+        Main.player.updateHappiness(this.happiness);
     }
 
     /**
@@ -584,7 +603,7 @@ public class World implements Serializable {
 
         this.updateIncomes();
 
-        Main.PLAYER.updateUnemployment(this.unemployment);
+        Main.player.updateUnemployment(this.unemployment);
     }
 
     /**
@@ -601,7 +620,7 @@ public class World implements Serializable {
 
         this.security = Math.clamp(protection / (float) this.getDucksCount(), 0 , 1);
 
-        Main.PLAYER.updateSecurity(this.security);
+        Main.player.updateSecurity(this.security);
     }
 
     /**
@@ -618,7 +637,7 @@ public class World implements Serializable {
 
         this.health = Math.clamp(protection / (float) this.getDucksCount(), 0, 1);
 
-        Main.PLAYER.updateHealth(this.health);
+        Main.player.updateHealth(this.health);
     }
 
     /**
@@ -693,5 +712,15 @@ public class World implements Serializable {
                 (hour * World.TOTAL_DAY_DURATION / 24) +
                         ((float) minute * World.TOTAL_DAY_DURATION) / (24 % World.TOTAL_DAY_DURATION * 60)
         );
+    }
+
+    public static World getWorldFromFile(File worldFile) {
+        try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(worldFile))) {
+            return  (World) inputStream.readObject();
+        } catch (IOException | ClassNotFoundException exception) {
+            Logger.sendMessage("No se ha podido leer el mundo: %s", Logger.LogMessageType.WARNING, exception.getMessage());
+        }
+
+        return new World();
     }
 }
