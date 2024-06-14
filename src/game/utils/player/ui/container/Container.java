@@ -1,6 +1,7 @@
 package game.utils.player.ui.container;
 
 import game.Main;
+import game.listener.MouseListener;
 import game.utils.player.ui.widget.Widget;
 import game.utils.player.ui.widget.widgetUtils.OnMouseDragEvent;
 import game.utils.player.ui.widget.widgetUtils.OnMouseMoveEvent;
@@ -85,6 +86,8 @@ public abstract class Container {
                 onResizeWindowEvent.onResizeWindowEvent(newWidth / Container.pixelSizeInScreen, newHeight / Container.pixelSizeInScreen);
             }
         }
+
+        this.onMouseMoveEvent(MouseListener.getInScreenLocation().getX(), MouseListener.getInScreenLocation().getY());
     }
 
     /**

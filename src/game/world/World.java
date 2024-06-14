@@ -651,9 +651,9 @@ public class World implements Serializable {
             }
         }
 
-        if (!paused || Main.tickSpeed != 0) {
-            for (Building BUILDING : this.BUILDINGS) {
-                BUILDING.onTick();
+        if (!paused && Main.tickSpeed != 0) {
+            for (Building building : this.BUILDINGS) {
+                building.onTick();
             }
 
             List<Duck> duckList = new ArrayList<>(this.DUCKS_LIST);

@@ -53,6 +53,8 @@ import java.util.List;
 
 
 public class Player {
+    private static final DecimalFormat MONEY_FORMAT = new DecimalFormat("###,###,###.##§", DecimalFormatSymbols.getInstance(Locale.GERMAN));
+
     private final static Tab GENERAL_TAB = new Tab(Textures.SELECTED_GENERAL_TAB_ICON, Textures.UNSELECTED_GENERAL_TAB_ICON),
         ZONING_TAB = new Tab(Textures.SELECTED_ZONING_TAB_ICON, Textures.UNSELECTED_ZONING_TAB_ICON),
         INDUSTRY_TAB = new Tab(Textures.SELECTED_INDUSTRY_TAB_ICON, Textures.UNSELECTED_INDUSTRY_TAB_ICON),
@@ -63,8 +65,8 @@ public class Player {
     private final static HashMap<Tab, List<List<Item>>> ITEMS = new HashMap<>() {{
         this.put(Player.GENERAL_TAB,Arrays.asList(
                 Arrays.asList(
-                        new TerrainItem(Textures.WATER, Terrain.TerrainType.WATER, "Agua", null, 0),
-                        new TerrainItem(Textures.GRASS, Terrain.TerrainType.GRASS, "Césped", null, 0),
+                        new TerrainItem(Textures.WATER_ICON, Terrain.TerrainType.WATER, "Agua", null, 0),
+                        new TerrainItem(Textures.GRASS, Terrain.TerrainType.GRASS, "Cesped", null, 0),
                         new TerrainItem(Textures.SAND, Terrain.TerrainType.SAND, "Arena", null, 0),
                         new TerrainItem(Textures.GRAVEL, Terrain.TerrainType.GRAVEL, "Grava", null, 0),
                         new TerrainItem(Textures.STONE, Terrain.TerrainType.STONE, "Piedra", null, 0),
@@ -99,19 +101,19 @@ public class Player {
         this.put(Player.SERVICES_TAB, List.of(
                 Arrays.asList(
                         new FeatureItem(Textures.HOSPITAL, Hospital::new, "Hospital", "Incrementa la salud de un máximo de 75 patos.", 15000),
-                        new FeatureItem(Textures.POLICE_STATION, PoliceStation::new, "Estación de Policia", "Comisaría para dar servicio a 40 patos.", 10000)
+                        new FeatureItem(Textures.POLICE_STATION, PoliceStation::new, "Estacion de Policia", "Comisaría para dar servicio a 40 patos.", 10000)
                 )
         ));
         this.put(Player.NATURE_TAB, Arrays.asList(
                 Arrays.asList(
                         new FeatureItem(Textures.BUSH, Bush::new, "Hierba", null, 25),
-                        new FeatureItem(Textures.TREE1, location -> new Tree(location, 0), "Arbol de roble", null, 50),
-                        new FeatureItem(Textures.TREE2, location -> new Tree(location, 1), "arbol de abedúl", null, 50)),
+                        new FeatureItem(Textures.TREE1, location -> new Tree(location, 0), "Arbol", null, 50),
+                        new FeatureItem(Textures.TREE2, location -> new Tree(location, 1), "Arbol mustio", null, 25)),
                 Arrays.asList(
                         new FeatureItem(Textures.TULIP, location -> new Flower(location, 0), "Tulipanes", null, 75),
                         new FeatureItem(Textures.TULIP_2, location -> new Flower(location, 1), "Mas tulipanes", null, 75),
                         new FeatureItem(Textures.BLUE_ORCHID, location -> new Flower(location, 2), "Orquidea azul", null, 75),
-                        new FeatureItem(Textures.DANDELION, location -> new Flower(location, 3), "Diente de león", null, 75),
+                        new FeatureItem(Textures.DANDELION, location -> new Flower(location, 3), "Diente de leon", null, 75),
                         new FeatureItem(Textures.RED_LILY, location -> new Flower(location, 4), "Lirio rojo", null, 75)),
                 List.of(
                         new FeatureItem(Textures.ROCK, Rock::new, "Una piedra", null, 0))
@@ -345,7 +347,7 @@ public class Player {
         FrameSeparatorWidget separatorWidget = new FrameSeparatorWidget(3, layoutBuilder.nextTo(fullscreenButton));
         this.VIDEO_MENU.addWidget(separatorWidget);
 
-        OptionsFrameButtonWidgets<Boolean> diurnalCycleButton = new OptionsFrameButtonWidgets<>(8, layoutBuilder.nextTo(separatorWidget), "Ciclo día/noche", new LinkedHashMap<>() {{
+        OptionsFrameButtonWidgets<Boolean> diurnalCycleButton = new OptionsFrameButtonWidgets<>(8, layoutBuilder.nextTo(separatorWidget), "Ciclo dia/noche", new LinkedHashMap<>() {{
             put(Boolean.TRUE, "Si");
             put(Boolean.FALSE, "No");
         }}, Setting.DIURNAL_CYCLE.getValue());
@@ -465,7 +467,7 @@ public class Player {
                     }
 
                     if (item.getPrice() != 0) {
-                        String priceString = new DecimalFormat("###,###,###.##§", DecimalFormatSymbols.getInstance(Locale.GERMAN)).format(item.getPrice());
+                        String priceString = Player.MONEY_FORMAT.format(item.getPrice());
                         tooltip.addLine("-" +priceString, GameFont.PIXEL_CONTENT, Font.PLAIN, TextTooltip.CONTENT_TEXT_SIZE, Colors.RED);
                     }
 
@@ -607,8 +609,10 @@ public class Player {
      * @param money El valor del dinero a mostrar.
      */
     public void updateMoney(int money) {
+        String moneyString = Player.MONEY_FORMAT.format(money);
+
         this.MONEY_TEXT_BOX.setText(
-                money + "§",
+                moneyString,
                 Font.PLAIN,
                 money > 0?Color.WHITE:Colors.RED
         );
@@ -620,8 +624,9 @@ public class Player {
      * @param incomes El valor de los ingresos a mostrar.
      */
     public void updateIncomes(int incomes) {
+        String incomesString = Player.MONEY_FORMAT.format(incomes);
         this.INCOMES_TEXT_BOX.setText(
-                (incomes > 0?"+":"") +incomes + "§/dia",
+                (incomes > 0?"+":"") +incomesString + "/dia",
                 Font.PLAIN,
                 incomes > 0?Colors.GREEN:Colors.RED
         );

@@ -12,7 +12,7 @@ public final class Textures {
         WORLD_BORDER = new AnimatedTexture("resources/textures/terrain/border", 5, 5, GL20.GL_REPEAT),
 
         /** TERRAIN **/
-        WATER = new AnimatedTexture("resources/textures/terrain/water", 5, 8),
+        WATER = new AnimatedTexture("resources/textures/terrain/water", 8, 5),
         GRASS = new StaticTexture("resources/textures/terrain/grass.png"),
         SAND = new StaticTexture("resources/textures/terrain/sand.png"),
         STONE = new StaticTexture("resources/textures/terrain/stone.png"),
@@ -113,6 +113,7 @@ public final class Textures {
         X5_GAME_ICON = new StaticTexture("resources/textures/ui/inventory/button/game_speed_button/x5_game_icon.png"),
         BULLDOZER_BUTTON_ICON = new StaticTexture("resources/textures/ui/inventory/button/bulldozer_button/bulldozer_icon.png"),
         BULLDOZER_ICON = new StaticTexture("resources/textures/ui/icon/bulldozer_icon.png"),
+        WATER_ICON = new StaticTexture("resources/textures/ui/icon/water_icon.png"),
         SLIDER_BACKGROUND = new StaticTexture("resources/textures/ui/inventory/slider/slider_background.png"),
         SLIDER = new StaticTexture("resources/textures/ui/inventory/slider/slider.png"),
         HOVERED_SLIDER = new StaticTexture("resources/textures/ui/inventory/slider/hovered_slider.png"),
